@@ -9,12 +9,12 @@
 		<relativePath/>
 		<!-- lookup parent from repository -->
 	</parent>
-	<groupId>mg.sandratra</groupId>
-	<artifactId>demo</artifactId>
+	<groupId>mg.exchange</groupId>
+	<artifactId>ghost-exchange</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>war</packaging>
-	<name>demo</name>
-	<description>Demo project for Spring Boot</description>
+	<name>ghost-exchange</name>
+	<description>A crypto exchange manager</description>
 	<url/>
 	<licenses>
 		<license/>
