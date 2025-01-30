@@ -1,4 +1,4 @@
-package mg.sandratra.demo;
+package mg.exchange;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
