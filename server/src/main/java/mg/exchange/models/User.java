@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
+import java.math.BigDecimal;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -17,8 +19,8 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(name = "fiat_balance", nullable = false, precision = 10, scale = 2)
-    private Double fiatBalance;
+    @Column(name = "fiat_balance", nullable = false, precision = 18, scale = 2)
+    private BigDecimal fiatBalance;
 
     @Column(name = "username", nullable = false, unique = true, length = 100)
     private String username;

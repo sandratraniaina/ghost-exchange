@@ -12,7 +12,7 @@ CREATE TABLE cryptocurrency(
   id serial NOT NULL,
   "name" varchar(50) NOT NULL,
   symbol varchar(3) NOT NULL,
-  fiat_price numeric(10, 2) NOT NULL,
+  fiat_price numeric(18, 2) NOT NULL,
   CONSTRAINT cryptocurrency_pkey PRIMARY KEY(id)
 );
 
@@ -36,8 +36,8 @@ CREATE TABLE sell_order(
   id serial NOT NULL,
   seller_id integer NOT NULL,
   cryptocurrency_id integer NOT NULL,
-  amount numeric(10, 12) NOT NULL,
-  fiat_price numeric(10, 2) NOT NULL,
+  amount numeric(18, 2) NOT NULL,
+  fiat_price numeric(18, 2) NOT NULL,
   "timestamp" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   is_open bool NOT NULL DEFAULT true,
   CONSTRAINT sell_order_pkey PRIMARY KEY(id)
@@ -46,7 +46,7 @@ CREATE TABLE sell_order(
 CREATE TABLE "transaction"(
   id serial NOT NULL,
   user_id integer NOT NULL,
-  amount numeric(10, 2) NOT NULL,
+  amount numeric(18, 2) NOT NULL,
   transaction_type transaction_type NOT NULL,
   "timestamp" timestamp NOT NULL,
   validation_timestamp timestamp DEFAULT NULL,
@@ -55,7 +55,7 @@ CREATE TABLE "transaction"(
 
 CREATE TABLE "user"(
   id serial NOT NULL,
-  fiat_balance numeric(10, 2) NOT NULL,
+  fiat_balance numeric(18, 2) NOT NULL,
   username varchar(100) NOT NULL UNIQUE,
   email varchar(100) NOT NULL,
   CONSTRAINT user_pkey PRIMARY KEY(id)
@@ -64,7 +64,7 @@ CREATE TABLE "user"(
 CREATE TABLE xe_history(
   id serial NOT NULL,
   cryptocurrency_id integer NOT NULL,
-  fiat_price numeric(10, 2) NOT NULL,
+  fiat_price numeric(18, 2) NOT NULL,
   "timestamp" timestamp NOT NULL,
   CONSTRAINT xe_history_pkey PRIMARY KEY(id)
 );
