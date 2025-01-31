@@ -41,6 +41,10 @@ public class UserService {
         userRepository.deleteById(id);
     }
 
+    public Optional<User> getUserByUsername(String username) {
+        return userRepository.findByUsername(username);
+    }
+
     public User convertJsonToUser(String json) {
         try {
             return objectMapper.readValue(json, User.class);
@@ -48,4 +52,11 @@ public class UserService {
             throw new RuntimeException("Failed to convert JSON to User", e);
         }
     }
+
+    public User checkUserAlreadyExist(String json) {
+        User userJson = convertJsonToUser(json);
+        Optional<User> existingUser = getUserByUsername(userJson.getUsername());
+        return existingUser.orElseGet(() -> createUser(userJson));
+    }
+
 }
