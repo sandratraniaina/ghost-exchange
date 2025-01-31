@@ -1,0 +1,14 @@
+spring.application.name=GhostExchangeApplication
+server.port=8080
+
+
+# PostgreSQL configuration
+spring.datasource.url=jdbc:postgresql://localhost:5432/ghost_exchange
+spring.datasource.username=postgres
+spring.datasource.password=liantsoa
+spring.datasource.driver-class-name=org.postgresql.Driver
+
+# JPA and Hibernate properties
+spring.jpa.hibernate.ddl-auto=create
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
