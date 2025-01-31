@@ -1,5 +1,7 @@
 package mg.exchange.services;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import mg.exchange.models.User;
 import mg.exchange.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +13,7 @@ import java.util.Optional;
 @Service
 public class UserService {
 
+    private static final ObjectMapper objectMapper = new ObjectMapper();
     @Autowired
     private UserRepository userRepository;
 
@@ -36,5 +39,13 @@ public class UserService {
 
     public void deleteUser(Long id) {
         userRepository.deleteById(id);
+    }
+
+    public User convertJsonToUser(String json) {
+        try {
+            return objectMapper.readValue(json, User.class);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Failed to convert JSON to User", e);
+        }
     }
 }
