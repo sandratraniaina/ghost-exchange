@@ -24,8 +24,10 @@ public class TransactionService {
         return transactionRepository.findAll();
     }
 
-    public Optional<Transaction> getTransactionById(Long id) {
-        return transactionRepository.findById(id);
+    public Transaction getTransactionById(Long id) {
+        Transaction transaction = transactionRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Transaction not found"));
+        return transaction;
     }
 
     public Transaction createTransaction(Transaction transaction) {

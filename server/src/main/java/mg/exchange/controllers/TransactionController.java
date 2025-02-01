@@ -55,6 +55,17 @@ public class TransactionController {
     }
 
     @SuppressWarnings("unchecked")
+    @GetMapping("/{transactionId}")
+    public <T> ResponseEntity<Response<T>> getTransactionById(@PathVariable Long transactionId) {
+        try {
+            Transaction transaction = transactionService.getTransactionById(transactionId);
+            return ResponseUtil.sendResponse(HttpStatus.OK, true, "Transaction deleted successfully",null);
+        } catch (Exception e) {
+            return ResponseUtil.sendResponse(HttpStatus.BAD_REQUEST, false,"Error while deleting transaction : "+transactionId , (T)e.getMessage());
+        }
+    }
+
+    @SuppressWarnings("unchecked")
     @PostMapping("/{transactionId}")
     public <T> ResponseEntity<Response<T>> validateTransaction(@PathVariable Long transactionId) {
         try {
