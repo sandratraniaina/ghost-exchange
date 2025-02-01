@@ -58,10 +58,11 @@ public class TransactionService {
         transactionRepository.deleteById(id);
     }
 
-    public void validateTransaction(Long id) {
+    public Transaction validateTransaction(Long id) {
         Transaction transaction = transactionRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Transaction not found"));
         transaction.setValidationTimestamp(LocalDate.now().atStartOfDay());
         updateTransaction(id, transaction);
+        return transaction;
     }
 }

@@ -1,11 +1,13 @@
 package mg.exchange.controllers;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -50,5 +52,18 @@ public class TransactionController {
             return ResponseUtil.sendResponse(HttpStatus.BAD_REQUEST, false, "Error while trying to save transaction", (T)e.getMessage());
         }
     }
-    
+
+    @PostMapping("/{transactionId}")
+    public <T> ResponseEntity<Response<T>> validateTransaction(@PathVariable Long transactionId) {
+        try {
+            transactionService.validateTransaction(transactionId);
+            return ResponseUtil.sendResponse(HttpStatus.OK, true, "Transaction validated successfully", (T) transaction);
+        } catch (Exception e) {
+            // Log the error
+            e.printStackTrace();
+
+            // Return an error response
+            return ResponseUtil.sendResponse(HttpStatus.BAD_REQUEST, false, e.getMessage(), null);
+        }
+    }
 }
