@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -34,4 +36,19 @@ public class TransactionController {
             return ResponseUtil.sendResponse(HttpStatus.BAD_REQUEST, false, "Error while fetching transactions data", (T)e.getMessage());
         }
     }
+
+    @SuppressWarnings("unchecked")
+    @PostMapping
+    public <T> ResponseEntity<Response<T>> saveTransaction(@RequestBody Transaction transaction) {
+        try {
+            if (transaction == null) {
+                throw new Exception("Cannot save a transaction of a value null");
+            }
+            transaction = transactionService.createTransaction(transaction);
+            return ResponseUtil.sendResponse(HttpStatus.OK, true, "Transaction saved successfully", (T) transaction);
+        } catch (Exception e) {
+            return ResponseUtil.sendResponse(HttpStatus.BAD_REQUEST, false, "Error while trying to save transaction", (T)e.getMessage());
+        }
+    }
+    
 }
