@@ -89,4 +89,10 @@ public class SellOrderService {
         Ledger ledger = new Ledger(0L,sellOrder,buyer,sellingDate);
         ledgerService.createLedger(ledger);
     }
+
+    public  void cancelSellOrder(SellOrder sellOrder){
+        sellOrder.setIsOpen(true);
+        ledgerService.deleteBySellOrderId(sellOrder.getId());
+        updateSellOrder(sellOrder.getId(),sellOrder);
+    }
 }
