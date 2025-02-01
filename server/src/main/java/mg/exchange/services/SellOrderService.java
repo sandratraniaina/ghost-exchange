@@ -1,5 +1,6 @@
 package mg.exchange.services;
 
+import mg.exchange.models.Ledger;
 import mg.exchange.models.SellOrder;
 import mg.exchange.models.User;
 import mg.exchange.models.Cryptocurrency;
@@ -9,6 +10,8 @@ import mg.exchange.repository.CryptocurrencyRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,6 +22,7 @@ public class SellOrderService {
     private final SellOrderRepository sellOrderRepository;
     private final UserRepository userRepository;
     private final CryptocurrencyRepository cryptocurrencyRepository;
+    private final LedgerService ledgerService;
 
     public List<SellOrder> getAllSellOrders() {
         return sellOrderRepository.findAll();
@@ -77,5 +81,12 @@ public class SellOrderService {
 
     public List<SellOrder> getSellOrdersBySellerId(Long sellerId) {
         return sellOrderRepository.findSellOrdersBySellerId(sellerId);
+    }
+
+    public  void buyCrypto(SellOrder sellOrder , User buyer, LocalDateTime sellingDate){
+        sellOrder.setIsOpen(false);
+        updateSellOrder(sellOrder.getId(),sellOrder);
+        Ledger ledger = new Ledger(0L,sellOrder,buyer,sellingDate);
+        ledgerService.createLedger(ledger);
     }
 }
