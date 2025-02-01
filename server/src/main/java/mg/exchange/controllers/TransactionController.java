@@ -59,9 +59,9 @@ public class TransactionController {
     public <T> ResponseEntity<Response<T>> getTransactionById(@PathVariable Long transactionId) {
         try {
             Transaction transaction = transactionService.getTransactionById(transactionId);
-            return ResponseUtil.sendResponse(HttpStatus.OK, true, "Transaction deleted successfully",null);
+            return ResponseUtil.sendResponse(HttpStatus.OK, true, "Transaction fetched successfully",(T)transaction);
         } catch (Exception e) {
-            return ResponseUtil.sendResponse(HttpStatus.BAD_REQUEST, false,"Error while deleting transaction : "+transactionId , (T)e.getMessage());
+            return ResponseUtil.sendResponse(HttpStatus.BAD_REQUEST, false,"Error while fetching transaction : "+transactionId , (T)e.getMessage());
         }
     }
 
