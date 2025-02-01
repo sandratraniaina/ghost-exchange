@@ -70,9 +70,9 @@ public class TransactionController {
     public <T> ResponseEntity<Response<T>> deleteTransaction(@PathVariable Long transactionId) {
         try {
             transactionService.deleteTransaction(transactionId);
-            return ResponseUtil.sendResponse(HttpStatus.OK, true, "Transaction validated successfully",null);
+            return ResponseUtil.sendResponse(HttpStatus.OK, true, "Transaction deleted successfully",null);
         } catch (Exception e) {
-            return ResponseUtil.sendResponse(HttpStatus.BAD_REQUEST, false,"Error while validating transaction : "+transactionId , (T)e.getMessage());
+            return ResponseUtil.sendResponse(HttpStatus.BAD_REQUEST, false,"Error while deleting transaction : "+transactionId , (T)e.getMessage());
         }
     }
 }
