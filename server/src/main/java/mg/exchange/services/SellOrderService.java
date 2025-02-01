@@ -70,4 +70,8 @@ public class SellOrderService {
     public void deleteSellOrder(Long id) {
         sellOrderRepository.deleteById(id);
     }
+
+    public List<SellOrder> getOpenSellOrders() {
+        return sellOrderRepository.findOpenSellOrders();
+    }
 }
