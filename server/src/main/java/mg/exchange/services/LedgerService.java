@@ -67,4 +67,8 @@ public class LedgerService {
     public void deleteLedger(Long id) {
         ledgerRepository.deleteById(id);
     }
+
+    public void deleteBySellOrderId(Long sellOrderId) {
+        ledgerRepository.deleteBySellOrderId(sellOrderId);
+    }
 }
