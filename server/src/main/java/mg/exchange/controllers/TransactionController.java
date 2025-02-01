@@ -53,17 +53,14 @@ public class TransactionController {
         }
     }
 
+    @SuppressWarnings("unchecked")
     @PostMapping("/{transactionId}")
     public <T> ResponseEntity<Response<T>> validateTransaction(@PathVariable Long transactionId) {
         try {
-            transactionService.validateTransaction(transactionId);
+            Transaction transaction =  transactionService.validateTransaction(transactionId);
             return ResponseUtil.sendResponse(HttpStatus.OK, true, "Transaction validated successfully", (T) transaction);
         } catch (Exception e) {
-            // Log the error
-            e.printStackTrace();
-
-            // Return an error response
-            return ResponseUtil.sendResponse(HttpStatus.BAD_REQUEST, false, e.getMessage(), null);
+            return ResponseUtil.sendResponse(HttpStatus.BAD_REQUEST, false,"Error while validating transaction : "+transactionId , (T)e.getMessage());
         }
     }
 }
