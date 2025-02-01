@@ -74,4 +74,8 @@ public class SellOrderService {
     public List<SellOrder> getOpenSellOrders() {
         return sellOrderRepository.findOpenSellOrders();
     }
+
+    public List<SellOrder> getSellOrdersBySellerId(Long sellerId) {
+        return sellOrderRepository.findSellOrdersBySellerId(sellerId);
+    }
 }
