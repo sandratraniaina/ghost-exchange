@@ -67,4 +67,8 @@ public class CryptocurrencyWalletService {
     public void deleteWallet(Long id) {
         cryptocurrencyWalletRepository.deleteById(id);
     }
+
+    public Optional<CryptocurrencyWallet> getWalletByUserId(Long userId) {
+        return cryptocurrencyWalletRepository.findByUserId(userId);
+    }
 }
