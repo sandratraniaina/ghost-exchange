@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -59,6 +60,17 @@ public class TransactionController {
         try {
             Transaction transaction =  transactionService.validateTransaction(transactionId);
             return ResponseUtil.sendResponse(HttpStatus.OK, true, "Transaction validated successfully", (T) transaction);
+        } catch (Exception e) {
+            return ResponseUtil.sendResponse(HttpStatus.BAD_REQUEST, false,"Error while validating transaction : "+transactionId , (T)e.getMessage());
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    @DeleteMapping("/{transactionId}")
+    public <T> ResponseEntity<Response<T>> deleteTransaction(@PathVariable Long transactionId) {
+        try {
+            transactionService.deleteTransaction(transactionId);
+            return ResponseUtil.sendResponse(HttpStatus.OK, true, "Transaction validated successfully",null);
         } catch (Exception e) {
             return ResponseUtil.sendResponse(HttpStatus.BAD_REQUEST, false,"Error while validating transaction : "+transactionId , (T)e.getMessage());
         }
