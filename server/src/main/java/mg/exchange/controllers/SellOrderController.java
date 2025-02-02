@@ -1,11 +1,13 @@
 package mg.exchange.controllers;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import mg.exchange.models.Response;
 import mg.exchange.models.SellOrder;
+import mg.exchange.models.User;
 import mg.exchange.services.SellOrderService;
 import mg.exchange.utils.ResponseUtil;
 
@@ -55,6 +58,17 @@ public class SellOrderController {
             return ResponseUtil.sendResponse(HttpStatus.OK, true, "Sell order created successfully", (T) sellOrder);
         } catch (Exception e) {
             return ResponseUtil.sendResponse(HttpStatus.BAD_REQUEST, false, "Error while creating sell order", (T) e.getMessage());
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    @PostMapping("/{sellOrderId}/buy")
+    public <T> ResponseEntity<Response<T>> buyCrypto(@PathVariable Long sellOrderId , @RequestBody User buyer){
+        try {
+            
+
+        } catch (Exception e) {
+            return ResponseUtil.sendResponse(HttpStatus.BAD_REQUEST, false, "Error while attempting to buy sell order id : " +sellOrderId, (T) e.getMessage());
         }
     }
     

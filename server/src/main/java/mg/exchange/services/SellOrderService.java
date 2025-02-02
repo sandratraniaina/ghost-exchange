@@ -28,8 +28,9 @@ public class SellOrderService {
         return sellOrderRepository.findAll();
     }
 
-    public Optional<SellOrder> getSellOrderById(Long id) {
-        return sellOrderRepository.findById(id);
+    public SellOrder getSellOrderById(Long id) {
+        return sellOrderRepository.findById(id)
+        .orElseThrow(() -> new RuntimeException("Sell Order not found with id: " + id));
     }
 
     public SellOrder createSellOrder(SellOrder sellOrder) {
