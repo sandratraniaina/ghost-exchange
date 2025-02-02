@@ -83,10 +83,10 @@ public class SellOrderService {
         return sellOrderRepository.findSellOrdersBySellerId(sellerId);
     }
 
-    public  void buyCrypto(SellOrder sellOrder , User buyer, LocalDateTime sellingDate){
+    public  void buyCrypto(SellOrder sellOrder , User buyer){
         sellOrder.setIsOpen(false);
         updateSellOrder(sellOrder.getId(),sellOrder);
-        Ledger ledger = new Ledger(0L,sellOrder,buyer,sellingDate);
+        Ledger ledger = new Ledger(0L,sellOrder,buyer,sellOrder.getTimestamp());
         ledgerService.createLedger(ledger);
     }
 
