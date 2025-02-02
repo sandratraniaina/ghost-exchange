@@ -84,6 +84,10 @@ public class SellOrderService {
         return sellOrderRepository.findSellOrdersBySellerId(sellerId);
     }
 
+    public List<SellOrder> getOpenSellOrdersBySellerId(Long sellerId){
+        return sellOrderRepository.findOpenSellOrdersBySellerId(sellerId);
+    }
+
     @Transactional
     public void buyCrypto(SellOrder sellOrder, User buyer) {
         if (sellOrder == null || buyer == null) {
