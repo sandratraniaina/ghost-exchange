@@ -16,4 +16,7 @@ public interface SellOrderRepository extends JpaRepository<SellOrder, Long> {
     @Query("SELECT so FROM SellOrder so WHERE so.seller.id = :sellerId")
     List<SellOrder> findSellOrdersBySellerId( @Param("sellerId") Long sellerId);
 
+    @Query("SELECT so FROM SellOrder so WHERE so.seller.id = :sellerId AND so.isOpen = true")
+    List<SellOrder> findOpenSellOrdersBySellerId( @Param("sellerId") Long sellerId);
+
 }
