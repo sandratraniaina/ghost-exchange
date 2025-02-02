@@ -9,7 +9,7 @@ import mg.exchange.repository.UserRepository;
 import mg.exchange.repository.CryptocurrencyRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
+import org.springframework.transaction.annotation.Transactional;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -28,8 +28,9 @@ public class SellOrderService {
         return sellOrderRepository.findAll();
     }
 
-    public Optional<SellOrder> getSellOrderById(Long id) {
-        return sellOrderRepository.findById(id);
+    public SellOrder getSellOrderById(Long id) {
+        return sellOrderRepository.findById(id)
+        .orElseThrow(() -> new RuntimeException("Sell Order not found with id: " + id));
     }
 
     public SellOrder createSellOrder(SellOrder sellOrder) {
@@ -71,9 +72,12 @@ public class SellOrderService {
         return sellOrderRepository.save(sellOrder);
     }
 
-    public void deleteSellOrder(Long id) {
-        sellOrderRepository.deleteById(id);
+    
+    @Transactional
+    public void deleteSellOrder(Long sellOrderId) {
+        sellOrderRepository.deleteById(sellOrderId);
     }
+    
 
     public List<SellOrder> getOpenSellOrders() {
         return sellOrderRepository.findOpenSellOrders();
@@ -83,13 +87,25 @@ public class SellOrderService {
         return sellOrderRepository.findSellOrdersBySellerId(sellerId);
     }
 
-    public  void buyCrypto(SellOrder sellOrder , User buyer, LocalDateTime sellingDate){
-        sellOrder.setIsOpen(false);
-        updateSellOrder(sellOrder.getId(),sellOrder);
-        Ledger ledger = new Ledger(0L,sellOrder,buyer,sellingDate);
-        ledgerService.createLedger(ledger);
+    public List<SellOrder> getOpenSellOrdersBySellerId(Long sellerId){
+        return sellOrderRepository.findOpenSellOrdersBySellerId(sellerId);
     }
 
+    @Transactional
+    public void buyCrypto(SellOrder sellOrder, User buyer) {
+        if (sellOrder == null || buyer == null) {
+            throw new IllegalArgumentException("Sell order and buyer must not be null");
+        }
+        sellOrder.setIsOpen(false);
+        sellOrderRepository.save(sellOrder);
+        Ledger ledger = new Ledger();
+        ledger.setSellOrder(sellOrder);
+        ledger.setBuyer(buyer);
+        ledger.setTimestamp(LocalDateTime.now()); 
+        ledgerService.createLedger(ledger); 
+    }
+
+    @Transactional
     public  void cancelSellOrder(SellOrder sellOrder){
         sellOrder.setIsOpen(true);
         ledgerService.deleteBySellOrderId(sellOrder.getId());
