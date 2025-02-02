@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -72,6 +73,17 @@ public class SellOrderController {
             return ResponseUtil.sendResponse(HttpStatus.OK, true, "Sell order bought successfully : ",null);
         } catch (Exception e) {
             return ResponseUtil.sendResponse(HttpStatus.BAD_REQUEST, false, "Error while attempting to buy sell order id : " +sellOrderId, (T) e.getMessage());
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    @PutMapping("/{sellOrderId}")
+    public <T> ResponseEntity<Response<T>> updateSellOrder(@PathVariable Long sellOrderId, @RequestBody SellOrder sellOrder){
+        try {
+            SellOrder updated = sellOrderService.updateSellOrder(sellOrderId, sellOrder);
+            return ResponseUtil.sendResponse(HttpStatus.OK, true, "Sell order updated successfully", (T) updated);
+        } catch (Exception e) {
+            return ResponseUtil.sendResponse(HttpStatus.BAD_REQUEST, false, "Error while attempting to update sell order id : " +sellOrderId, (T) e.getMessage());
         }
     }
 }
