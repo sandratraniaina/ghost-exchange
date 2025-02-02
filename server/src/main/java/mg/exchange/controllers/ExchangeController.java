@@ -6,11 +6,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import mg.exchange.models.Cryptocurrency;
 import mg.exchange.models.Response;
 import mg.exchange.models.XeHistory;
+import mg.exchange.services.CryptocurrencyService;
 import mg.exchange.services.XeHistoryService;
 import mg.exchange.utils.ResponseUtil;
 
@@ -20,6 +23,7 @@ public class ExchangeController {
     
     @Autowired
     private XeHistoryService exchangeService;
+    @Autowired CryptocurrencyService cryptocurrencyService;
 
     @SuppressWarnings("unchecked")
     @GetMapping

@@ -5,6 +5,8 @@ import mg.exchange.models.Cryptocurrency;
 import mg.exchange.repository.XeHistoryRepository;
 import mg.exchange.repository.CryptocurrencyRepository;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,6 +18,11 @@ public class XeHistoryService {
 
     private final XeHistoryRepository xeHistoryRepository;
     private final CryptocurrencyRepository cryptocurrencyRepository;
+    @Value("${cryptocurrency.price.min}")
+    private double priceMin;
+
+    @Value("${cryptocurrency.price.max}")
+    private double priceMax;
 
     public List<XeHistory> getAllXeHistories() {
         return xeHistoryRepository.findAll();
