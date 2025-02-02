@@ -7,6 +7,7 @@ import mg.exchange.repository.CryptocurrencyRepository;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +29,9 @@ public class XeHistoryService {
 
     @Value("${cryptocurrency.price.max}")
     private double priceMax;
+
+    @Value("${cryptocurrency.schedule.interval}")
+    private long scheduleInterval;
 
     public List<XeHistory> getAllXeHistories() {
         return xeHistoryRepository.findAll();
@@ -66,6 +70,7 @@ public class XeHistoryService {
     }
 
     @Transactional
+    @Scheduled(fixedRateString = "${cryptocurrency.schedule.interval}")
     public void generateNewExchanges() {
         List<Cryptocurrency> cryptocurrencies = cryptocurrencyRepository.findAll();
         Random random = new Random();
