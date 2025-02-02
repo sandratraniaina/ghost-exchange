@@ -24,8 +24,9 @@ public class CryptocurrencyWalletService {
         return cryptocurrencyWalletRepository.findAll();
     }
 
-    public Optional<CryptocurrencyWallet> getWalletById(Long id) {
-        return cryptocurrencyWalletRepository.findById(id);
+    public CryptocurrencyWallet getWalletById(Long id) {
+        return cryptocurrencyWalletRepository.findById(id)
+        .orElseThrow(() -> new RuntimeException("CryptocurrencyWallet not found with id: " + id));
     }
 
     public CryptocurrencyWallet createWallet(CryptocurrencyWallet wallet) {
@@ -65,10 +66,13 @@ public class CryptocurrencyWalletService {
     }
 
     public void deleteWallet(Long id) {
+        CryptocurrencyWallet wallet = getWalletById(id);
         cryptocurrencyWalletRepository.deleteById(id);
     }
 
     public Optional<CryptocurrencyWallet> getWalletByUserId(Long userId) {
+        User user = userRepository.findById(userId)
+        .orElseThrow(() -> new RuntimeException("User not found"));
         return cryptocurrencyWalletRepository.findByUserId(userId);
     }
 }
