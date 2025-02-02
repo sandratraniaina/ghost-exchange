@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -32,4 +34,16 @@ public class WalletController {
             return ResponseUtil.sendResponse(HttpStatus.BAD_REQUEST, false, "Error while retrieving wallet for user "+userId, (T)e.getMessage());
         }
     }
+
+    @SuppressWarnings("unchecked")
+    @PostMapping
+    public <T> ResponseEntity<Response<T>> createWallet(@RequestBody CryptocurrencyWallet wallet){
+        try {
+            CryptocurrencyWallet createdWallet = walletService.createWallet(wallet);
+            return ResponseUtil.sendResponse(HttpStatus.OK, true, "Wallet created successfully", (T)createdWallet);
+        } catch (Exception e) {
+            return ResponseUtil.sendResponse(HttpStatus.BAD_REQUEST, false, "Error while creating wallet for user "+wallet.getUser().getId(), (T)e.getMessage());
+        }
+    }
+    
 }
