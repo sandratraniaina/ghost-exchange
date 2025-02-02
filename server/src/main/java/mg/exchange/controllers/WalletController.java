@@ -5,6 +5,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -55,6 +56,17 @@ public class WalletController {
             return ResponseUtil.sendResponse(HttpStatus.OK, true, "Wallet fetched successfully", (T)wallet);
         } catch (Exception e) {
             return ResponseUtil.sendResponse(HttpStatus.BAD_REQUEST, false, "Error while fetching wallet  "+walletId, (T)e.getMessage());
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    @DeleteMapping("/{walletId}")
+    public <T> ResponseEntity<Response<T>> deleteWalletById(@PathVariable Long walletId){
+        try {
+            walletService.deleteWallet(walletId);
+            return ResponseUtil.sendResponse(HttpStatus.OK, true, "Wallet deleted successfully", null);
+        } catch (Exception e) {
+            return ResponseUtil.sendResponse(HttpStatus.BAD_REQUEST, false, "Error while deleting wallet  "+walletId, (T)e.getMessage());
         }
     }
 
