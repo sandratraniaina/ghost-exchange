@@ -59,5 +59,20 @@ public class SellOrderController {
         } catch (Exception e) {
             return ResponseUtil.sendResponse(HttpStatus.BAD_REQUEST, false, "Error while creating sell order", (T) e.getMessage());
         }
-    }    
+    }   
+    
+    @SuppressWarnings("unchecked")
+    @PostMapping("/{sellOrderId}/buy")
+    public <T> ResponseEntity<Response<T>> buyCrypto(@PathVariable Long sellOrderId , @RequestBody User buyer){
+        try {
+            SellOrder sellOrder = sellOrderService.getSellOrderById(sellOrderId);
+            if(buyer == null){
+                throw new Exception("Cannot buy a crypto with a buyer of a value null");
+            }
+            sellOrderService.buyCrypto(sellOrder, buyer);
+            return ResponseUtil.sendResponse(HttpStatus.OK, true, "Sell order bought successfully : ",null);
+        } catch (Exception e) {
+            return ResponseUtil.sendResponse(HttpStatus.BAD_REQUEST, false, "Error while attempting to buy sell order id : " +sellOrderId, (T) e.getMessage());
+        }
+    }
 }
