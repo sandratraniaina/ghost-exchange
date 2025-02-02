@@ -59,17 +59,5 @@ public class SellOrderController {
         } catch (Exception e) {
             return ResponseUtil.sendResponse(HttpStatus.BAD_REQUEST, false, "Error while creating sell order", (T) e.getMessage());
         }
-    }
-
-    @SuppressWarnings("unchecked")
-    @PostMapping("/{sellOrderId}/buy")
-    public <T> ResponseEntity<Response<T>> buyCrypto(@PathVariable Long sellOrderId , @RequestBody User buyer){
-        try {
-            
-
-        } catch (Exception e) {
-            return ResponseUtil.sendResponse(HttpStatus.BAD_REQUEST, false, "Error while attempting to buy sell order id : " +sellOrderId, (T) e.getMessage());
-        }
-    }
-    
+    }    
 }

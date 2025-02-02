@@ -9,7 +9,7 @@ import mg.exchange.repository.UserRepository;
 import mg.exchange.repository.CryptocurrencyRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
+import org.springframework.transaction.annotation.Transactional;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -84,11 +84,18 @@ public class SellOrderService {
         return sellOrderRepository.findSellOrdersBySellerId(sellerId);
     }
 
-    public  void buyCrypto(SellOrder sellOrder , User buyer){
+    @Transactional
+    public void buyCrypto(SellOrder sellOrder, User buyer) {
+        if (sellOrder == null || buyer == null) {
+            throw new IllegalArgumentException("Sell order and buyer must not be null");
+        }
         sellOrder.setIsOpen(false);
-        updateSellOrder(sellOrder.getId(),sellOrder);
-        Ledger ledger = new Ledger(0L,sellOrder,buyer,sellOrder.getTimestamp());
-        ledgerService.createLedger(ledger);
+        sellOrderRepository.save(sellOrder);
+        Ledger ledger = new Ledger();
+        ledger.setSellOrder(sellOrder);
+        ledger.setBuyer(buyer);
+        ledger.setTimestamp(LocalDateTime.now()); 
+        ledgerService.createLedger(ledger); 
     }
 
     public  void cancelSellOrder(SellOrder sellOrder){
