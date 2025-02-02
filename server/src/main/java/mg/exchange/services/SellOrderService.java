@@ -72,9 +72,12 @@ public class SellOrderService {
         return sellOrderRepository.save(sellOrder);
     }
 
-    public void deleteSellOrder(Long id) {
-        sellOrderRepository.deleteById(id);
+    
+    @Transactional
+    public void deleteSellOrder(Long sellOrderId) {
+        sellOrderRepository.deleteById(sellOrderId);
     }
+    
 
     public List<SellOrder> getOpenSellOrders() {
         return sellOrderRepository.findOpenSellOrders();
@@ -102,6 +105,7 @@ public class SellOrderService {
         ledgerService.createLedger(ledger); 
     }
 
+    @Transactional
     public  void cancelSellOrder(SellOrder sellOrder){
         sellOrder.setIsOpen(true);
         ledgerService.deleteBySellOrderId(sellOrder.getId());

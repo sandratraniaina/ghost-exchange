@@ -5,6 +5,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -61,6 +63,7 @@ public class SellOrderController {
         }
     }   
     
+    @Transactional
     @SuppressWarnings("unchecked")
     @PostMapping("/{sellOrderId}/buy")
     public <T> ResponseEntity<Response<T>> buyCrypto(@PathVariable Long sellOrderId , @RequestBody User buyer){
@@ -84,6 +87,19 @@ public class SellOrderController {
             return ResponseUtil.sendResponse(HttpStatus.OK, true, "Sell order updated successfully", (T) updated);
         } catch (Exception e) {
             return ResponseUtil.sendResponse(HttpStatus.BAD_REQUEST, false, "Error while attempting to update sell order id : " +sellOrderId, (T) e.getMessage());
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    @DeleteMapping("/{sellOrderId}")
+    public <T> ResponseEntity<Response<T>> deleteSellOrder(@PathVariable Long sellOrderId) {
+        try {
+            SellOrder sellOrder = sellOrderService.getSellOrderById(sellOrderId);    
+            sellOrderService.deleteSellOrder(sellOrderId);
+            return ResponseUtil.sendResponse(HttpStatus.OK, true, "Sell order deleted successfully", null);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseUtil.sendResponse(HttpStatus.INTERNAL_SERVER_ERROR, false, "Error while attempting to delete sell order id: " + sellOrderId, (T) e.getMessage());
         }
     }
 }
