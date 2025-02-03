@@ -14,5 +14,4 @@ import java.sql.Timestamp;
 public class AnalysisResult {
     private Cryptocurrency cryptocurrency;
     private BigDecimal value;
-    private Timestamp timestamp;
 }
