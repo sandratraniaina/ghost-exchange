@@ -12,7 +12,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface AnalysisResultRepsository extends JpaRepository<AnalysisResult ,Long > {
+public interface AnalysisResultRepsository{
 
     @Query("""
         SELECT 
