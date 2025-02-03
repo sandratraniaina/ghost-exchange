@@ -17,4 +17,10 @@ import mg.exchange.models.Cryptocurrency;
 @RequiredArgsConstructor
 public class AnalysisResultService {
     private final AnalysisResultRepsository analysisResultRepository;
+
+    public List<AnalysisResult> getMaxValueCrypto(List<Cryptocurrency> cryptos, Timestamp min, Timestamp max){
+        return analysisResultRepository.getMaxForCryptos(cryptos,min,max);
+    }
+
+
 }
