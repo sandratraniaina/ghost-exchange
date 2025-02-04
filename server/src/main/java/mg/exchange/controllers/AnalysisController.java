@@ -46,8 +46,10 @@ public class AnalysisController {
                 result = analysisService.getMinValueCrypto(cryptos, start, end);
             }else if(type.trim().equalsIgnoreCase("avg")){
                 result = analysisService.getAverageValueCrypto(cryptos, start, end);
+            }else if(type.trim().equalsIgnoreCase("1q")){
+                result = analysisService.getFirstQuartileValueCrypto(cryptos, start, end);
             }
-            return ResponseUtil.sendResponse(HttpStatus.OK, true, "Analyze done", (T) result);
+            return ResponseUtil.sendResponse(HttpStatus.OK, true, "Analyze "+ type+" done", (T) result);
         } catch (Exception e) {
             return ResponseUtil.sendResponse(HttpStatus.BAD_REQUEST, false, "Error while analyzing cryptos", (T) e.getMessage());
         }
