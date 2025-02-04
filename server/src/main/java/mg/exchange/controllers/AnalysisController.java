@@ -16,6 +16,7 @@ import mg.exchange.dto.AnalysisResult;
 import mg.exchange.models.Cryptocurrency;
 import mg.exchange.models.Response;
 import mg.exchange.services.AnalysisResultService;
+import mg.exchange.services.CryptocurrencyService;
 import mg.exchange.utils.ResponseUtil;
 
 @RestController
@@ -25,10 +26,14 @@ public class AnalysisController {
     @Autowired
     private AnalysisResultService analysisService;
 
+    @Autowired
+    private CryptocurrencyService cryptocurrencyService;
+
     @SuppressWarnings("unchecked")
     @GetMapping
-    public <T> ResponseEntity<Response<T>> analyse(@RequestParam(required = true) String type, @RequestBody List<Cryptocurrency> cryptos, @RequestParam Timestamp start, @RequestParam Timestamp end){
+    public <T> ResponseEntity<Response<T>> analyse(@RequestParam(required = true) String type, @RequestParam(required = false) Timestamp start, @RequestParam(required = false) Timestamp end){
         try {
+            List<Cryptocurrency> cryptos = cryptocurrencyService.getAllCryptocurrencies();
             List<AnalysisResult> result = null;
             if(type.trim().toLowerCase().equals("max")){
                 result = analysisService.getMaxValueCrypto(cryptos, start, end);
