@@ -1,3 +1,5 @@
+import { SignupFormData } from "@/components/pages/auth/SignupPage";
+
 export interface User {
     id: string;
     name: string;
@@ -8,6 +10,7 @@ export interface AuthContextType {
     isAuthenticated: boolean;
     user: User | null;
     login: (email: string, password: string) => Promise<void>;
+    signup: (user: SignupFormData) => Promise<void>;
     logout: () => void;
 }
 
