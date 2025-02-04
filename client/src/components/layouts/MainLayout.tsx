@@ -5,7 +5,7 @@ import { BaseProps } from '@/types/common';
 
 export const MainLayout: React.FC<BaseProps> = ({ className = '' }) => {
     return (
-        <div className={`min-h-screen flex flex-col ${className}`}>
+        <div className={`min-h-screen flex flex-col w-full ${className}`}>
             <Header />
             <div className="flex flex-1">
                 <Sidebar />
