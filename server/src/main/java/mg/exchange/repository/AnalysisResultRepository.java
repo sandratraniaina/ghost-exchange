@@ -39,7 +39,7 @@ public interface AnalysisResultRepository extends JpaRepository<Cryptocurrency, 
         @Param("min") LocalDateTime min,
         @Param("max") LocalDateTime max);
 
-    @Query("SELECT new mg.exchange.dto.AnalysisResult(c, AVG(x.fiatPrice)) " +
+    @Query("SELECT new mg.exchange.dto.AnalysisResult(c, CAST(AVG(x.fiatPrice) AS big_decimal)) " +
         "FROM Cryptocurrency c " +
         "JOIN XeHistory x ON c.id = x.cryptocurrency.id " +
         "WHERE c IN :cryptos " +

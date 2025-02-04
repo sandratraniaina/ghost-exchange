@@ -42,9 +42,10 @@ public class AnalysisController {
             List<AnalysisResult> result = null;
             if (type.trim().equalsIgnoreCase("max")) {
                 result = analysisService.getMaxValueCrypto(cryptos, start, end);
-            }
-            if(type.trim().equalsIgnoreCase("min")){
+            }else if(type.trim().equalsIgnoreCase("min")){
                 result = analysisService.getMinValueCrypto(cryptos, start, end);
+            }else if(type.trim().equalsIgnoreCase("avg")){
+                result = analysisService.getAverageValueCrypto(cryptos, start, end);
             }
             return ResponseUtil.sendResponse(HttpStatus.OK, true, "Analyze done", (T) result);
         } catch (Exception e) {
