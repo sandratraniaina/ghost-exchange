@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
@@ -28,4 +29,10 @@ public class Ledger {
 
     @Column(nullable = false, columnDefinition = "timestamp DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime timestamp;
+
+    @Column(name = "sales_commission", nullable = false, precision = 10, scale = 2)
+    private BigDecimal salesCommission;
+
+    @Column(name = "purchases_commission", nullable = false, precision = 10, scale = 2)
+    private BigDecimal purchasesCommission;
 }
