@@ -15,8 +15,8 @@ export const Sidebar: React.FC<BaseProps> = ({ className = '' }) => {
     ];
 
     return (
-        <div className={`h-full w-64 bg-gray-50 border-r p-4 ${className}`}>
-            <nav className="space-y-2">
+        <div className={`w-64 bg-gray-50 border-r p-4 ${className}`}>
+            <nav className="space-y-2 w-full">
                 {navItems.map((item) => (
                     <a
                         key={item.path}
