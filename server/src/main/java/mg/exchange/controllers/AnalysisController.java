@@ -48,6 +48,8 @@ public class AnalysisController {
                 result = analysisService.getAverageValueCrypto(cryptos, start, end);
             }else if(type.trim().equalsIgnoreCase("1q")){
                 result = analysisService.getFirstQuartileValueCrypto(cryptos, start, end);
+            }else if(type.trim().equalsIgnoreCase("standard-deviation")){
+                result = analysisService.getStandardDeviationValueCrypto(cryptos, start, end);
             }
             return ResponseUtil.sendResponse(HttpStatus.OK, true, "Analyze "+ type+" done", (T) result);
         } catch (Exception e) {
