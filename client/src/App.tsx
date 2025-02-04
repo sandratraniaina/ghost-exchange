@@ -1,15 +1,16 @@
-import FiatTransaction from './components/FiatTransaction/FiatTransaction';
-import UserProfile from './components/UserProfile/UserProfile';
-import CryptoChart from './components/CryptoChart/CryptoChart';
 
-function App() {
+import { BrowserRouter } from 'react-router-dom';
+import { AuthProvider } from './contexts/AuthContext';
+import { AppRoutes } from './routes/AppRoutes';
+
+const App = () => {
   return (
-    <>
-      <FiatTransaction />
-      <UserProfile />
-      <CryptoChart />
-    </>
-  )
-}
+    <AuthProvider>
+      <BrowserRouter>
+        <AppRoutes />
+      </BrowserRouter>
+    </AuthProvider>
+  );
+};
 
-export default App
+export default App;
