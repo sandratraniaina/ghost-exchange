@@ -21,7 +21,7 @@ export const Sidebar: React.FC<BaseProps> = ({ className = '' }) => {
                     <a
                         key={item.path}
                         href={item.path}
-                        className="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-100"
+                        className="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-100 text-black hover:underline"
                     >
                         <item.icon className="w-5 h-5" />
                         <span>{item.label}</span>

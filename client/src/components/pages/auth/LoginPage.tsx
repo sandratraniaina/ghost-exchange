@@ -1,6 +1,6 @@
 // src/pages/auth/LoginPage.tsx
 import { useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -116,19 +116,20 @@ export const LoginPage = () => {
                         </Button>
                         <div className="flex justify-between items-center w-full text-sm">
                             <Button
-                                variant="link"
+                                variant="outline"
                                 onClick={() => navigate('/register')}
                                 disabled={isLoading}
                             >
                                 Create account
                             </Button>
-                            <Button
-                                variant="link"
-                                onClick={() => navigate('/forgot-password')}
-                                disabled={isLoading}
+
+                            <Link
+                                to="/forgot-password"
+                                className="text-sm text-black hover:underline hover:text-gray-700"
                             >
                                 Forgot password?
-                            </Button>
+                            </Link>
+
                         </div>
                     </CardFooter>
                 </form>
