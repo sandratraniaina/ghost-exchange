@@ -16,6 +16,13 @@ CREATE TABLE account(
   CONSTRAINT account_pkey PRIMARY KEY(id)
 );
 
+CREATE TABLE commission(
+  id serial NOT NULL,
+  sales_commission numeric(10,2) NOT NULL,
+  purchases_commission numeric(10,2) NOT NULL,
+  CONSTRAINT commission_pkey PRIMARY KEY(id)
+);
+
 CREATE TABLE cryptocurrency(
   id serial NOT NULL,
   "name" varchar(50) NOT NULL,
@@ -37,6 +44,8 @@ CREATE TABLE ledger(
   sell_order_id integer NOT NULL,
   buyer_id integer NOT NULL,
   "timestamp" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  sales_commission numeric(10,2) NOT NULL,
+  purchases_commission numeric(10,2) NOT NULL,
   CONSTRAINT ledger_pkey PRIMARY KEY(id)
 );
 
@@ -71,8 +80,7 @@ CREATE TABLE xe_history(
 
 ALTER TABLE ledger
   ADD CONSTRAINT ledger_sell_order_id_fkey
-    FOREIGN KEY (sell_order_id) REFERENCES sell_order (id)
-    ON DELETE CASCADE;
+    FOREIGN KEY (sell_order_id) REFERENCES sell_order (id);
 
 ALTER TABLE sell_order
   ADD CONSTRAINT sell_order_seller_id_fkey
