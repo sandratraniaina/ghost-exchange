@@ -26,4 +26,8 @@ public class AnalysisResultService {
     public List<AnalysisResult> getMinValueCrypto(List<Cryptocurrency> cryptos, LocalDateTime start, LocalDateTime end) {
         return analysisResultRepository.getMinForCryptos(cryptos, start, end);
     }
+
+    public List<AnalysisResult> getAverageValueCrypto(List<Cryptocurrency> cryptos, LocalDateTime start, LocalDateTime end) {
+        return analysisResultRepository.getAverageForCryptos(cryptos, start, end);
+    }
 }
