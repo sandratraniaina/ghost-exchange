@@ -1,10 +1,12 @@
 package mg.exchange.services;
 
+import mg.exchange.dto.CommissionSummaryDTO;
 import mg.exchange.models.Commission;
 import mg.exchange.repository.CommissionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,5 +39,9 @@ public class CommissionService {
 
     public void deleteCommission(Long id) {
         commissionRepository.deleteById(id);
+    }
+
+    public List<CommissionSummaryDTO> getCommissionSummary(Long cryptocurrency_id, String typeAnalyse, Timestamp min, Timestamp max) {
+        return commissionRepository.getCommissionSummary(cryptocurrency_id, typeAnalyse, min, max);
     }
 }
