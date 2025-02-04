@@ -34,4 +34,8 @@ public class AnalysisResultService {
     public List<AnalysisResult> getFirstQuartileValueCrypto(List<Cryptocurrency> cryptos, LocalDateTime start, LocalDateTime end) {
         return analysisResultRepository.getFirstQuartile(cryptos, start, end);
     }
+
+    public List<AnalysisResult> getStandardDeviationValueCrypto(List<Cryptocurrency> cryptos, LocalDateTime start, LocalDateTime end) {
+        return analysisResultRepository.getStandardDeviation(cryptos, start, end);
+    }
 }
