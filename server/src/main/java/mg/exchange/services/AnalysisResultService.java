@@ -23,5 +23,7 @@ public class AnalysisResultService {
         return analysisResultRepository.getMaxForCryptos(cryptos, start, end);
     }
 
-
+    public List<AnalysisResult> getMinValueCrypto(List<Cryptocurrency> cryptos, LocalDateTime start, LocalDateTime end) {
+        return analysisResultRepository.getMinForCryptos(cryptos, start, end);
+    }
 }
