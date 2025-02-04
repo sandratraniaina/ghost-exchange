@@ -1,4 +1,3 @@
-import './App.css'
 import FiatTransaction from './components/FiatTransaction/FiatTransaction';
 import UserProfile from './components/UserProfile/UserProfile';
 
