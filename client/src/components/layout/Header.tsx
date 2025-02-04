@@ -3,7 +3,7 @@ import { BaseProps } from '@/types/common';
 
 interface HeaderProps extends BaseProps {
     title?: string;
-    className: string
+    className?: string
 }
 
 export const Header: React.FC<HeaderProps> = ({
