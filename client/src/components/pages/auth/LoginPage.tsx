@@ -117,7 +117,7 @@ export const LoginPage = () => {
                         <div className="flex justify-between items-center w-full text-sm">
                             <Button
                                 variant="outline"
-                                onClick={() => navigate('/register')}
+                                onClick={() => navigate('/signup')}
                                 disabled={isLoading}
                             >
                                 Create account
