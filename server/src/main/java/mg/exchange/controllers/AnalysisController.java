@@ -9,6 +9,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -32,28 +33,40 @@ public class AnalysisController {
     private CryptocurrencyService cryptocurrencyService;
 
     @SuppressWarnings("unchecked")
-    @GetMapping
+    @PostMapping
     public <T> ResponseEntity<Response<T>> analyse(
         @RequestParam(required = true) String type, 
         @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime start, 
-        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime end) {
-        try {
-            List<Cryptocurrency> cryptos = cryptocurrencyService.getAllCryptocurrencies();
-            List<AnalysisResult> result = null;
-            if (type.trim().equalsIgnoreCase("max")) {
+        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime end, 
+        @RequestBody(required = false) List<Cryptocurrency> cryptos 
+    ) { 
+    try { 
+        List<AnalysisResult> result = null; 
+        if(cryptos == null || cryptos.isEmpty()){ 
+            cryptos = cryptocurrencyService.getAllCryptocurrencies(); 
+        } 
+        switch(type.trim().toLowerCase()) {
+            case "max":
                 result = analysisService.getMaxValueCrypto(cryptos, start, end);
-            }else if(type.trim().equalsIgnoreCase("min")){
+                break;
+            case "min":
                 result = analysisService.getMinValueCrypto(cryptos, start, end);
-            }else if(type.trim().equalsIgnoreCase("avg")){
+                break;
+            case "avg":
                 result = analysisService.getAverageValueCrypto(cryptos, start, end);
-            }else if(type.trim().equalsIgnoreCase("1q")){
+                break;
+            case "1q":
                 result = analysisService.getFirstQuartileValueCrypto(cryptos, start, end);
-            }else if(type.trim().equalsIgnoreCase("standard-deviation")){
+                break;
+            case "standard-deviation":
                 result = analysisService.getStandardDeviationValueCrypto(cryptos, start, end);
-            }
-            return ResponseUtil.sendResponse(HttpStatus.OK, true, "Analyze "+ type+" done", (T) result);
-        } catch (Exception e) {
-            return ResponseUtil.sendResponse(HttpStatus.BAD_REQUEST, false, "Error while analyzing cryptos", (T) e.getMessage());
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid analysis type");
         }
-    }
+        return ResponseUtil.sendResponse(HttpStatus.OK, true, "Analyze "+ type+" done", (T) result); 
+    } catch (Exception e) { 
+        return ResponseUtil.sendResponse(HttpStatus.BAD_REQUEST, false, "Error while analyzing cryptos", (T) e.getMessage()); 
+    } 
+}
 }
