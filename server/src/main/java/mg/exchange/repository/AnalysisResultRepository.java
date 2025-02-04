@@ -4,6 +4,7 @@ import mg.exchange.dto.AnalysisResult;
 import mg.exchange.models.Cryptocurrency;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -23,8 +24,8 @@ public interface AnalysisResultRepository extends JpaRepository<Cryptocurrency, 
     "GROUP BY c")
     List<AnalysisResult> getMaxForCryptos(
         @Param("cryptos") List<Cryptocurrency> cryptos,
-        @Param("min") Timestamp min,
-        @Param("max") Timestamp max);
+        @Param("min") LocalDateTime min,
+        @Param("max") LocalDateTime max);
   
 }
 

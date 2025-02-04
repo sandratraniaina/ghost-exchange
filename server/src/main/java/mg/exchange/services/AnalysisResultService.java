@@ -6,6 +6,7 @@ import mg.exchange.models.Cryptocurrency;
 import mg.exchange.repository.AnalysisResultRepository;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -18,8 +19,8 @@ import mg.exchange.models.Cryptocurrency;
 public class AnalysisResultService {
     private final AnalysisResultRepository analysisResultRepository;
 
-    public List<AnalysisResult> getMaxValueCrypto(List<Cryptocurrency> cryptos, Timestamp minTimestamp, Timestamp maxTimestamp) {
-        return analysisResultRepository.getMaxForCryptos(cryptos, minTimestamp, maxTimestamp);
+    public List<AnalysisResult> getMaxValueCrypto(List<Cryptocurrency> cryptos, LocalDateTime start, LocalDateTime end) {
+        return analysisResultRepository.getMaxForCryptos(cryptos, start, end);
     }
 
 
