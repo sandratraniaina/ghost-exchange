@@ -106,6 +106,7 @@ export const SignupPage = () => {
                                 <Input
                                     id="firstName"
                                     name="firstName"
+                                    placeholder="Enter your first name"
                                     value={formData.firstName}
                                     onChange={handleInputChange}
                                     required
@@ -119,6 +120,7 @@ export const SignupPage = () => {
                                 <Input
                                     id="lastName"
                                     name="lastName"
+                                    placeholder="Enter your last name"
                                     value={formData.lastName}
                                     onChange={handleInputChange}
                                     required
@@ -168,6 +170,7 @@ export const SignupPage = () => {
                             <Input
                                 id="username"
                                 name="username"
+                                placeholder="Enter your username"
                                 value={formData.username}
                                 onChange={handleInputChange}
                                 required
@@ -183,6 +186,7 @@ export const SignupPage = () => {
                                 id="email"
                                 name="email"
                                 type="email"
+                                placeholder="Enter your email"
                                 value={formData.email}
                                 onChange={handleInputChange}
                                 required
@@ -198,6 +202,7 @@ export const SignupPage = () => {
                                 id="password"
                                 name="password"
                                 type="password"
+                                placeholder="Enter your password"
                                 value={formData.password}
                                 onChange={handleInputChange}
                                 required
@@ -213,6 +218,7 @@ export const SignupPage = () => {
                                 id="confirmPassword"
                                 name="confirmPassword"
                                 type="password"
+                                placeholder="Enter your password confirmation"
                                 value={formData.confirmPassword}
                                 onChange={handleInputChange}
                                 required
