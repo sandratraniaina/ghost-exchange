@@ -30,4 +30,8 @@ public class AnalysisResultService {
     public List<AnalysisResult> getAverageValueCrypto(List<Cryptocurrency> cryptos, LocalDateTime start, LocalDateTime end) {
         return analysisResultRepository.getAverageForCryptos(cryptos, start, end);
     }
+
+    public List<AnalysisResult> getFirstQuartileValueCrypto(List<Cryptocurrency> cryptos, LocalDateTime start, LocalDateTime end) {
+        return analysisResultRepository.getFirstQuartile(cryptos, start, end);
+    }
 }
