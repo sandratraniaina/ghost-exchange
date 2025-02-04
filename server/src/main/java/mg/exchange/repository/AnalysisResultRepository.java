@@ -38,6 +38,18 @@ public interface AnalysisResultRepository extends JpaRepository<Cryptocurrency, 
         @Param("cryptos") List<Cryptocurrency> cryptos,
         @Param("min") LocalDateTime min,
         @Param("max") LocalDateTime max);
+
+    @Query("SELECT new mg.exchange.dto.AnalysisResult(c, AVG(x.fiatPrice)) " +
+        "FROM Cryptocurrency c " +
+        "JOIN XeHistory x ON c.id = x.cryptocurrency.id " +
+        "WHERE c IN :cryptos " +
+        "AND (cast(:min as timestamp) IS NULL OR x.timestamp >= :min) " +
+        "AND (cast(:max as timestamp) IS NULL OR x.timestamp <= :max) " +
+        "GROUP BY c")
+    List<AnalysisResult> getAverageForCryptos(
+        @Param("cryptos") List<Cryptocurrency> cryptos,
+        @Param("min") LocalDateTime min,
+        @Param("max") LocalDateTime max);
   
 }
 
