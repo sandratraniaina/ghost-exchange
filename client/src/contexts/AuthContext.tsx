@@ -1,6 +1,7 @@
 import { createContext, ReactNode} from 'react';
 import { AuthContextType, User } from '../types/auth';
 import { useLocalStorage } from '../hooks/useLocalStorage';
+import { SignupFormData } from '@/components/pages/auth/SignupPage';
 
 export const AuthContext = createContext<AuthContextType | null>(null);
 
@@ -13,6 +14,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setUser(mockUser);
     };
 
+    const signup = async (user: SignupFormData) => {
+        console.log("User signed up");
+        console.log(user);
+    }
+
     const logout = () => {
         setUser(null);
     };
@@ -23,6 +29,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                 isAuthenticated: !!user,
                 user,
                 login,
+                signup,
                 logout
             }}
         >
