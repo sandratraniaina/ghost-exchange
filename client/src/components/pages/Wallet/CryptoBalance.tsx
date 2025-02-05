@@ -15,6 +15,7 @@ const CryptoBalance: React.FC<CryptoBalanceProps> = ({ symbol, balance, currentP
     const [sellVolume, setSellVolume] = useState<number>(0);
 
     const handleBuy = () => {
+        // TODO: Confirm with how links are handled
         window.location.href = `/marketplace?${symbol.toLowerCase()}`;
     };
 
