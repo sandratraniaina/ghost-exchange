@@ -1,7 +1,7 @@
 import CryptoBalance from "./CryptoBalance"
 
 export const Wallet = () => {
-    // TODO: Fetch data from API
+    // TODO: Replace mock data with API call in production
     const cryptoData = [
         { symbol: 'BTC', balance: 0.5, currentPrice: 50000 },
         { symbol: 'ETH', balance: 10, currentPrice: 3000 },
