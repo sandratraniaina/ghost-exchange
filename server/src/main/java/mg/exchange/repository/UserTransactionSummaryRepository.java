@@ -17,17 +17,17 @@ public interface UserTransactionSummaryRepository extends JpaRepository<User, Lo
 
     @Query("SELECT new mg.exchange.dto.UserTransactionSummary(" +
         "a, " +
-        "COALESCE(SUM(up.totalAchat), 0), " +
-        "COALESCE(SUM(us.totalVente), 0), " +
+        "COALESCE(SUM(up.totalPurchase), 0), " +
+        "COALESCE(SUM(us.totalSale), 0), " +
         "a.fiatBalance) " +
         "FROM User a " +
-        "LEFT JOIN (SELECT l.buyer AS buyer, SUM(s.fiatPrice) AS totalAchat " +
+        "LEFT JOIN (SELECT l.buyer AS buyer, SUM(s.fiatPrice) AS totalPurchase " +
         "           FROM Ledger l " +
         "           JOIN l.sellOrder s " +
         "           WHERE (CAST(:min AS timestamp) IS NULL OR l.timestamp >= :min) " +
         "           AND (CAST(:max AS timestamp) IS NULL OR l.timestamp <= :max) " +
         "           GROUP BY l.buyer) up ON a.id = up.buyer.id " +
-        "LEFT JOIN (SELECT s.seller AS seller, SUM(s.fiatPrice) AS totalVente " +
+        "LEFT JOIN (SELECT s.seller AS seller, SUM(s.fiatPrice) AS totalSale " +
         "           FROM SellOrder s " +
         "           WHERE s.isOpen = FALSE " +
         "           AND (CAST(:min AS timestamp) IS NULL OR s.timestamp >= :min) " +

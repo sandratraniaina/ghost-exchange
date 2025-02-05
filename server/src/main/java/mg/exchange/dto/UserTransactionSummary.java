@@ -12,7 +12,7 @@ import mg.exchange.models.User;
 @AllArgsConstructor
 public class UserTransactionSummary {
     private User user;
-    private BigDecimal totalAchat;
-    private BigDecimal totalVente;
-    private BigDecimal valeurPortefeuille;
+    private BigDecimal totalPurchase;
+    private BigDecimal totalSale;
+    private BigDecimal portfolioValue;
 }
