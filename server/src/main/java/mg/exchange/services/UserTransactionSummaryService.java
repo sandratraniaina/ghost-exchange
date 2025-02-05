@@ -8,17 +8,17 @@ import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 import mg.exchange.dto.UserTransactionSummary;
-import mg.exchange.repository.UserTransactionSummaryRepository;
+import mg.exchange.repository.UserRepository;
 
 @Service
 @RequiredArgsConstructor
 public class UserTransactionSummaryService {
     
     @Autowired
-    private UserTransactionSummaryRepository userTransactionRepository;
+    private UserRepository userRepository;
 
     public List<UserTransactionSummary> getUserTransactionSummary(LocalDateTime min, LocalDateTime max) {
-        return userTransactionRepository.getUserTransactionSummary(min, max);
+        return userRepository.getUserTransactionSummary(min, max);
     }
 
 }
