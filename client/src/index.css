@@ -35,6 +35,10 @@ body {
   min-height: 100vh;
 }
 
+main>*+* {
+  margin-top: 1.5rem;
+}
+
 h1 {
   font-size: 3.2em;
   line-height: 1.1;

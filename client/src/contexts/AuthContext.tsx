@@ -9,9 +9,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const [user, setUser] = useLocalStorage<User | null>('user', null);
 
     const login = async (email: string, password: string) => {
-        // Replace with actual API call
-        const mockUser: User = { id: '1', name: 'John Doe', email};
-        setUser(mockUser);
+        // TODO: Replace with an API call
+        setUser(new User());
     };
 
     const signup = async (user: SignupFormData) => {
