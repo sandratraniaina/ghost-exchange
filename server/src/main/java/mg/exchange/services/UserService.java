@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import mg.exchange.dto.SignInRequest;
+import mg.exchange.models.AccountRole;
 import mg.exchange.models.User;
 import mg.exchange.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,7 +59,7 @@ public class UserService {
 
     public User checkUserAlreadyExist(SignInRequest user) {
         Optional<User> existingUser = getUserByUsername(user.getUsername());
-        return existingUser.orElseGet(() -> createUser(new User(null, new BigDecimal("0"), user.getUsername(), user.getEmail())));
+        return existingUser.orElseGet(() -> createUser(new User(null, new BigDecimal("0"), user.getUsername(), user.getEmail(), AccountRole.CLIENT)));
     }
 
 }
