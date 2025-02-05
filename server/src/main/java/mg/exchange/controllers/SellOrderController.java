@@ -102,4 +102,19 @@ public class SellOrderController {
             return ResponseUtil.sendResponse(HttpStatus.INTERNAL_SERVER_ERROR, false, "Error while attempting to delete sell order id: " + sellOrderId, (T) e.getMessage());
         }
     }
+
+    @GetMapping("/cryptos/{cryptoId}")
+    public <T> ResponseEntity<Response<T>> getSellOrderByCryptpcurrencyId(@PathVariable Long cryptoId){
+        try{
+            if ( cryptoId == null ){
+                throw new IllegalArgumentException("CryptoCurrencyId is null ");
+            }else{
+                List<SellOrder> sellOrders = sellOrderService.getSellOrderByCryptocurrencyId(cryptoId);
+                return ResponseUtil.sendResponse(HttpStatus.OK, true, "Sell orders fetched successfully", (T) sellOrders);
+            }
+
+        } catch (Exception e) {
+            return ResponseUtil.sendResponse(HttpStatus.INTERNAL_SERVER_ERROR, false, "Error while fetching sell orders", (T) e.getMessage());
+        }
+    }
 }
