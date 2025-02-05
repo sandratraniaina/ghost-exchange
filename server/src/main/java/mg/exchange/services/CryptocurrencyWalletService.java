@@ -26,7 +26,7 @@ public class CryptocurrencyWalletService {
 
     public CryptocurrencyWallet getWalletById(Long id) {
         return cryptocurrencyWalletRepository.findById(id)
-        .orElseThrow(() -> new RuntimeException("CryptocurrencyWallet not found with id: " + id));
+                .orElseThrow(() -> new RuntimeException("CryptocurrencyWallet not found with id: " + id));
     }
 
     public CryptocurrencyWallet createWallet(CryptocurrencyWallet wallet) {
@@ -72,7 +72,11 @@ public class CryptocurrencyWalletService {
 
     public Optional<CryptocurrencyWallet> getWalletByUserId(Long userId) {
         User user = userRepository.findById(userId)
-        .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new RuntimeException("User not found"));
         return cryptocurrencyWalletRepository.findByUserId(userId);
+    }
+
+    public Optional<CryptocurrencyWallet> getWalletByUserIdAndCrypotCurrencyId(Long userId, Long cryptoId) {
+        return cryptocurrencyWalletRepository.findByUuserIDAndCryptocurrencyId(cryptoId, userId);
     }
 }
