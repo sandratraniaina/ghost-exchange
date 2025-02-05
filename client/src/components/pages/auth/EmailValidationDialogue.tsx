@@ -3,7 +3,6 @@ import {
 	AlertDialog,
 	AlertDialogContent,
 	AlertDialogDescription,
-	AlertDialogFooter,
 	AlertDialogHeader,
 	AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
@@ -55,7 +54,7 @@ const EmailValidationDialog = ({
 						</p>
 					</AlertDialogDescription>
 				</AlertDialogHeader>
-				<AlertDialogFooter className="flex-col space-y-2">
+				<div className="flex flex-col space-y-2">
 					<Button
 						onClick={() => navigate('/login')}
 						className="w-full"
@@ -67,7 +66,7 @@ const EmailValidationDialog = ({
 						<Button
 							onClick={handleResendEmail}
 							disabled={isResending}
-							className="p-0 h-auto"
+							className="p-2 h-auto"
 						>
 							{isResending ? (
 								<>
@@ -79,7 +78,7 @@ const EmailValidationDialog = ({
 							)}
 						</Button>
 					</div>
-				</AlertDialogFooter>
+				</div>
 			</AlertDialogContent>
 		</AlertDialog>
 	);
