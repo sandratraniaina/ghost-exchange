@@ -4,6 +4,7 @@ import { Dashboard } from '@/components/pages/Dashboard/Dashboard';
 import { LoginPage } from '@/components/pages/auth/LoginPage';
 import { SignupPage } from '@/components/pages/auth/SignupPage';
 import { Wallet } from '@/components/pages/Wallet/Wallet';
+import { Marketplace } from '@/components/pages/Marketplace/Marketplace';
 
 export const AppRoutes = () => {
     return (
@@ -16,6 +17,7 @@ export const AppRoutes = () => {
             <Route element={<MainLayout />}>
                 <Route path="/" element={<Dashboard />} />
                 <Route path="/wallet" element={<Wallet />} />
+                <Route path="/marketplace" element={<Marketplace />} />
             </Route>
 
         </Routes>
