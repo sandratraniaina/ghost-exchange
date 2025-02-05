@@ -22,7 +22,6 @@ import mg.exchange.models.SellOrder;
 import mg.exchange.models.User;
 import mg.exchange.services.SellOrderService;
 import mg.exchange.services.UserService;
-import mg.exchange.services.UserTransactionSummaryService;
 import mg.exchange.utils.ResponseUtil;
 
 @RestController
@@ -35,9 +34,6 @@ public class UserController {
     @Autowired 
     private SellOrderService sellOrderService;
 
-    @Autowired
-    private UserTransactionSummaryService userTransactionService;
-    
     @SuppressWarnings("unchecked")
     @PostMapping("/sign-in")
     public <T> ResponseEntity<Response<T>> signIn(@RequestBody SignInRequest user) { 
@@ -82,7 +78,7 @@ public class UserController {
     @GetMapping("/transactions/summary")
     public <T> ResponseEntity<Response<T>> getUserTransactionSummary(@RequestParam(required = false)LocalDateTime min, @RequestParam(required = false)LocalDateTime max){
         try {
-            List<UserTransactionSummary> list = userTransactionService.getUserTransactionSummary(min,max);
+            List<UserTransactionSummary> list = userService.getUserTransactionSummary(min,max);
             return ResponseUtil.sendResponse(HttpStatus.OK, true, "Users transaction fetched successufully", (T)list);
         } catch (Exception e) {
             return ResponseUtil.sendResponse(HttpStatus.BAD_REQUEST, false, "Error while attempting to fetch users transaction summary", (T)e.getMessage());
