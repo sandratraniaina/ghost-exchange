@@ -1,5 +1,6 @@
 package mg.exchange.services;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,8 +17,8 @@ public class UserTransactionSummaryService {
     @Autowired
     private UserTransactionSummaryRepository userTransactionRepository;
 
-    public List<UserTransactionSummary> getUserTransactionSummary() {
-        return userTransactionRepository.getUserTransactionSummary();
+    public List<UserTransactionSummary> getUserTransactionSummary(LocalDateTime min, LocalDateTime max) {
+        return userTransactionRepository.getUserTransactionSummary(min, max);
     }
 
 }
