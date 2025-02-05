@@ -1,4 +1,4 @@
-import { HomeIcon, UserIcon, SettingsIcon } from 'lucide-react';
+import { HomeIcon, ShoppingCart, Wallet } from 'lucide-react';
 import { BaseProps } from '@/types/common';
 
 interface NavItem {
@@ -10,12 +10,12 @@ interface NavItem {
 export const Sidebar: React.FC<BaseProps> = ({ className = '' }) => {
     const navItems: NavItem[] = [
         { path: '/', label: 'Home', icon: HomeIcon },
-        { path: '/profile', label: 'Profile', icon: UserIcon },
-        { path: '/settings', label: 'Settings', icon: SettingsIcon }
+        { path: '/marketplace', label: 'Marketplace', icon: ShoppingCart },
+        { path: '/wallet', label: 'Wallet', icon: Wallet }
     ];
 
     return (
-        <div className={`w-64 bg-gray-50 border-r p-4 ${className}`}>
+        <div className={`w-64 bg-gray-50 border-r p-4 ${className}`}>   
             <nav className="space-y-2 w-full">
                 {navItems.map((item) => (
                     <a
