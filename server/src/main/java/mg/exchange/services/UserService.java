@@ -58,7 +58,7 @@ public class UserService {
 
     public User checkUserAlreadyExist(SignInRequest user) {
         Optional<User> existingUser = getUserByUsername(user.getUsername());
-        return existingUser.orElseGet(() -> createUser(new User(0L,new BigDecimal("0"),user.getUsername(),user.getEmail())));
+        return existingUser.orElseGet(() -> createUser(new User(null, new BigDecimal("0"), user.getUsername(), user.getEmail())));
     }
 
 }
