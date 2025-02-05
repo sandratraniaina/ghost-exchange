@@ -74,7 +74,7 @@ export const LoginPage = () => {
 
     if (showPinValidation) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+            <div className="min-h-screen flex items-center justify-center px-4">
                 <PinValidation
                     email={formData.email}
                     onSuccess={handlePinSuccess}
@@ -85,7 +85,7 @@ export const LoginPage = () => {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+        <div className="min-h-screen flex items-center justify-center px-4">
             <Card className="w-full max-w-md">
                 <CardHeader>
                     <CardTitle className="text-2xl text-center">Welcome Back</CardTitle>
@@ -157,7 +157,9 @@ export const LoginPage = () => {
 
                             <Link
                                 to="/forgot-password"
-                                className="text-sm text-black hover:underline hover:text-gray-700"
+                                className="flex items-center space-x-3 p-3 rounded-lg transition-colors 
+                                   hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 
+                                   dark:text-gray-300 font-medium"
                             >
                                 Forgot password?
                             </Link>

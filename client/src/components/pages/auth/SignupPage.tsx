@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Loader2} from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import EmailValidationDialog from './EmailValidationDialogue';
 
 export interface SignupFormData {
@@ -94,7 +94,7 @@ export const SignupPage = () => {
 
     return (
         <>
-            <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 py-8">
+            <div className="min-h-screen flex items-center justify-center px-4 py-8">
                 <Card className="w-full max-w-md">
                     <CardHeader>
                         <CardTitle className="text-2xl text-center">Create Account</CardTitle>
@@ -255,7 +255,9 @@ export const SignupPage = () => {
                             <div className="text-center">
                                 <Link
                                     to="/login"
-                                    className="text-sm text-black hover:underline hover:text-gray-700"
+                                    className="flex items-center space-x-3 p-3 rounded-lg transition-colors 
+                                   hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 
+                                   dark:text-gray-300 font-medium"
                                 >
                                     Already have an account? Sign in
                                 </Link>
