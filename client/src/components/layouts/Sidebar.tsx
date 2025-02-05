@@ -1,4 +1,5 @@
 import { HomeIcon, ShoppingCart, Wallet } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { BaseProps } from '@/types/common';
 
 interface NavItem {
@@ -15,17 +16,19 @@ export const Sidebar: React.FC<BaseProps> = ({ className = '' }) => {
     ];
 
     return (
-        <div className={`w-64 bg-gray-50 border-r p-4 ${className}`}>   
+        <div className={`w-64 border-r p-4 ${className}`}>   
             <nav className="space-y-2 w-full">
                 {navItems.map((item) => (
-                    <a
+                    <Link
                         key={item.path}
-                        href={item.path}
-                        className="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-100 text-black hover:underline"
+                        to={item.path}
+                        className="flex items-center space-x-3 p-3 rounded-lg transition-colors 
+                                   hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 
+                                   dark:text-gray-300 font-medium"
                     >
                         <item.icon className="w-5 h-5" />
                         <span>{item.label}</span>
-                    </a>
+                    </Link>
                 ))}
             </nav>
         </div>

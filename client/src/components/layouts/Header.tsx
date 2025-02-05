@@ -11,7 +11,7 @@ export const Header: React.FC<HeaderProps> = ({
     className = ''
 }) => {
     return (
-        <header className={`h-16 border-b bg-white flex items-center justify-between px-6 ${className}`}>
+        <header className={`h-16 border-b flex items-center justify-between px-6 ${className}`}>
             <h1 className="text-xl font-bold">{title}</h1>
             <UserProfile />
         </header>

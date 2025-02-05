@@ -7,7 +7,7 @@ const UserProfile = () => {
   const { user, logout } = useAuth();
 
   return (
-    <div className="inline-flex items-center space-x-2 bg-white rounded-lg p-2 shadow-sm min-w-fit">
+    <div className="inline-flex items-center space-x-2 rounded-lg p-2 shadow-sm min-w-fit">
       <DarkModeToggle></DarkModeToggle>
       <Avatar>
         <AvatarImage src={user.avatar} alt={user.name} />
