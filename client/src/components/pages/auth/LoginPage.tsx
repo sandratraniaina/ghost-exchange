@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2 } from 'lucide-react';
+import PinValidation from './PinValidation';
 
 interface LoginFormData {
     email: string;
@@ -19,12 +20,12 @@ export const LoginPage = () => {
     const { login } = useAuth();
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [showPinValidation, setShowPinValidation] = useState(false);
     const [formData, setFormData] = useState<LoginFormData>({
         email: '',
         password: ''
     });
 
-    // Get the page user was trying to visit before being redirected to login
     const from = location.state?.from?.pathname || '/';
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -33,7 +34,6 @@ export const LoginPage = () => {
             ...prev,
             [name]: value
         }));
-        // Clear error when user starts typing
         if (error) setError(null);
     };
 
@@ -43,14 +43,46 @@ export const LoginPage = () => {
         setError(null);
 
         try {
-            await login(formData.email, formData.password);
-            navigate(from, { replace: true });
+            // Mock API validation of credentials before showing PIN
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            // If credentials are valid, show PIN validation
+            setShowPinValidation(true);
         } catch (err) {
-            setError(err instanceof Error ? err.message : 'Failed to login');
+            setError(err instanceof Error ? err.message : 'Invalid credentials');
         } finally {
             setIsLoading(false);
         }
     };
+
+    const handlePinSuccess = async () => {
+        setIsLoading(true);
+        try {
+            // Only create the user after successful PIN validation
+            await login(formData.email, formData.password);
+            navigate(from, { replace: true });
+        } catch (err) {
+            setError(err instanceof Error ? err.message : 'Failed to login');
+            setShowPinValidation(false);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handlePinCancel = () => {
+        setShowPinValidation(false);
+    };
+
+    if (showPinValidation) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+                <PinValidation
+                    email={formData.email}
+                    onSuccess={handlePinSuccess}
+                    onCancel={handlePinCancel}
+                />
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
@@ -108,7 +140,7 @@ export const LoginPage = () => {
                             {isLoading ? (
                                 <>
                                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                    Signing in...
+                                    Verifying...
                                 </>
                             ) : (
                                 'Sign In'
@@ -129,7 +161,6 @@ export const LoginPage = () => {
                             >
                                 Forgot password?
                             </Link>
-
                         </div>
                     </CardFooter>
                 </form>
