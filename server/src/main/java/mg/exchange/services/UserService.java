@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import mg.exchange.dto.SignInRequest;
+import mg.exchange.dto.UserTransactionSummary;
 import mg.exchange.models.AccountRole;
 import mg.exchange.models.User;
 import mg.exchange.repository.UserRepository;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -60,6 +62,10 @@ public class UserService {
     public User checkUserAlreadyExist(SignInRequest user) {
         Optional<User> existingUser = getUserByUsername(user.getUsername());
         return existingUser.orElseGet(() -> createUser(new User(null, new BigDecimal("0"), user.getUsername(), user.getEmail(), AccountRole.CLIENT)));
+    }
+
+    public List<UserTransactionSummary> getUserTransactionSummary(LocalDateTime min, LocalDateTime max) {
+        return userRepository.getUserTransactionSummary(min, max);
     }
 
 }

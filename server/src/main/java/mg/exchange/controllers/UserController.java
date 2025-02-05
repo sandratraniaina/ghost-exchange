@@ -1,5 +1,6 @@
 package mg.exchange.controllers;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import mg.exchange.dto.SignInRequest;
+import mg.exchange.dto.UserTransactionSummary;
 import mg.exchange.models.Response;
 import mg.exchange.models.SellOrder;
 import mg.exchange.models.User;
@@ -31,7 +33,7 @@ public class UserController {
     
     @Autowired 
     private SellOrderService sellOrderService;
-    
+
     @SuppressWarnings("unchecked")
     @PostMapping("/sign-in")
     public <T> ResponseEntity<Response<T>> signIn(@RequestBody SignInRequest user) { 
@@ -69,6 +71,17 @@ public class UserController {
             return ResponseUtil.sendResponse(HttpStatus.OK, true, "Sell orders fetched successfully", (T) sellOrders);
         } catch (Exception e) {
             return ResponseUtil.sendResponse(HttpStatus.BAD_REQUEST, false, "Error while attempting to fetch sell orders for user "+userId, (T)e.getMessage());
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    @GetMapping("/transactions/summary")
+    public <T> ResponseEntity<Response<T>> getUserTransactionSummary(@RequestParam(required = false)LocalDateTime min, @RequestParam(required = false)LocalDateTime max){
+        try {
+            List<UserTransactionSummary> list = userService.getUserTransactionSummary(min,max);
+            return ResponseUtil.sendResponse(HttpStatus.OK, true, "Users transaction fetched successufully", (T)list);
+        } catch (Exception e) {
+            return ResponseUtil.sendResponse(HttpStatus.BAD_REQUEST, false, "Error while attempting to fetch users transaction summary", (T)e.getMessage());
         }
     }
 }
