@@ -1,9 +1,26 @@
-import { View, Text } from 'react-native';
+import { useAuth } from '@/hooks/useAuth';
+import { View, Image } from 'react-native';
+import { YStack, Text, Button } from 'tamagui';
 
 export default function ProfileScreen() {
+    const { user, logout } = useAuth();
+
     return (
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <Text style={{ fontSize: 24 }}>Profile Screen</Text>
+        <View style={{ flex: 1, padding: 20 }}>
+            <YStack space="$4" alignItems="center">
+                <Image
+                    source={{
+                        uri: user?.avatar || 'https://api.dicebear.com/7.x/avataaars/png?seed=default'
+                    }}
+                    style={{ width: 150, height: 150, borderRadius: 75 }}
+                />
+                <Text fontSize={24} fontWeight="bold">{user?.username}</Text>
+                <Text fontSize={16}>{user?.email}</Text>
+                <Text fontSize={20} fontWeight="bold">
+                    Balance: ${user?.balance.toFixed(2)}
+                </Text>
+                <Button theme="red" onPress={logout}>Logout</Button>
+            </YStack>
         </View>
     );
 }
