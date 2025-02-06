@@ -126,13 +126,13 @@ export const UserActivity = () => {
                                     </div>
                                 </TableCell>
                                 <TableCell className="text-right">
-                                    ${user.totalSales.toLocaleString()}
+                                    {user.totalSales.toLocaleString()}
                                 </TableCell>
                                 <TableCell className="text-right">
-                                    ${user.totalPurchase.toLocaleString()}
+                                    {user.totalPurchase.toLocaleString()}
                                 </TableCell>
                                 <TableCell className="text-right">
-                                    ${user.portfolioValue.toLocaleString()}
+                                    {user.portfolioValue.toLocaleString()}
                                 </TableCell>
                             </TableRow>
                         ))}
