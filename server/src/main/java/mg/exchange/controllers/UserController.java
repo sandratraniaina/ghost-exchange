@@ -32,33 +32,34 @@ public class UserController {
 
     @Autowired
     private UserService userService;
-    
-    @Autowired 
+
+    @Autowired
     private SellOrderService sellOrderService;
 
     @Autowired
     private CryptocurrencyWalletService walletService;
 
-
     @SuppressWarnings("unchecked")
     @PostMapping("/sign-in")
-    public <T> ResponseEntity<Response<T>> signIn(@RequestBody SignInRequest user) { 
+    public <T> ResponseEntity<Response<T>> signIn(@RequestBody SignInRequest user) {
         try {
 
             if (user == null) {
                 return ResponseUtil.sendResponse(HttpStatus.BAD_REQUEST, false, "User parameter is missing", null);
             }
-    
+
             User logUser = userService.checkUserAlreadyExist(user);
             return ResponseUtil.sendResponse(HttpStatus.OK, true, "User signed in successfully", (T) logUser);
         } catch (Exception e) {
-            return ResponseUtil.sendResponse(HttpStatus.BAD_REQUEST, false, "Error while attempting to sign in", (T)e.getMessage());
+            return ResponseUtil.sendResponse(HttpStatus.BAD_REQUEST, false, "Error while attempting to sign in",
+                    (T) e.getMessage());
         }
     }
 
     @SuppressWarnings("unchecked")
     @GetMapping("/{userId}/sell-orders")
-    public <T> ResponseEntity<Response<T>> getUserSellOrders(@PathVariable Long userId, @RequestParam(required = false) String type){
+    public <T> ResponseEntity<Response<T>> getUserSellOrders(@PathVariable Long userId,
+            @RequestParam(required = false) String type) {
         try {
             User u = userService.getUserById(userId);
             List<SellOrder> sellOrders;
@@ -70,33 +71,36 @@ public class UserController {
                 }
             } else {
                 sellOrders = sellOrderService.getSellOrdersBySellerId(userId);
-            } 
+            }
             return ResponseUtil.sendResponse(HttpStatus.OK, true, "Sell orders fetched successfully", (T) sellOrders);
         } catch (Exception e) {
-            return ResponseUtil.sendResponse(HttpStatus.BAD_REQUEST, false, "Error while attempting to fetch sell orders for user "+userId, (T)e.getMessage());
+            return ResponseUtil.sendResponse(HttpStatus.BAD_REQUEST, false,
+                    "Error while attempting to fetch sell orders for user " + userId, (T) e.getMessage());
         }
     }
 
     @SuppressWarnings("unchecked")
     @GetMapping("/transactions/summary")
-    public <T> ResponseEntity<Response<T>> getUserTransactionSummary(@RequestParam(required = false)LocalDateTime min, @RequestParam(required = false)LocalDateTime max){
+    public <T> ResponseEntity<Response<T>> getUserTransactionSummary(@RequestParam(required = false) LocalDateTime min,
+            @RequestParam(required = false) LocalDateTime max) {
         try {
-            List<UserTransactionSummary> list = userService.getUserTransactionSummary(min,max);
-            return ResponseUtil.sendResponse(HttpStatus.OK, true, "Users transaction fetched successufully", (T)list);
+            List<UserTransactionSummary> list = userService.getUserTransactionSummary(min, max);
+            return ResponseUtil.sendResponse(HttpStatus.OK, true, "Users transaction fetched successufully", (T) list);
         } catch (Exception e) {
-            return ResponseUtil.sendResponse(HttpStatus.BAD_REQUEST, false, "Error while attempting to fetch users transaction summary", (T)e.getMessage());
+            return ResponseUtil.sendResponse(HttpStatus.BAD_REQUEST, false,
+                    "Error while attempting to fetch users transaction summary", (T) e.getMessage());
         }
     }
 
     @SuppressWarnings("unchecked")
     @GetMapping("/{userId}/wallets")
-    public <T> ResponseEntity<Response<T>> getWalletByUserId(@PathVariable Long userId){
+    public <T> ResponseEntity<Response<T>> getWalletByUserId(@PathVariable Long userId) {
         try {
             Optional<CryptocurrencyWallet> wallets = walletService.getWalletByUserId(userId);
-            return ResponseUtil.sendResponse(HttpStatus.OK, true, "Wallet fetched successfully", (T)wallets);
+            return ResponseUtil.sendResponse(HttpStatus.OK, true, "Wallet fetched successfully", (T) wallets);
         } catch (Exception e) {
-            return ResponseUtil.sendResponse(HttpStatus.BAD_REQUEST, false, "Error while retrieving wallet for user "+userId, (T)e.getMessage());
+            return ResponseUtil.sendResponse(HttpStatus.BAD_REQUEST, false,
+                    "Error while retrieving wallet for user " + userId, (T) e.getMessage());
         }
     }
 }
- 
