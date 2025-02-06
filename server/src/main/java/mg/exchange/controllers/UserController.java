@@ -116,6 +116,7 @@ public class UserController {
     ) {
         try {
             List<UserCryptoTransaction> transactions = ledgerService.getUserCryptoTransactions(cryptoId, min, max, type);
+            
             return ResponseUtil.sendResponse(HttpStatus.OK, true, "Crypto transactions fetched successfully", (T)transactions);
         } catch (Exception e) {
             return ResponseUtil.sendResponse(HttpStatus.BAD_REQUEST, false, "Error while retrieving crypto transaction for user", (T)e.getMessage());
