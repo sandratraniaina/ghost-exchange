@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { TrendingUp } from "lucide-react";
-import { Bar, BarChart, CartesianGrid, XAxis, Tooltip, ResponsiveContainer } from "recharts";
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
@@ -53,15 +53,23 @@ const cryptocurrencies = [
 const chartData: ChartDataItem[] = [
     { crypto: 'Bitcoin', price: 45000 },
     { crypto: 'Ethereum', price: 3200 },
-    { crypto: 'Tether', price: 1 },
-    { crypto: 'Binance Coin', price: 380 },
-    { crypto: 'Solana', price: 95 },
+    { crypto: 'Tether', price: 10000 },
+    { crypto: 'Binance Coin', price: 3800 },
+    { crypto: 'Solana', price: 9500 },
     { crypto: 'Cardano', price: 1.2 },
-    { crypto: 'XRP', price: 0.85 },
-    { crypto: 'Polkadot', price: 15 },
-    { crypto: 'Dogecoin', price: 0.12 },
-    { crypto: 'Avalanche', price: 35 }
+    { crypto: 'XRP', price: 8500 },
+    { crypto: 'Polkadot', price: 1500 },
+    { crypto: 'Dogecoin', price: 1200 },
+    { crypto: 'Avalanche', price: 3500 }
 ];
+
+// Format large numbers to be more compact
+const formatMGA = (value: number) => {
+    return value >= 1000000
+        ? `${(value / 1000000).toFixed(1)}M`
+        : `${(value / 1000).toFixed(0)}k`;
+};
+
 
 export const Analysis = () => {
     const [selectedAnalysis, setSelectedAnalysis] = useState<AnalysisType | ''>('');
@@ -81,7 +89,6 @@ export const Analysis = () => {
         <Card className="w-full">
             <CardHeader>
                 <CardTitle>Cryptocurrency Analysis</CardTitle>
-
                 <CardDescription>
                     Select cryptocurrencies and analysis parameters
                 </CardDescription>
@@ -91,12 +98,10 @@ export const Analysis = () => {
                 {/* Analysis Type Select */}
                 <div className="space-y-2">
                     <Label>Analysis Type</Label>
-
                     <Select onValueChange={(value: AnalysisType) => setSelectedAnalysis(value)} value={selectedAnalysis}>
                         <SelectTrigger className="w-full">
                             <SelectValue placeholder="Select analysis type" />
                         </SelectTrigger>
-
                         <SelectContent>
                             {analysisTypes.map((type) => (
                                 <SelectItem key={type.value} value={type.value}>
@@ -110,7 +115,6 @@ export const Analysis = () => {
                 {/* Cryptocurrency Checkboxes */}
                 <div className="space-y-2">
                     <Label>Cryptocurrencies</Label>
-
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
                         {cryptocurrencies.map((crypto) => (
                             <div key={crypto.id} className="flex items-center space-x-2">
@@ -135,7 +139,6 @@ export const Analysis = () => {
                 <div className="flex flex-col sm:flex-row gap-4">
                     <div className="space-y-2 w-full">
                         <Label>Start Date</Label>
-
                         <input
                             type="datetime-local"
                             className="w-full rounded-md border p-2"
@@ -145,7 +148,6 @@ export const Analysis = () => {
                     </div>
                     <div className="space-y-2 w-full">
                         <Label>End Date</Label>
-
                         <input
                             type="datetime-local"
                             className="w-full rounded-md border p-2"
@@ -170,26 +172,33 @@ export const Analysis = () => {
                             <TrendingUp className="h-4 w-4" />
                             Price Analysis
                         </CardTitle>
-
-                        <CardDescription>Cryptocurrency Prices (USD)</CardDescription>
+                        <CardDescription>Cryptocurrency Prices (MGA)</CardDescription>
                     </CardHeader>
 
                     <CardContent>
                         <div className="w-full h-[400px]">
                             <ResponsiveContainer width="100%" height="100%">
-                                <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 50 }}>
+                                <BarChart data={chartData} margin={{ top: 20, right: 30, left: 35, bottom: 50 }}>
                                     <CartesianGrid vertical={false} />
                                     <XAxis
                                         dataKey="crypto"
                                         tickLine={false}
                                         tickMargin={10}
                                         axisLine={false}
+                                        fontSize={12}
                                         angle={-45}
                                         textAnchor="end"
                                     />
-
-                                    <Tooltip />
-
+                                    <YAxis
+                                        tickFormatter={formatMGA}
+                                        tickLine={false}
+                                        axisLine={false}
+                                        fontSize={12}
+                                        width={35}
+                                    />
+                                    <Tooltip
+                                        formatter={(value) => [`${value.toLocaleString()}`, "Price"]}
+                                    />
                                     <Bar
                                         dataKey="price"
                                         fill="hsl(var(--primary))"
