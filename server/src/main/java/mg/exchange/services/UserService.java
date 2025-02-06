@@ -22,6 +22,8 @@ public class UserService {
     private static final ObjectMapper objectMapper = new ObjectMapper();
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private FirestoreService firestoreService;
 
     public List<User> getAllUsers() {
         return userRepository.findAll();
@@ -29,11 +31,13 @@ public class UserService {
 
     public User getUserById(Long id) {
         return userRepository.findById(id)
-        .orElseThrow(() -> new RuntimeException("User not found for ID : "+id));
+                .orElseThrow(() -> new RuntimeException("User not found for ID : " + id));
     }
 
     public User createUser(User user) {
-        return userRepository.save(user);
+        User savedUser = userRepository.save(user);
+        firestoreService.syncToFirestore(savedUser);
+        return savedUser;
     }
 
     public User updateUser(Long id, User userDetails) {
@@ -41,11 +45,16 @@ public class UserService {
         user.setFiatBalance(userDetails.getFiatBalance());
         user.setUsername(userDetails.getUsername());
         user.setEmail(userDetails.getEmail());
+        user.setAccountRole(userDetails.getAccountRole());
+        firestoreService.syncToFirestore(user);
         return userRepository.save(user);
     }
 
-    public void deleteUser(Long id) {
+    public void deleteUser(Long id) throws Exception {
+        User userToDelete = userRepository.findById(id)
+                .orElseThrow(() -> new Exception("Utilisateur non trouvé avec l'id: " + id));
         userRepository.deleteById(id);
+        firestoreService.deleteFromFirestore(userToDelete);
     }
 
     public Optional<User> getUserByUsername(String username) {
@@ -62,7 +71,8 @@ public class UserService {
 
     public User checkUserAlreadyExist(SignInRequest user) {
         Optional<User> existingUser = getUserByUsername(user.getUsername());
-        return existingUser.orElseGet(() -> createUser(new User(null, new BigDecimal("0"), user.getUsername(), user.getEmail(), AccountRole.CLIENT)));
+        return existingUser.orElseGet(() -> createUser(
+                new User(null, new BigDecimal("0"), user.getUsername(), user.getEmail(), AccountRole.CLIENT)));
     }
 
     public List<UserTransactionSummary> getUserTransactionSummary(LocalDateTime min, LocalDateTime max) {
