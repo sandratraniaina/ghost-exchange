@@ -7,6 +7,7 @@ import { Wallet } from '@/components/pages/Wallet/Wallet';
 import { Marketplace } from '@/components/pages/Marketplace/Marketplace';
 import { Analysis } from '@/components/pages/Analysis/Analysis';
 import { CommissionRate } from '@/components/pages/Commission/CommissionRate';
+import { CommissionAnalysis } from '@/components/pages/Commission/CommissionAnalysis';
 
 export const AppRoutes = () => {
     return (
@@ -22,6 +23,7 @@ export const AppRoutes = () => {
                 <Route path="/marketplace" element={<Marketplace />} />
                 <Route path="/analysis" element={<Analysis />} />
                 <Route path="/commission-rate" element={<CommissionRate />} />
+                <Route path="/commission-analysis" element={<CommissionAnalysis />} />
             </Route>
 
         </Routes>
