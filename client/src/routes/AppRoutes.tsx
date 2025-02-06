@@ -8,8 +8,10 @@ import { Marketplace } from '@/components/pages/Marketplace/Marketplace';
 import { Analysis } from '@/components/pages/Analysis/Analysis';
 import { CommissionRate } from '@/components/pages/Commission/CommissionRate';
 import { CommissionAnalysis } from '@/components/pages/Commission/CommissionAnalysis';
-import { AdminDashboard } from '@/components/pages/AdminDashboard/AdminDashboard';
+import AdminDashboard from '@/components/pages/AdminDashboard/AdminDashboard';
 import { UserActivity } from '@/components/pages/UserActivity/UserActivity';
+import { UserTransactionHistory } from '@/components/pages/UserActivityHistory/UserTransactionHistory';
+import { UserCryptoHistory } from '@/components/pages/UserActivityHistory/UserCryptoHistory';
 
 export const AppRoutes = () => {
     return (
@@ -28,6 +30,8 @@ export const AppRoutes = () => {
                 <Route path="/commission-analysis" element={<CommissionAnalysis />} />
                 <Route path="/admin/dashboard" element={<AdminDashboard />} />
                 <Route path="/user-activity" element={<UserActivity />} />
+                <Route path="/user-activity/history/transaction" element={<UserTransactionHistory />} />
+                <Route path="/user-activity/history/crypto" element={<UserCryptoHistory />} />
             </Route>
 
         </Routes>
