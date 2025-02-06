@@ -27,24 +27,24 @@ public interface LedgerRepository extends JpaRepository<Ledger, Long> {
     Optional<Ledger> findBySellOrderId(Long sellOrderId);
 
     @Query("SELECT new mg.exchange.dto.UserCryptoTransaction(" +
-           "l, " +
-           "CASE " +
-           "    WHEN l.buyer = :user THEN 'BUY' " +
-           "    WHEN so.seller = :user THEN 'SELL' " +
-           "END) " +
-           "FROM Ledger l " +
-           "JOIN l.sellOrder so " +
-           "WHERE (:cryptocurrency IS NULL OR so.cryptocurrency = :cryptocurrency) " +
-           "AND (:user IS NULL OR l.buyer = :user OR so.seller = :user) " +
-           "AND (:minDate IS NULL OR l.timestamp >= :minDate) " +
-           "AND (:maxDate IS NULL OR l.timestamp <= :maxDate) " +
-           "AND (:type IS NULL OR " +
-           "    ((:type = 'BUY' AND l.buyer = :user) OR " +
-           "     (:type = 'SELL' AND so.seller = :user))) " +
-           "ORDER BY l.timestamp DESC")
+        "l, " +
+        "CASE " +
+        "    WHEN a.id = l.buyer.id THEN 'BUY' " +
+        "    WHEN a.id = so.seller.id THEN 'SELL' " +
+        "    ELSE NULL " +
+        "END) " +
+        "FROM Ledger l " +
+        "JOIN l.sellOrder so " +
+        "JOIN User a ON a.id = l.buyer.id OR a.id = so.seller.id " +
+        "WHERE (:cryptocurrencyId IS NULL OR so.cryptocurrency.id = :cryptocurrencyId) " +
+        "AND (CAST(:minDate AS timestamp) IS NULL OR l.timestamp >= :minDate) " +
+        "AND (CAST(:maxDate AS timestamp) IS NULL OR l.timestamp <= :maxDate) " +
+        "AND (:type IS NULL OR " +
+        "    (:type = 'BUY' AND a.id = l.buyer.id) OR " +
+        "    (:type = 'SELL' AND a.id = so.seller.id)) " +
+        "ORDER BY l.timestamp DESC")
     List<UserCryptoTransaction> getHistoryCryptoTransaction(
-        @Param("cryptocurrency") Cryptocurrency cryptocurrency,
-        @Param("user") User user,
+        @Param("cryptocurrencyId") Long cryptocurrencyId,
         @Param("minDate") LocalDateTime minDate,
         @Param("maxDate") LocalDateTime maxDate,
         @Param("type") String type

@@ -79,7 +79,7 @@ public class LedgerService {
         return ledgerRepository.findBySellOrderId(sellOrderId);
     }
 
-    public List<UserCryptoTransaction> getUserCryptoTransactions(User user, Cryptocurrency crypto, LocalDateTime min, LocalDateTime max, String type){
-        return ledgerRepository.getHistoryCryptoTransaction(crypto, user, min, max, type);
+    public List<UserCryptoTransaction> getUserCryptoTransactions(Long cryptoId, LocalDateTime min, LocalDateTime max, String type){
+        return ledgerRepository.getHistoryCryptoTransaction(cryptoId, min, max, type);
     }
 }
