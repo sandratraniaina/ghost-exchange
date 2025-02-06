@@ -19,6 +19,8 @@ public class TransactionService {
     private final TransactionRepository transactionRepository;
     @Autowired
     private UserService userService;
+    @Autowired
+    private FirestoreService firestoreService;
 
     public List<Transaction> getAllTransactions() {
         return transactionRepository.findAll();
@@ -34,7 +36,9 @@ public class TransactionService {
         // Ensure the user exists
         User user = userService.getUserById(transaction.getUser().getId());
         transaction.setUser(user);
-        return transactionRepository.save(transaction);
+        Transaction savedTransaction = transactionRepository.save(transaction);
+        firestoreService.syncToFirestore(savedTransaction);
+        return savedTransaction;
     }
 
     public Transaction updateTransaction(Long id, Transaction transactionDetails) {
@@ -51,12 +55,14 @@ public class TransactionService {
         transaction.setTransactionType(transactionDetails.getTransactionType());
         transaction.setTimestamp(transactionDetails.getTimestamp());
         transaction.setValidationTimestamp(transactionDetails.getValidationTimestamp());
+        firestoreService.syncToFirestore(transaction);
         return transactionRepository.save(transaction);
     }
 
     public void deleteTransaction(Long id) {
         Transaction transaction = transactionRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Transaction not found"));
+        firestoreService.deleteFromFirestore(transaction);
         transactionRepository.deleteById(id);
     }
 
