@@ -6,4 +6,6 @@ public interface FirestoreSyncable {
     Map<String, Object> toFirestoreMap();
 
     String getFirestoreCollectionName();
+
+    Long getId();
 }

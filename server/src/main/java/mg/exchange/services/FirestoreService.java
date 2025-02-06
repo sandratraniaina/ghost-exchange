@@ -24,8 +24,8 @@ public class FirestoreService {
         try {
             FileInputStream serviceAccount = new FileInputStream("path/to/serviceAccountKey.json");
             FirebaseOptions options = FirebaseOptions.builder()
-                .setCredentials(GoogleCredentials.fromStream(serviceAccount))
-                .build();
+                    .setCredentials(GoogleCredentials.fromStream(serviceAccount))
+                    .build();
             FirebaseApp.initializeApp(options);
             db = FirestoreClient.getFirestore();
         } catch (IOException e) {
@@ -36,9 +36,9 @@ public class FirestoreService {
     public <T extends FirestoreSyncable> void syncToFirestore(T entity) {
         try {
             db.collection(entity.getFirestoreCollectionName())
-              .document(String.valueOf(entity.getId()))
-              .set(entity.toFirestoreMap())
-              .get();
+                    .document(String.valueOf(entity.getId()))
+                    .set(entity.toFirestoreMap())
+                    .get();
         } catch (Exception e) {
             // Gérer l'exception
         }
