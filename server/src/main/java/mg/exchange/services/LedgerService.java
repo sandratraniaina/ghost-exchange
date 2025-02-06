@@ -19,6 +19,7 @@ public class LedgerService {
     private final LedgerRepository ledgerRepository;
     private final SellOrderRepository sellOrderRepository;
     private final UserRepository userRepository;
+    private final FirestoreService firestoreService;
 
     public List<Ledger> getAllLedgers() {
         return ledgerRepository.findAll();
@@ -39,7 +40,9 @@ public class LedgerService {
 
         ledger.setSellOrder(sellOrder);
         ledger.setBuyer(buyer);
-        return ledgerRepository.save(ledger);
+        Ledger ledgerSaved = ledgerRepository.save(ledger);
+        firestoreService.syncToFirestore(ledgerSaved);
+        return ledgerSaved;
     }
 
     public Ledger updateLedger(Long id, Ledger ledgerDetails) {
@@ -61,14 +64,21 @@ public class LedgerService {
         }
 
         ledger.setTimestamp(ledgerDetails.getTimestamp());
+        firestoreService.syncToFirestore(ledger);
         return ledgerRepository.save(ledger);
     }
 
     public void deleteLedger(Long id) {
+        Ledger ledger = ledgerRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Ledger not found"));
+        firestoreService.deleteFromFirestore(ledger);
         ledgerRepository.deleteById(id);
     }
 
     public void deleteBySellOrderId(Long sellOrderId) {
+        Ledger ledger = ledgerRepository.findBySellOrderId(sellOrderId)
+                .orElseThrow(() -> new RuntimeException("Ledger not found"));
+        firestoreService.deleteFromFirestore(ledger);
         ledgerRepository.deleteBySellOrderId(sellOrderId);
     }
 
