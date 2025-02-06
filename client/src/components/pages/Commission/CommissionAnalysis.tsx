@@ -60,9 +60,11 @@ const chartData: ChartDataItem[] = [
     { crypto: 'Avalanche', commission: 320000 }
 ];
 
-// Format large numbers with commas
+// Format large numbers with commas and shortened MGA
 const formatMGA = (value: number) => {
-    return `${value.toLocaleString()} MGA`;
+    return value >= 1000000
+        ? `${(value / 1000000).toFixed(1)}M`
+        : `${(value / 1000).toFixed(0)}k`;
 };
 
 export const CommissionAnalysis = () => {
@@ -83,7 +85,6 @@ export const CommissionAnalysis = () => {
         <Card className="w-full">
             <CardHeader>
                 <CardTitle>Commission Analysis</CardTitle>
-
                 <CardDescription>
                     Analyze cryptocurrency commission earnings
                 </CardDescription>
@@ -93,12 +94,10 @@ export const CommissionAnalysis = () => {
                 {/* Analysis Type Select */}
                 <div className="space-y-2">
                     <Label>Analysis Type</Label>
-
                     <Select onValueChange={(value: AnalysisType) => setSelectedAnalysis(value)} value={selectedAnalysis}>
                         <SelectTrigger className="w-full">
                             <SelectValue placeholder="Select analysis type" />
                         </SelectTrigger>
-
                         <SelectContent>
                             {analysisTypes.map((type) => (
                                 <SelectItem key={type.value} value={type.value}>
@@ -112,7 +111,6 @@ export const CommissionAnalysis = () => {
                 {/* Cryptocurrency Checkboxes */}
                 <div className="space-y-2">
                     <Label>Cryptocurrencies</Label>
-
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
                         {cryptocurrencies.map((crypto) => (
                             <div key={crypto.id} className="flex items-center space-x-2">
@@ -137,7 +135,6 @@ export const CommissionAnalysis = () => {
                 <div className="flex flex-col sm:flex-row gap-4">
                     <div className="space-y-2 w-full">
                         <Label>Start Date</Label>
-
                         <input
                             type="datetime-local"
                             className="w-full rounded-md border p-2"
@@ -147,7 +144,6 @@ export const CommissionAnalysis = () => {
                     </div>
                     <div className="space-y-2 w-full">
                         <Label>End Date</Label>
-
                         <input
                             type="datetime-local"
                             className="w-full rounded-md border p-2"
@@ -172,20 +168,20 @@ export const CommissionAnalysis = () => {
                             <TrendingUp className="h-4 w-4" />
                             Commission Earnings
                         </CardTitle>
-
                         <CardDescription>Total Commission Earnings (MGA)</CardDescription>
                     </CardHeader>
 
                     <CardContent>
                         <div className="w-full h-[400px]">
                             <ResponsiveContainer width="100%" height="100%">
-                                <BarChart data={chartData} margin={{ top: 20, right: 30, left: 40, bottom: 50 }}>
+                                <BarChart data={chartData} margin={{ top: 20, right: 30, left: 35, bottom: 50 }}>
                                     <CartesianGrid vertical={false} />
                                     <XAxis
                                         dataKey="crypto"
                                         tickLine={false}
                                         tickMargin={10}
                                         axisLine={false}
+                                        fontSize={12}
                                         angle={-45}
                                         textAnchor="end"
                                     />
@@ -193,9 +189,11 @@ export const CommissionAnalysis = () => {
                                         tickFormatter={formatMGA}
                                         tickLine={false}
                                         axisLine={false}
+                                        fontSize={12}
+                                        width={35}
                                     />
                                     <Tooltip
-                                        formatter={(value) => formatMGA(value as number)}
+                                        formatter={(value) => [`${value.toLocaleString()} MGA`, "Commission"]}
                                     />
                                     <Bar
                                         dataKey="commission"
