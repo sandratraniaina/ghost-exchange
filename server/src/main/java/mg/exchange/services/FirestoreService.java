@@ -46,4 +46,16 @@ public class FirestoreService {
             // Gérer l'exception
         }
     }
+
+    public <T extends FirestoreSyncable> void deleteFromFirestore(T entity) {
+        try {
+            db.collection(entity.getFirestoreCollectionName())
+                .document(String.valueOf(entity.getId()))
+                .delete()
+                .get();
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to delete from Firestore", e);
+        }
+    }
+    
 }
