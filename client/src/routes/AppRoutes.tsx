@@ -5,6 +5,7 @@ import { LoginPage } from '@/components/pages/auth/LoginPage';
 import { SignupPage } from '@/components/pages/auth/SignupPage';
 import { Wallet } from '@/components/pages/Wallet/Wallet';
 import { Marketplace } from '@/components/pages/Marketplace/Marketplace';
+import { Analysis } from '@/components/pages/Analysis/Analysis';
 
 export const AppRoutes = () => {
     return (
@@ -18,6 +19,7 @@ export const AppRoutes = () => {
                 <Route path="/" element={<Dashboard />} />
                 <Route path="/wallet" element={<Wallet />} />
                 <Route path="/marketplace" element={<Marketplace />} />
+                <Route path="/analysis" element={<Analysis />} />
             </Route>
 
         </Routes>
