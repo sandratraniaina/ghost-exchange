@@ -15,8 +15,8 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from '@/components/ui/input';
 
-// UserTransactionHistory Component
 export const UserTransactionHistory = () => {
     const [transactions] = useState([
         {
@@ -34,15 +34,24 @@ export const UserTransactionHistory = () => {
 
     const [filters, setFilters] = useState({
         transactionType: '',
-        userId: ''
+        userId: '',
+        startDate: '',
+        endDate: ''
     });
 
     const filteredTransactions = transactions.filter(transaction => {
-        const matchesType = !filters.transactionType ||
+        const matchesType = !filters.transactionType || filters.transactionType === "0" ||
             transaction.transactionType === filters.transactionType;
-        const matchesUser = !filters.userId ||
+        const matchesUser = !filters.userId || filters.userId === "0" ||
             transaction.user.username === filters.userId;
-        return matchesType && matchesUser;
+        
+        const transactionDate = new Date(transaction.timestamp);
+        const matchesStartDate = !filters.startDate || 
+            transactionDate >= new Date(filters.startDate);
+        const matchesEndDate = !filters.endDate || 
+            transactionDate <= new Date(filters.endDate + 'T23:59:59');
+
+        return matchesType && matchesUser && matchesStartDate && matchesEndDate;
     });
 
     const uniqueUsers = [...new Set(transactions.map(t => t.user.username))];
@@ -53,7 +62,7 @@ export const UserTransactionHistory = () => {
                 <CardTitle>Transaction History</CardTitle>
             </CardHeader>
             <CardContent>
-                <div className="flex gap-4 mb-6">
+                <div className="flex flex-wrap gap-4 mb-6">
                     <Select
                         value={filters.transactionType}
                         onValueChange={(value) =>
@@ -88,8 +97,29 @@ export const UserTransactionHistory = () => {
                             ))}
                         </SelectContent>
                     </Select>
+
+                    <div className="flex gap-2 items-center">
+                        <Input
+                            type="date"
+                            value={filters.startDate}
+                            onChange={(e) =>
+                                setFilters(prev => ({ ...prev, startDate: e.target.value }))
+                            }
+                            className="w-[180px]"
+                        />
+                        <span className="text-sm text-gray-500">to</span>
+                        <Input
+                            type="date"
+                            value={filters.endDate}
+                            onChange={(e) =>
+                                setFilters(prev => ({ ...prev, endDate: e.target.value }))
+                            }
+                            className="w-[180px]"
+                        />
+                    </div>
                 </div>
 
+                {/* Rest of the table code remains the same */}
                 <div className="rounded-md border">
                     <Table>
                         <TableHeader>
@@ -118,10 +148,11 @@ export const UserTransactionHistory = () => {
                                     <TableCell>{transaction.user.email}</TableCell>
                                     <TableCell>
                                         <span
-                                            className={`px-2 py-1 rounded-full text-xs font-semibold ${transaction.transactionType === 'CREDIT'
+                                            className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                                                transaction.transactionType === 'CREDIT'
                                                     ? 'bg-green-100 text-green-800'
                                                     : 'bg-red-100 text-red-800'
-                                                }`}
+                                            }`}
                                         >
                                             {transaction.transactionType}
                                         </span>

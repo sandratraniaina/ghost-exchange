@@ -8,6 +8,7 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { useState } from "react";
+import { Input } from "@/components/ui/input";
 
 export const UserCryptoHistory = () => {
     const [transactions] = useState([
@@ -28,17 +29,26 @@ export const UserCryptoHistory = () => {
     const [filters, setFilters] = useState({
         transactionType: '',
         userId: '',
-        cryptoType: ''
+        cryptoType: '',
+        startDate: '',
+        endDate: ''
     });
 
     const filteredTransactions = transactions.filter(transaction => {
-        const matchesType = !filters.transactionType ||
+        const matchesType = !filters.transactionType || filters.transactionType === "0" ||
             transaction.transactionType === filters.transactionType;
-        const matchesUser = !filters.userId ||
+        const matchesUser = !filters.userId || filters.userId === "0" ||
             transaction.user.username === filters.userId;
-        const matchesCrypto = !filters.cryptoType ||
+        const matchesCrypto = !filters.cryptoType || filters.cryptoType === "0" ||
             transaction.cryptoType === filters.cryptoType;
-        return matchesType && matchesUser && matchesCrypto;
+
+        const transactionDate = new Date(transaction.timestamp);
+        const matchesStartDate = !filters.startDate ||
+            transactionDate >= new Date(filters.startDate);
+        const matchesEndDate = !filters.endDate ||
+            transactionDate <= new Date(filters.endDate + 'T23:59:59');
+
+        return matchesType && matchesUser && matchesCrypto && matchesStartDate && matchesEndDate;
     });
 
     const uniqueUsers = [...new Set(transactions.map(t => t.user.username))];
@@ -50,7 +60,7 @@ export const UserCryptoHistory = () => {
                 <CardTitle>Crypto Transaction History</CardTitle>
             </CardHeader>
             <CardContent>
-                <div className="flex gap-4 mb-6">
+                <div className="flex flex-wrap gap-4 mb-6">
                     <Select
                         value={filters.transactionType}
                         onValueChange={(value) =>
@@ -104,8 +114,29 @@ export const UserCryptoHistory = () => {
                             ))}
                         </SelectContent>
                     </Select>
+
+                    <div className="flex gap-2 items-center">
+                        <Input
+                            type="date"
+                            value={filters.startDate}
+                            onChange={(e) =>
+                                setFilters(prev => ({ ...prev, startDate: e.target.value }))
+                            }
+                            className="w-[180px]"
+                        />
+                        <span className="text-sm text-gray-500">to</span>
+                        <Input
+                            type="date"
+                            value={filters.endDate}
+                            onChange={(e) =>
+                                setFilters(prev => ({ ...prev, endDate: e.target.value }))
+                            }
+                            className="w-[180px]"
+                        />
+                    </div>
                 </div>
 
+                {/* Rest of the table code remains the same */}
                 <div className="rounded-md border">
                     <Table>
                         <TableHeader>
