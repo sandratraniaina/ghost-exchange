@@ -1,0 +1,5 @@
+export const CommissionRate = () => {
+    return (
+        <></>
+    );
+};
