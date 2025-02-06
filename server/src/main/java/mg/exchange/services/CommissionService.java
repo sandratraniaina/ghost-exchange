@@ -20,8 +20,10 @@ public class CommissionService {
         return commissionRepository.findAll();
     }
 
-    public Optional<Commission> getCommissionById(Long id) {
-        return commissionRepository.findById(id);
+    public Commission getCommissionById(Long id) {
+        return commissionRepository.findById(id)
+        .orElseThrow(() -> new RuntimeException("Commission not found"));
+
     }
 
     public Commission createCommission(Commission commission) {

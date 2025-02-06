@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -66,5 +67,9 @@ public class TransactionService {
         transaction.setValidationTimestamp(LocalDate.now().atStartOfDay());
         updateTransaction(id, transaction);
         return transaction;
+    }
+
+    public List<Transaction> getHistoryTransaction(Long cryptoId, LocalDateTime min, LocalDateTime max, String type){
+        return transactionRepository.getHistoryTransaction(cryptoId,min,max,type);
     }
 }

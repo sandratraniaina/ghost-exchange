@@ -63,7 +63,6 @@ public class SellOrderController {
         }
     }   
     
-    @Transactional
     @SuppressWarnings("unchecked")
     @PostMapping("/{sellOrderId}/buy")
     public <T> ResponseEntity<Response<T>> buyCrypto(@PathVariable Long sellOrderId , @RequestBody User buyer){
