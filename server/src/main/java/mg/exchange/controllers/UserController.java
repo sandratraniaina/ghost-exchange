@@ -54,10 +54,7 @@ public class UserController {
     @GetMapping("/{userId}/sell-orders")
     public <T> ResponseEntity<Response<T>> getUserSellOrders(@PathVariable Long userId, @RequestParam(required = false) String type){
         try {
-            Optional<User> u = userService.getUserById(userId);
-            if(u == null){
-                throw new Exception("User not found for id : "+userId);
-            }
+            User u = userService.getUserById(userId);
             List<SellOrder> sellOrders;
             if (type != null) {
                 if (type.trim().toLowerCase().equals("open")) {
