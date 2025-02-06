@@ -23,10 +23,12 @@ import mg.exchange.models.Cryptocurrency;
 import mg.exchange.models.CryptocurrencyWallet;
 import mg.exchange.models.Response;
 import mg.exchange.models.SellOrder;
+import mg.exchange.models.Transaction;
 import mg.exchange.models.User;
 import mg.exchange.services.CryptocurrencyWalletService;
 import mg.exchange.services.LedgerService;
 import mg.exchange.services.SellOrderService;
+import mg.exchange.services.TransactionService;
 import mg.exchange.services.UserService;
 import mg.exchange.utils.ResponseUtil;
 
@@ -42,6 +44,9 @@ public class UserController {
 
     @Autowired 
     private LedgerService ledgerService;
+
+    @Autowired 
+    private TransactionService transactionService;
 
     @Autowired
     private CryptocurrencyWalletService walletService;
@@ -120,6 +125,22 @@ public class UserController {
             return ResponseUtil.sendResponse(HttpStatus.OK, true, "Crypto transactions fetched successfully", (T)transactions);
         } catch (Exception e) {
             return ResponseUtil.sendResponse(HttpStatus.BAD_REQUEST, false, "Error while retrieving crypto transaction for user", (T)e.getMessage());
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    @GetMapping("/transactions")
+    public <T> ResponseEntity<Response<T>> getHistoryTransaction(
+        @RequestParam(required = false) Long cryptoId, 
+        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime min, 
+        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime max, 
+        @RequestParam(required = false) String type
+    ) {
+        try {
+            List<Transaction> transactions = transactionService.getHistoryTransaction(cryptoId, min, max, type);
+            return ResponseUtil.sendResponse(HttpStatus.OK, true, "Transactions fetched successfully", (T)transactions);
+        } catch (Exception e) {
+            return ResponseUtil.sendResponse(HttpStatus.BAD_REQUEST, false, "Error while retrieving transaction history for user", (T)e.getMessage());
         }
     }
 }
