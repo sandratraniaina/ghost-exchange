@@ -13,7 +13,7 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 
-type AnalysisType = 'firstQuartile' | 'max' | 'min' | 'mean' | 'stdDev';
+type AnalysisType = 'sum' | 'average';
 type CryptoId = 'btc' | 'eth' | 'usdt' | 'bnb' | 'sol' | 'ada' | 'xrp' | 'dot' | 'doge' | 'avax';
 
 interface DateRange {
@@ -23,15 +23,12 @@ interface DateRange {
 
 interface ChartDataItem {
     crypto: string;
-    price: number;
+    commission: number;
 }
 
 const analysisTypes = [
-    { value: 'firstQuartile' as AnalysisType, label: 'First Quartile' },
-    { value: 'max' as AnalysisType, label: 'Maximum' },
-    { value: 'min' as AnalysisType, label: 'Minimum' },
-    { value: 'mean' as AnalysisType, label: 'Mean' },
-    { value: 'stdDev' as AnalysisType, label: 'Standard Deviation' }
+    { value: 'sum' as AnalysisType, label: 'Sum (Somme)' },
+    { value: 'average' as AnalysisType, label: 'Average (Moyenne)' }
 ];
 
 // TODO: Replace mock data with API call in production
@@ -49,36 +46,35 @@ const cryptocurrencies = [
 ];
 
 // TODO: Replace mock data with API call in production
-// Updated chart data with 10 cryptocurrencies and realistic prices
+// Sample commission data in MGA
 const chartData: ChartDataItem[] = [
-    { crypto: 'Bitcoin', price: 45000 },
-    { crypto: 'Ethereum', price: 3200 },
-    { crypto: 'Tether', price: 10000 },
-    { crypto: 'Binance Coin', price: 3800 },
-    { crypto: 'Solana', price: 9500 },
-    { crypto: 'Cardano', price: 1.2 },
-    { crypto: 'XRP', price: 8500 },
-    { crypto: 'Polkadot', price: 1500 },
-    { crypto: 'Dogecoin', price: 1200 },
-    { crypto: 'Avalanche', price: 3500 }
+    { crypto: 'Bitcoin', commission: 1250000 },
+    { crypto: 'Ethereum', commission: 850000 },
+    { crypto: 'Tether', commission: 120000 },
+    { crypto: 'Binance Coin', commission: 450000 },
+    { crypto: 'Solana', commission: 380000 },
+    { crypto: 'Cardano', commission: 180000 },
+    { crypto: 'XRP', commission: 220000 },
+    { crypto: 'Polkadot', commission: 290000 },
+    { crypto: 'Dogecoin', commission: 150000 },
+    { crypto: 'Avalanche', commission: 320000 }
 ];
 
-// Format large numbers to be more compact
+// Format large numbers with commas and shortened MGA
 const formatMGA = (value: number) => {
     return value >= 1000000
         ? `${(value / 1000000).toFixed(1)}M`
         : `${(value / 1000).toFixed(0)}k`;
 };
 
-
-export const Analysis = () => {
+export const CommissionAnalysis = () => {
     const [selectedAnalysis, setSelectedAnalysis] = useState<AnalysisType | ''>('');
     const [selectedCryptos, setSelectedCryptos] = useState<CryptoId[]>([]);
     const [dateRange, setDateRange] = useState<DateRange>({ min: '', max: '' });
 
     const handleAnalyze = () => {
         // TODO: Replace with API call in production
-        console.log('Analysis parameters:', {
+        console.log('Commission analysis parameters:', {
             type: selectedAnalysis,
             cryptocurrencies: selectedCryptos,
             dateRange
@@ -88,9 +84,9 @@ export const Analysis = () => {
     return (
         <Card className="w-full">
             <CardHeader>
-                <CardTitle>Cryptocurrency Analysis</CardTitle>
+                <CardTitle>Commission Analysis</CardTitle>
                 <CardDescription>
-                    Select cryptocurrencies and analysis parameters
+                    Analyze cryptocurrency commission earnings
                 </CardDescription>
             </CardHeader>
 
@@ -162,7 +158,7 @@ export const Analysis = () => {
                     className="w-full"
                     onClick={handleAnalyze}
                 >
-                    Analyze
+                    Analyze Commissions
                 </Button>
 
                 {/* Bar Chart */}
@@ -170,9 +166,9 @@ export const Analysis = () => {
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">
                             <TrendingUp className="h-4 w-4" />
-                            Price Analysis
+                            Commission Earnings
                         </CardTitle>
-                        <CardDescription>Cryptocurrency Prices (MGA)</CardDescription>
+                        <CardDescription>Total Commission Earnings (MGA)</CardDescription>
                     </CardHeader>
 
                     <CardContent>
@@ -197,10 +193,10 @@ export const Analysis = () => {
                                         width={35}
                                     />
                                     <Tooltip
-                                        formatter={(value) => [`${value.toLocaleString()}`, "Price"]}
+                                        formatter={(value) => [`${value.toLocaleString()} MGA`, "Commission"]}
                                     />
                                     <Bar
-                                        dataKey="price"
+                                        dataKey="commission"
                                         fill="hsl(var(--primary))"
                                         radius={[4, 4, 0, 0]}
                                     />
