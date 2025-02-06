@@ -85,4 +85,8 @@ public class XeHistoryService {
             xeHistoryRepository.save(xeHistory);
         }
     }
+
+    public List<XeHistory> getHistory(List<Cryptocurrency> cryptos, Integer interval){
+        return xeHistoryRepository.getHistory(cryptos, interval);
+    }
 }
