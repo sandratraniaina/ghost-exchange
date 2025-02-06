@@ -32,7 +32,7 @@ public class FirestoreService {
             FirebaseApp.initializeApp(options);
             db = FirestoreClient.getFirestore();
         } catch (IOException e) {
-            // Gérer l'exception
+            e.printStackTrace();
         }
     }
 
@@ -43,7 +43,7 @@ public class FirestoreService {
                     .set(entity.toFirestoreMap())
                     .get();
         } catch (Exception e) {
-            // Gérer l'exception
+            e.printStackTrace();
         }
     }
 
@@ -57,5 +57,5 @@ public class FirestoreService {
             throw new RuntimeException("Failed to delete from Firestore", e);
         }
     }
-    
+
 }
