@@ -8,6 +8,7 @@ import { Marketplace } from '@/components/pages/Marketplace/Marketplace';
 import { Analysis } from '@/components/pages/Analysis/Analysis';
 import { CommissionRate } from '@/components/pages/Commission/CommissionRate';
 import { CommissionAnalysis } from '@/components/pages/Commission/CommissionAnalysis';
+import AdminDashboard from '@/components/pages/AdminDashboard/AdminDashboard';
 
 export const AppRoutes = () => {
     return (
@@ -24,6 +25,7 @@ export const AppRoutes = () => {
                 <Route path="/analysis" element={<Analysis />} />
                 <Route path="/commission-rate" element={<CommissionRate />} />
                 <Route path="/commission-analysis" element={<CommissionAnalysis />} />
+                <Route path="/admin/dashboard" element={<AdminDashboard />} />
             </Route>
 
         </Routes>
