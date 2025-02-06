@@ -15,6 +15,7 @@ import java.util.Optional;
 public class CommissionService {
 
     private final CommissionRepository commissionRepository;
+    private final FirestoreService firestoreService;
 
     public List<Commission> getAllCommissions() {
         return commissionRepository.findAll();
@@ -25,7 +26,9 @@ public class CommissionService {
     }
 
     public Commission createCommission(Commission commission) {
-        return commissionRepository.save(commission);
+        Commission commissionSaved = commissionRepository.save(commission);
+        firestoreService.syncToFirestore(commissionSaved);
+        return commissionSaved;
     }
 
     public Commission updateCommission(Long id, Commission commissionDetails) {
@@ -34,11 +37,15 @@ public class CommissionService {
 
         commission.setSalesCommission(commissionDetails.getSalesCommission());
         commission.setPurchasesCommission(commissionDetails.getPurchasesCommission());
+        firestoreService.syncToFirestore(commission);
         return commissionRepository.save(commission);
     }
 
     public void deleteCommission(Long id) {
+        Commission commissionToDelete = commissionRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Commission not found"));
         commissionRepository.deleteById(id);
+        firestoreService.deleteFromFirestore(commissionToDelete);
     }
 
     public List<CommissionSummaryDTO> getCommissionSummary(Long cryptocurrency_id, String typeAnalyse, Timestamp min, Timestamp max) {
