@@ -38,11 +38,7 @@ public interface CommissionRepository extends JpaRepository<Commission, Long> {
               AND (cast(:max as timestamp) IS NULL OR so.timestamp <= :max)
             
             GROUP BY
-                CASE
-                    WHEN :cryptocurrency_id IS NOT NULL THEN so.cryptocurrency_id
-                    ELSE NULL
-                    END;
-            
+                so.cryptocurrency_id
             """, nativeQuery = true)
     List<CommissionSummaryDTO> getCommissionSummary(@Param("cryptocurrency_id") Long cryptocurrencyId, @Param("type_analyse") String type_analyse, @Param("min") Timestamp min, @Param("max") Timestamp max);
 }
