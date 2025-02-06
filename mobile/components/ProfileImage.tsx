@@ -36,7 +36,6 @@ export default function ProfileImage({ imageUri }: { readonly imageUri?: string 
     };
 
     const updatePhoto = () => {
-        // Implement your photo update logic here
         console.log('Updating photo:', photo);
     };
 
@@ -46,29 +45,34 @@ export default function ProfileImage({ imageUri }: { readonly imageUri?: string 
 
     if (showCamera) {
         return (
-            <YStack height={300} width="100%">
+            <YStack height="100%" width="100%" position="absolute" top={0} left={0} zIndex={999}>
                 <CameraView
                     ref={cameraRef}
-                    style={{ flex: 1 }}
+                    style={{ flex: 1, height: "100%" }}
                     facing={facing}
                 >
-                    <XStack padding="$2" justifyContent="space-between">
+                    <YStack flex={1} justifyContent="space-between">
                         <Button
                             icon={X}
                             circular
+                            margin="$2"
                             onPress={() => setShowCamera(false)}
                         />
-                        <Button
-                            icon={SwitchCamera}
-                            circular
-                            onPress={toggleCameraFacing}
-                        />
-                        <Button
-                            icon={CameraIcon}
-                            circular
-                            onPress={takePicture}
-                        />
-                    </XStack>
+                        <XStack padding="$4" justifyContent="space-around" marginBottom="-$20">
+                            <Button
+                                icon={SwitchCamera}
+                                circular
+                                size="$6"
+                                onPress={toggleCameraFacing}
+                            />
+                            <Button
+                                icon={CameraIcon}
+                                circular
+                                size="$6"
+                                onPress={takePicture}
+                            />
+                        </XStack>
+                    </YStack>
                 </CameraView>
             </YStack>
         );

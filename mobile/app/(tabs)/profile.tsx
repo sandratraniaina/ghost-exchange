@@ -7,14 +7,8 @@ export default function ProfileScreen() {
     const { user, logout } = useAuth();
 
     return (
-        <View style={{ flex: 1, padding: 20 }}>
-            <YStack gap="$4" alignItems="center">
-                {/* <Image
-                    source={{
-                        uri: user?.avatar
-                    }}
-                    style={{ width: 150, height: 150, borderRadius: 75 }}
-                /> */}
+        <View style={{ flex: 1, padding: 20, height: "100%" }}>
+            <YStack gap="$4" alignItems="center" height="100%">
                 <ProfileImage></ProfileImage>
                 <Text fontSize={24} fontWeight="bold">{user?.username}</Text>
                 <Text fontSize={16}>{user?.email}</Text>
