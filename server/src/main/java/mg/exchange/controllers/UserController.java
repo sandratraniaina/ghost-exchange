@@ -17,9 +17,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import mg.exchange.dto.SignInRequest;
 import mg.exchange.dto.UserTransactionSummary;
+import mg.exchange.models.CryptocurrencyWallet;
 import mg.exchange.models.Response;
 import mg.exchange.models.SellOrder;
 import mg.exchange.models.User;
+import mg.exchange.services.CryptocurrencyWalletService;
 import mg.exchange.services.SellOrderService;
 import mg.exchange.services.UserService;
 import mg.exchange.utils.ResponseUtil;
@@ -33,6 +35,10 @@ public class UserController {
     
     @Autowired 
     private SellOrderService sellOrderService;
+
+    @Autowired
+    private CryptocurrencyWalletService walletService;
+
 
     @SuppressWarnings("unchecked")
     @PostMapping("/sign-in")
@@ -79,6 +85,17 @@ public class UserController {
             return ResponseUtil.sendResponse(HttpStatus.OK, true, "Users transaction fetched successufully", (T)list);
         } catch (Exception e) {
             return ResponseUtil.sendResponse(HttpStatus.BAD_REQUEST, false, "Error while attempting to fetch users transaction summary", (T)e.getMessage());
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    @GetMapping("/{userId}/wallets")
+    public <T> ResponseEntity<Response<T>> getWalletByUserId(@PathVariable Long userId){
+        try {
+            Optional<CryptocurrencyWallet> wallets = walletService.getWalletByUserId(userId);
+            return ResponseUtil.sendResponse(HttpStatus.OK, true, "Wallet fetched successfully", (T)wallets);
+        } catch (Exception e) {
+            return ResponseUtil.sendResponse(HttpStatus.BAD_REQUEST, false, "Error while retrieving wallet for user "+userId, (T)e.getMessage());
         }
     }
 }
