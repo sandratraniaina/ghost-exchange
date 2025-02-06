@@ -1,5 +1,6 @@
+import ProfileImage from '@/components/ProfileImage';
 import { useAuth } from '@/hooks/useAuth';
-import { View, Image } from 'react-native';
+import { View } from 'react-native';
 import { YStack, Text, Button } from 'tamagui';
 
 export default function ProfileScreen() {
@@ -7,13 +8,14 @@ export default function ProfileScreen() {
 
     return (
         <View style={{ flex: 1, padding: 20 }}>
-            <YStack space="$4" alignItems="center">
-                <Image
+            <YStack gap="$4" alignItems="center">
+                {/* <Image
                     source={{
                         uri: user?.avatar
                     }}
                     style={{ width: 150, height: 150, borderRadius: 75 }}
-                />
+                /> */}
+                <ProfileImage></ProfileImage>
                 <Text fontSize={24} fontWeight="bold">{user?.username}</Text>
                 <Text fontSize={16}>{user?.email}</Text>
                 <Text fontSize={20} fontWeight="bold">
