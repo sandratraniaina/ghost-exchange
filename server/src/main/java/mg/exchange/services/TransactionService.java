@@ -32,8 +32,7 @@ public class TransactionService {
 
     public Transaction createTransaction(Transaction transaction) {
         // Ensure the user exists
-        User user = userService.getUserById(transaction.getUser().getId())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userService.getUserById(transaction.getUser().getId());
         transaction.setUser(user);
         return transactionRepository.save(transaction);
     }
@@ -44,8 +43,7 @@ public class TransactionService {
 
         // Update user if provided
         if (transactionDetails.getUser() != null) {
-            User user = userService.getUserById(transactionDetails.getUser().getId())
-                    .orElseThrow(() -> new RuntimeException("User not found"));
+            User user = userService.getUserById(transactionDetails.getUser().getId());
             transaction.setUser(user);
         }
 

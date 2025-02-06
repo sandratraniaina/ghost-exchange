@@ -40,33 +40,33 @@ public class AnalysisController {
         @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime end, 
         @RequestBody(required = false) List<Cryptocurrency> cryptos 
     ) { 
-    try { 
-        List<AnalysisResult> result = null; 
-        if(cryptos == null || cryptos.isEmpty()){ 
-            cryptos = cryptocurrencyService.getAllCryptocurrencies(); 
+        try { 
+            List<AnalysisResult> result = null; 
+            if(cryptos == null || cryptos.isEmpty()){ 
+                cryptos = cryptocurrencyService.getAllCryptocurrencies(); 
+            } 
+            switch(type.trim().toLowerCase()) {
+                case "max":
+                    result = analysisService.getMaxValueCrypto(cryptos, start, end);
+                    break;
+                case "min":
+                    result = analysisService.getMinValueCrypto(cryptos, start, end);
+                    break;
+                case "avg":
+                    result = analysisService.getAverageValueCrypto(cryptos, start, end);
+                    break;
+                case "1q":
+                    result = analysisService.getFirstQuartileValueCrypto(cryptos, start, end);
+                    break;
+                case "standard-deviation":
+                    result = analysisService.getStandardDeviationValueCrypto(cryptos, start, end);
+                    break;
+                default:
+                    throw new IllegalArgumentException("Invalid analysis type");
+            }
+            return ResponseUtil.sendResponse(HttpStatus.OK, true, "Analyze "+ type+" done", (T) result); 
+        } catch (Exception e) { 
+            return ResponseUtil.sendResponse(HttpStatus.BAD_REQUEST, false, "Error while analyzing cryptos", (T) e.getMessage()); 
         } 
-        switch(type.trim().toLowerCase()) {
-            case "max":
-                result = analysisService.getMaxValueCrypto(cryptos, start, end);
-                break;
-            case "min":
-                result = analysisService.getMinValueCrypto(cryptos, start, end);
-                break;
-            case "avg":
-                result = analysisService.getAverageValueCrypto(cryptos, start, end);
-                break;
-            case "1q":
-                result = analysisService.getFirstQuartileValueCrypto(cryptos, start, end);
-                break;
-            case "standard-deviation":
-                result = analysisService.getStandardDeviationValueCrypto(cryptos, start, end);
-                break;
-            default:
-                throw new IllegalArgumentException("Invalid analysis type");
-        }
-        return ResponseUtil.sendResponse(HttpStatus.OK, true, "Analyze "+ type+" done", (T) result); 
-    } catch (Exception e) { 
-        return ResponseUtil.sendResponse(HttpStatus.BAD_REQUEST, false, "Error while analyzing cryptos", (T) e.getMessage()); 
-    } 
-}
+    }
 }

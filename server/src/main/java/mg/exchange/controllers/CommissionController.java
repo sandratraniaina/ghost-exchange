@@ -36,14 +36,14 @@ public class CommissionController {
 
     @PostMapping("/search")
     public <T> ResponseEntity<Response<T>> getCommissionSummary(
-            @RequestParam(required = false) Long cryptocurrencyId,
-            @RequestParam String typeAnalyse,
+            @RequestParam(required = false) Long cryptoId,
+            @RequestParam String type,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime min,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime max) {
         try {
             Timestamp minTimestamp = (min != null) ? Timestamp.valueOf(min) : null;
             Timestamp maxTimestamp = (max != null) ? Timestamp.valueOf(max) : null;
-            List<CommissionSummaryDTO> summary = commissionService.getCommissionSummary(cryptocurrencyId, typeAnalyse, minTimestamp, maxTimestamp);
+            List<CommissionSummaryDTO> summary = commissionService.getCommissionSummary(cryptoId, type, minTimestamp, maxTimestamp);
             return ResponseUtil.sendResponse(HttpStatus.OK, true, "Commission summary retrieved successfully", (T) summary);
         } catch (Exception e) {
             return ResponseUtil.sendResponse(HttpStatus.BAD_REQUEST, false, "Error retrieving commission summary", (T) e.getMessage());
