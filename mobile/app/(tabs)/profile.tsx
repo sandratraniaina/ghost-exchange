@@ -10,7 +10,7 @@ export default function ProfileScreen() {
             <YStack space="$4" alignItems="center">
                 <Image
                     source={{
-                        uri: user?.avatar || 'https://api.dicebear.com/7.x/avataaars/png?seed=default'
+                        uri: user?.avatar
                     }}
                     style={{ width: 150, height: 150, borderRadius: 75 }}
                 />

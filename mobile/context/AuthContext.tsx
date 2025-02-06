@@ -29,7 +29,7 @@ export function AuthProvider({ children }: { readonly children: React.ReactNode 
         id: '1',
         email: 'user@example.com',
         username: 'JohnDoe',
-        avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=john',
+        avatar: 'https://api.dicebear.com/7.x/avataaars/png?seed=default',
         balance: 1000.00
     };
 
