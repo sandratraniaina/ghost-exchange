@@ -13,20 +13,12 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface XeHistoryRepository extends JpaRepository<XeHistory, Long> {
-    int DEFAULT_INTERVAL = 3;
-    default List<XeHistory> getHistory(List<Cryptocurrency> cryptocurrencies, Integer interval) {
-        int actualInterval = interval != null ? interval : DEFAULT_INTERVAL;
-        LocalDateTime endTime = LocalDateTime.now();
-        LocalDateTime startTime = endTime.minusHours(actualInterval);
-        
-        return findHistoricalData(cryptocurrencies,startTime,endTime);
-    }
 
     @Query("SELECT xh FROM XeHistory xh " +
            "WHERE xh.cryptocurrency IN :cryptocurrencies " +
            "AND xh.timestamp BETWEEN :startTime AND :endTime " +
-           "ORDER BY xh.timestamp DESC")
-    List<XeHistory> findHistoricalData(
+           "ORDER BY xh.timestamp DESC") 
+    List<XeHistory> findByCryptocurrencyInAndTimestampBetween(
         @Param("cryptocurrencies") List<Cryptocurrency> cryptocurrencies,
         @Param("startTime") LocalDateTime startTime,
         @Param("endTime") LocalDateTime endTime

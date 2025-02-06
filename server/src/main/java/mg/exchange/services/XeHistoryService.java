@@ -22,6 +22,8 @@ import java.util.Random;
 @RequiredArgsConstructor
 public class XeHistoryService {
 
+    int DEFAULT_INTERVAL = 3;
+
     private final XeHistoryRepository xeHistoryRepository;
     private final CryptocurrencyRepository cryptocurrencyRepository;
     @Value("${cryptocurrency.price.min}")
@@ -86,7 +88,15 @@ public class XeHistoryService {
         }
     }
 
+    public List<XeHistory> findHistory(List<Cryptocurrency> cryptocurrencies, Integer interval) {
+        int actualInterval = interval != null ? interval : DEFAULT_INTERVAL;
+        LocalDateTime endTime = LocalDateTime.now();
+        LocalDateTime startTime = endTime.minusHours(actualInterval);
+        
+        return xeHistoryRepository.findByCryptocurrencyInAndTimestampBetween(cryptocurrencies,startTime,endTime);
+    }
+
     public List<XeHistory> getHistory(List<Cryptocurrency> cryptos, Integer interval){
-        return xeHistoryRepository.getHistory(cryptos, interval);
+        return findHistory(cryptos, interval);
     }
 }
