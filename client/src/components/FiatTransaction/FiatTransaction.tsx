@@ -3,33 +3,32 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import TransactionDialog from './TransactionDialog';
 import { createTransaction } from '@/api/fiat';
+import { useAuth } from '@/hooks/useAuth';
 
 interface FiatTransactionProps {
   balance?: number;
   currency?: string;
-  onDeposit?: (amount: number) => Promise<void>;
-  onWithdraw?: (amount: number) => Promise<void>;
 }
 
 const FiatTransaction: React.FC<FiatTransactionProps> = ({
   balance = 0,
-  currency = 'MGA',
-  onDeposit = async (amount: number) => { await createTransaction(amount, "DEPOSIT") },
-  onWithdraw = async (amount: number) => { await createTransaction(amount, "WITHDRAW") },
+  currency = 'MGA'
 }) => {
   const [isDepositOpen, setIsDepositOpen] = useState(false);
   const [isWithdrawOpen, setIsWithdrawOpen] = useState(false);
   const [amount, setAmount] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
+  const { user } = useAuth();
+
   const handleTransaction = async (type: 'deposit' | 'withdraw') => {
     setIsLoading(true);
     const numAmount = parseFloat(amount);
 
     if (type === 'deposit') {
-      await onDeposit(numAmount);
+      await createTransaction(parseInt(user.id), numAmount, "DEPOSIT");
     } else {
-      await onWithdraw(numAmount);
+      await createTransaction(parseInt(user.id), numAmount, "WITHDRAW");
     }
 
     setAmount('');
