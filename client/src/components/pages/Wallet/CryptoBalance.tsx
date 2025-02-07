@@ -6,7 +6,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Skeleton } from "@/components/ui/skeleton";
 
-
 interface CryptoBalanceProps {
   symbol: string;
   balance: number;
@@ -16,6 +15,7 @@ interface CryptoBalanceProps {
 
 const CryptoBalance: React.FC<CryptoBalanceProps> = ({ symbol, balance, currentPrice, isLoading }) => {
   const [sellVolume, setSellVolume] = useState<number>(0);
+  const isVolumeValid = sellVolume >= 0 && sellVolume <= balance;
 
   const handleBuy = () => {
     window.location.href = `/marketplace?${symbol.toLowerCase()}`;
@@ -70,7 +70,7 @@ const CryptoBalance: React.FC<CryptoBalanceProps> = ({ symbol, balance, currentP
                         max={balance}
                         onChange={(e) => setSellVolume(Number(e.target.value))}
                         placeholder={`Max: ${balance} ${symbol}`}
-                        className="[&:invalid]:border-red-500 [&:invalid]:text-red-600"
+                        className="[&:invalid]:border-red-500 [&:invalid]:text-red-600 [&:invalid]:ring-red-500 [&:invalid]:focus-visible:ring-red-500 [&:invalid]:focus-visible:border-red-500"
                       />
                     </div>
 
@@ -92,7 +92,9 @@ const CryptoBalance: React.FC<CryptoBalanceProps> = ({ symbol, balance, currentP
                       />
                     </div>
 
-                    <Button className="w-full">Confirm Sell</Button>
+                    <Button className="w-full" disabled={!isVolumeValid}>
+                      Confirm Sell
+                    </Button>
                   </div>
                 </DialogContent>
               </Dialog>
