@@ -31,7 +31,7 @@ public class Transaction implements FirestoreSyncable {
     @Column(name = "transaction_type", nullable = false)
     private TransactionType transactionType;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime timestamp;
 
     @Column(name = "validation_timestamp")
@@ -50,14 +50,14 @@ public class Transaction implements FirestoreSyncable {
     @Override
     public Map<String, Object> toFirestoreMap() {
         Map<String, Object> map = new HashMap<>();
-        
+
         if (id != null) map.put("id", id);
         if (user != null) map.put("user", user.toFirestoreMap());
         if (amount != null) map.put("amount", amount);
         if (transactionType != null) map.put("transactionType", transactionType.name());
         if (timestamp != null) map.put("timestamp", timestamp.toString());
         if (validationTimestamp != null) map.put("validationTimestamp", validationTimestamp.toString());
-        
+
         return map;
     }
 }
