@@ -1,15 +1,23 @@
 spring.application.name=GhostExchangeApplication
-server.port=9090
-
+server.port=2510
 
 # PostgreSQL configuration
-spring.datasource.url=jdbc:postgresql://localhost:5432/ghost_exchange (For local development)
-spring.datasource.url=jdbc:postgresql://postgres:5432/ghost_exchange (For Docker)
-spring.datasource.username=dev
-spring.datasource.password=DevTeam2000
+spring.datasource.url=jdbc:postgresql://localhost:5432/ghost_exchange
+spring.datasource.username=postgres
+spring.datasource.password=liantsoa
 spring.datasource.driver-class-name=org.postgresql.Driver
 
 # JPA and Hibernate properties
-spring.jpa.hibernate.ddl-auto=create
+spring.jpa.hibernate.ddl-auto=update
 spring.jpa.show-sql=true
-spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
+
+# crypto currency parameter
+cryptocurrency.price.min=2000
+cryptocurrency.price.max=10000
+cryptocurrency.schedule.interval=360000
+
+#Firebase configuration
+firebase.serviceAccountKey=C://Users//rakot//OneDrive//Documents//S5//Cloud//firstproject-cda07-firebase-adminsdk-omwyo-20bef4f23a.json
+
+# Activer CORS globalement
+spring.web.resources.add-mappings=true
