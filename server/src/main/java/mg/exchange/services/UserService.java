@@ -6,6 +6,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import mg.exchange.dto.SignInRequest;
 import mg.exchange.dto.UserTransactionSummary;
 import mg.exchange.models.AccountRole;
+import mg.exchange.models.Cryptocurrency;
+import mg.exchange.models.CryptocurrencyFavorite;
 import mg.exchange.models.User;
 import mg.exchange.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,8 +25,12 @@ public class UserService {
     private static final ObjectMapper objectMapper = new ObjectMapper();
     @Autowired
     private UserRepository userRepository;
+
     @Autowired
     private FirestoreService firestoreService;
+
+    @Autowired
+    private CryptocurrencyFavoriteService cryptocurrencyFavoriteService;
 
     public List<User> getAllUsers() {
         return userRepository.findAll();
@@ -77,6 +84,15 @@ public class UserService {
 
     public List<UserTransactionSummary> getUserTransactionSummary(LocalDateTime min, LocalDateTime max) {
         return userRepository.getUserTransactionSummary(min, max);
+    }
+
+    public List<Cryptocurrency> getFavoriteCryptocurrency(User u){
+        List<CryptocurrencyFavorite> favorites = cryptocurrencyFavoriteService.getFavoritesByAccountId(u.getId());
+        List<Cryptocurrency> results = new ArrayList<>();
+        for(CryptocurrencyFavorite fav : favorites){
+            results.add(fav.getCryptocurrency());
+        }
+        return results;
     }
 
 }
