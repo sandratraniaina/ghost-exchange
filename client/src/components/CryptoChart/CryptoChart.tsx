@@ -118,6 +118,20 @@ const CryptoChart: React.FC = () => {
     }
   }, [timeRange, selectedCryptoId, loadingOptions]);
 
+  // Fetch data every 10 seconds
+  useEffect(() => {
+    const intervalId = setInterval(async () => {
+      try {
+        const data = await fetchCryptoData(parseInt(selectedCryptoId));
+        setChartData(data);
+      } catch (error) {
+        console.error("Error fetching price data:", error);
+      }
+    }, 10000); // 10 seconds
+
+    return () => clearInterval(intervalId);
+  }, [selectedCryptoId]);
+
   const selectedCrypto = cryptoOptions.find((c) => c.id.toString() === selectedCryptoId);
 
   const handleTimeRangeChange = (value: string) => {
@@ -163,7 +177,7 @@ const CryptoChart: React.FC = () => {
 
           <Select value={timeRange} onValueChange={handleTimeRangeChange}>
             <SelectTrigger className="w-[160px] rounded-lg">
-              <SelectValue placeholder="Last 15 minutes" /> {/* Updated placeholder */}
+              <SelectValue placeholder="Last 15 minutes" />
             </SelectTrigger>
 
             <SelectContent className="rounded-xl">
