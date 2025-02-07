@@ -31,7 +31,7 @@ interface PriceData {
 }
 
 interface CryptoOption {
-  id: string;
+  id: number;
   name: string;
   symbol: string;
   fiatPrice: number;
@@ -52,7 +52,7 @@ const fetchCryptoData = async (cryptoId: string, timeRange: TimeRange): Promise<
   await new Promise(resolve => setTimeout(resolve, 500));
 
   const options = await fetchCryptoOptions();
-  const crypto = options.find((c: CryptoOption) => c.id.toString() === cryptoId); // Type added to parameter 'c'
+  const crypto = Array.isArray(options) ? options.find((c: CryptoOption) => c.id.toString() === cryptoId) : undefined; // Type added to parameter 'c'
   if (!crypto) throw new Error("Cryptocurrency not found");
 
   const data: PriceData[] = [];
@@ -86,6 +86,7 @@ const fetchCryptoData = async (cryptoId: string, timeRange: TimeRange): Promise<
   return data;
 };
 
+
 const chartConfig: ChartDataConfig = {
   price: {
     label: "Price",
@@ -106,7 +107,7 @@ const CryptoChart: React.FC = () => {
     const loadOptions = async () => {
       try {
         const options = await fetchCryptoOptions();
-        setCryptoOptions(options);
+        setCryptoOptions(options.data);
       } catch (error) {
         console.error('Error fetching crypto options:', error);
       } finally {
@@ -150,7 +151,8 @@ const CryptoChart: React.FC = () => {
     if (value >= 1000) {
       return `$${(value / 1000).toFixed(1)}k`;
     }
-  }
+    return `$${value}`;
+  };
 
   return (
     <Card>
@@ -170,11 +172,13 @@ const CryptoChart: React.FC = () => {
             </SelectTrigger>
 
             <SelectContent className="rounded-xl">
-              {cryptoOptions.map((crypto) => (
-                <SelectItem key={crypto.id} value={crypto.id.toString()} className="rounded-lg">
-                  {crypto.name} ({crypto.symbol})
-                </SelectItem>
-              ))}
+              {
+                cryptoOptions.map((crypto) => (
+                  <SelectItem key={crypto.id} value={crypto.id.toString()} className="rounded-lg">
+                    {crypto.name} ({crypto.symbol})
+                  </SelectItem>
+                ))
+              }
             </SelectContent>
           </Select>
 
