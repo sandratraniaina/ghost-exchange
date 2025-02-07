@@ -20,7 +20,7 @@ services:
       PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./src/main/sql:/docker-entrypoint-initdb.d
+      - ./postgres_data/initdb.d:/docker-entrypoint-initdb.d
     networks:
       - app-network
 
