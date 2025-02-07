@@ -75,7 +75,7 @@ public class CryptocurrencyWalletService {
         firestoreService.deleteFromFirestore(wallet);
     }
 
-    public Optional<CryptocurrencyWallet> getWalletByUserId(Long userId) {
+    public List<CryptocurrencyWallet> getWalletByUserId(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         return cryptocurrencyWalletRepository.findByUserId(userId);
