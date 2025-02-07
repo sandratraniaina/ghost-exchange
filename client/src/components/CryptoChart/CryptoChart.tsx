@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { TrendingUp } from "lucide-react";
 import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts";
-import { fetchCryptoOptions } from "@/api/crypto";
-import { fetchCryptoHistory } from "@/api/cryptoGraph";
+import { fetchCryptoOptions, fetchCryptoHistory } from "@/api/crypto";
 
 import {
   Card,
