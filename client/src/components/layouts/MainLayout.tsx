@@ -3,6 +3,7 @@ import { Header } from '@/components/layouts/Header';
 import { Sidebar } from '@/components/layouts/Sidebar';
 import { BaseProps } from '@/types/common';
 import { ProtectedRoute } from '../ProtectedRoute';
+import { Toaster } from '../ui/toaster';
 
 export const MainLayout: React.FC<BaseProps> = ({ className = '' }) => {
     return (
@@ -16,6 +17,7 @@ export const MainLayout: React.FC<BaseProps> = ({ className = '' }) => {
                     </main>
                 </div>
             </div>
+            <Toaster />
         </ProtectedRoute>
     );
 };
