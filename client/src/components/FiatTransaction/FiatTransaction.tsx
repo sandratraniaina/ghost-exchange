@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
+import TransactionDialog from './TransactionDialog';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import TransactionDialog from './TransactionDialog';
+import { useToast } from '@/hooks/use-toast';
 import { createTransaction } from '@/api/fiat';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -20,16 +21,33 @@ const FiatTransaction: React.FC<FiatTransactionProps> = ({
   const [isLoading, setIsLoading] = useState(false);
 
   const { user } = useAuth();
+  const { toast } = useToast()
 
   const handleTransaction = async (type: 'deposit' | 'withdraw') => {
     setIsLoading(true);
     const numAmount = parseFloat(amount);
+    let response = null;
 
     if (type === 'deposit') {
-      await createTransaction(parseInt(user.id), numAmount, "DEPOSIT");
+      response = await createTransaction(parseInt(user.id), numAmount, "DEPOSIT");
     } else {
-      await createTransaction(parseInt(user.id), numAmount, "WITHDRAW");
+      response = await createTransaction(parseInt(user.id), numAmount, "WITHDRAW");
     }
+
+    if (!response?.success) {
+      toast({
+        title: "Error",
+        description: response?.message || "Failed to complete transaction. Please check your connection and try again.",
+        variant: "destructive",
+      });
+      setIsLoading(false);
+      return;
+    }
+
+    toast({
+      title: "Success",
+      description: type === 'deposit' ? "Deposit successful!" : "Withdrawal successful!",
+    });
 
     setAmount('');
     setIsDepositOpen(false);
