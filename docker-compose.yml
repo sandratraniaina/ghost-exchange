@@ -1,0 +1,50 @@
+services:
+  # TODO: Suppress warnings in front end build
+  frontend:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+  # TODO: Create an application.properties in production
+  backend:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    depends_on:
+      - postgres
+    networks:
+      - app-network
+
+  # TODO: Copy anonymizer's init.sql to initdb.d in production
+  # TODO: Copy backend's init.sql to initdb.d in production
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: dev
+      POSTGRES_PASSWORD: DevTeam2000
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./postgres-data/initdb.d:/docker-entrypoint-initdb.d
+    networks:
+      - app-network
+
+  # TODO: Deploy anonymizer to DockerHub
+  anonymizer:
+    image: anonymizer:1.0.0
+    depends_on:
+      - postgres
+    networks:
+      - app-network
+
+networks:
+  app-network:
+
+volumes:
+  postgres_data:
