@@ -1,15 +1,11 @@
 import axios from 'axios';
 
-export const createTransaction = async (userId: number, amount: number, transactionType: string) => {
+export const createTransaction = async (userId: number, amount: number, transactionType: "DEPOSIT" | "WITHDRAW") => {
   try {
     const apiHost = import.meta.env.VITE_API_HOST;
 
     if (!apiHost) {
       throw new Error('VITE_API_HOST environment variable is not defined.');
-    }
-
-    if (!["WITHDRAW", "DEPOSIT"].includes(transactionType)) {
-      throw new Error('Invalid transaction type.');
     }
 
     const uri = '/transactions';
