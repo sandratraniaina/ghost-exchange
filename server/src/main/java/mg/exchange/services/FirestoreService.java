@@ -132,7 +132,7 @@ public class FirestoreService {
                                          JpaRepository<T, Long> repository) {
         try {
             Map<String, Object> data = document.getData();
-            System.out.println("document: " + document);
+            
 
             if (data != null) {
                 // Correction pour timestamp
@@ -182,7 +182,7 @@ public class FirestoreService {
                                             JpaRepository<T, Long> repository) {
         try {
             Map<String, Object> data = document.getData();
-            System.out.println("document: " + document);
+            
 
             if (data != null) {
                 // Correction pour timestamp
