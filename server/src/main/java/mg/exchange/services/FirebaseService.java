@@ -28,7 +28,7 @@ public class FirebaseService {
         CreateRequest request = new CreateRequest()
                 .setEmail(u.getEmail())
                 .setEmailVerified(false)
-                .setPassword("DefaultPassword123!") // Ensure the password is securely managed
+                .setPassword("DefaultPassword123!") 
                 .setDisplayName(u.getUsername())
                 .setDisabled(false);
         

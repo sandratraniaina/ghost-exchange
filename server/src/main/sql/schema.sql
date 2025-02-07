@@ -13,6 +13,7 @@ CREATE TABLE account(
   fiat_balance numeric(18, 2) NOT NULL,
   username varchar(100) NOT NULL UNIQUE,
   email varchar(100) NOT NULL,
+  pwd varchar(256) NOT NULL,
   CONSTRAINT account_pkey PRIMARY KEY(id)
 );
 
