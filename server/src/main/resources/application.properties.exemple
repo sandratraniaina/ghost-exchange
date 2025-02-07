@@ -3,9 +3,10 @@ server.port=8080
 
 
 # PostgreSQL configuration
-spring.datasource.url=jdbc:postgresql://localhost:5432/ghost_exchange
-spring.datasource.username=postgres
-spring.datasource.password=liantsoa
+spring.datasource.url=jdbc:postgresql://localhost:5432/ghost_exchange (For local development)
+spring.datasource.url=jdbc:postgresql://postgres:5432/ghost_exchange (For Docker)
+spring.datasource.username=dev
+spring.datasource.password=DevTeam2000
 spring.datasource.driver-class-name=org.postgresql.Driver
 
 # JPA and Hibernate properties
