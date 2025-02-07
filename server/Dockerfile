@@ -36,4 +36,4 @@ COPY src ./src
 EXPOSE 8080
 
 # Step 10: Set the entrypoint to run the Spring Boot application using Maven
-ENTRYPOINT ["mvn", "spring-boot:run"]
+CMD ["mvn", "spring-boot:run"]
