@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
+import { fetchCryptoOptions } from "@/api/crypto";
 
 import {
   Card,
@@ -33,7 +34,8 @@ interface CryptoOption {
   id: string;
   name: string;
   symbol: string;
-  basePrice: number;
+  fiatPrice: number;
+  firestoreCollectionName: string;
 }
 
 interface ChartDataConfig extends ChartConfig {
@@ -45,30 +47,27 @@ interface ChartDataConfig extends ChartConfig {
 
 type TimeRange = "15m" | "10m" | "5m";
 
-// Simulated API call for crypto options (unchanged)
-const fetchCryptoOptions = async (): Promise<CryptoOption[]> => {
-  await new Promise(resolve => setTimeout(resolve, 300));
-
-  return [
-    { id: "bitcoin", name: "Bitcoin", symbol: "BTC", basePrice: 52000 },
-    { id: "ethereum", name: "Ethereum", symbol: "ETH", basePrice: 3000 },
-    { id: "solana", name: "Solana", symbol: "SOL", basePrice: 120 },
-  ];
-};
-
 // Simulated API call for price data (modified to handle minutes)
 const fetchCryptoData = async (cryptoId: string, timeRange: TimeRange): Promise<PriceData[]> => {
   await new Promise(resolve => setTimeout(resolve, 500));
 
   const options = await fetchCryptoOptions();
-  const crypto = options.find(c => c.id === cryptoId);
+  const crypto = options.find((c: CryptoOption) => c.id.toString() === cryptoId); // Type added to parameter 'c'
   if (!crypto) throw new Error("Cryptocurrency not found");
 
   const data: PriceData[] = [];
   const endDate = new Date();
-  const minutesToGenerate = timeRange === "15m" ? 15 : timeRange === "10m" ? 10 : 5;
 
-  let basePrice = crypto.basePrice;
+  let minutesToGenerate;
+  if (timeRange === "15m") {
+    minutesToGenerate = 15;
+  } else if (timeRange === "10m") {
+    minutesToGenerate = 10;
+  } else {
+    minutesToGenerate = 5;
+  }
+
+  let basePrice = crypto.fiatPrice;
 
   for (let i = minutesToGenerate; i >= 0; i--) {
     const date = new Date(endDate);
@@ -87,7 +86,6 @@ const fetchCryptoData = async (cryptoId: string, timeRange: TimeRange): Promise<
   return data;
 };
 
-
 const chartConfig: ChartDataConfig = {
   price: {
     label: "Price",
@@ -97,7 +95,7 @@ const chartConfig: ChartDataConfig = {
 
 const CryptoChart: React.FC = () => {
   const [timeRange, setTimeRange] = useState<TimeRange>("15m"); // Default to 15m
-  const [selectedCryptoId, setSelectedCryptoId] = useState<string>("bitcoin");
+  const [selectedCryptoId, setSelectedCryptoId] = useState<string>("1");
   const [chartData, setChartData] = useState<PriceData[]>([]);
   const [cryptoOptions, setCryptoOptions] = useState<CryptoOption[]>([]);
   const [loading, setLoading] = useState(true);
@@ -138,7 +136,7 @@ const CryptoChart: React.FC = () => {
     }
   }, [timeRange, selectedCryptoId, loadingOptions]);
 
-  const selectedCrypto = cryptoOptions.find(c => c.id === selectedCryptoId);
+  const selectedCrypto = cryptoOptions.find(c => c.id.toString() === selectedCryptoId);
 
   const handleTimeRangeChange = (value: string) => {
     setTimeRange(value as TimeRange);
@@ -150,11 +148,9 @@ const CryptoChart: React.FC = () => {
 
   const formatYAxis = (value: number) => {
     if (value >= 1000) {
-      return `$${(value / 1000).toFixed(1)} k`;
+      return `$${(value / 1000).toFixed(1)}k`;
     }
-    return `$${value} `;
-  };
-
+  }
 
   return (
     <Card>
@@ -163,7 +159,7 @@ const CryptoChart: React.FC = () => {
           <CardTitle>Cryptocurrency Price Chart</CardTitle>
 
           <CardDescription>
-            {selectedCrypto ? `Showing price data for ${selectedCrypto.name}(${selectedCrypto.symbol})` : 'Loading...'}
+            {selectedCrypto ? `Showing price data for ${selectedCrypto.name} (${selectedCrypto.symbol})` : 'Loading...'}
           </CardDescription>
         </div>
 
@@ -175,7 +171,7 @@ const CryptoChart: React.FC = () => {
 
             <SelectContent className="rounded-xl">
               {cryptoOptions.map((crypto) => (
-                <SelectItem key={crypto.id} value={crypto.id} className="rounded-lg">
+                <SelectItem key={crypto.id} value={crypto.id.toString()} className="rounded-lg">
                   {crypto.name} ({crypto.symbol})
                 </SelectItem>
               ))}
