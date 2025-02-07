@@ -93,7 +93,7 @@ public class FirestoreService {
         listenToCollectionChanges("commission", Commission.class, commissionRepository);
         listenToCollectionChanges("cryptocurrency_wallet", CryptocurrencyWallet.class, cryptocurrencyWalletRepository);
         listenToCollectionChanges("ledger", Ledger.class, ledgerRepository);
-        listenToCollectionChanges("user", User.class, userRepository);
+        listenToCollectionChanges("account", User.class, userRepository);
     }
 
     private <T> void listenToCollectionChanges(String collectionName, Class<T> entityClass,
