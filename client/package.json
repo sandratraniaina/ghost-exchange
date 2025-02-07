@@ -19,6 +19,7 @@
     "@radix-ui/react-select": "^2.1.5",
     "@radix-ui/react-separator": "^1.1.1",
     "@radix-ui/react-slot": "^1.1.1",
+    "@radix-ui/react-toast": "^1.2.6",
     "@types/react-router-dom": "^5.3.3",
     "axios": "^1.7.9",
     "class-variance-authority": "^0.7.1",
