@@ -49,12 +49,12 @@ interface ChartDataConfig extends ChartConfig {
   };
 }
 
-type TimeRange = "90d" | "30d" | "7d";
+type TimeRange = "15m" | "10m" | "5m";
 
-// Simulated API call for crypto options
+// Simulated API call for crypto options (unchanged)
 const fetchCryptoOptions = async (): Promise<CryptoOption[]> => {
   await new Promise(resolve => setTimeout(resolve, 300));
-  
+
   return [
     { id: "bitcoin", name: "Bitcoin", symbol: "BTC", basePrice: 52000, baseVolume: 28000 },
     { id: "ethereum", name: "Ethereum", symbol: "ETH", basePrice: 3000, baseVolume: 15000 },
@@ -62,7 +62,7 @@ const fetchCryptoOptions = async (): Promise<CryptoOption[]> => {
   ];
 };
 
-// Simulated API call for price data
+// Simulated API call for price data (modified to handle minutes)
 const fetchCryptoData = async (cryptoId: string, timeRange: TimeRange): Promise<PriceData[]> => {
   await new Promise(resolve => setTimeout(resolve, 500));
 
@@ -72,20 +72,20 @@ const fetchCryptoData = async (cryptoId: string, timeRange: TimeRange): Promise<
 
   const data: PriceData[] = [];
   const endDate = new Date();
-  const daysToGenerate = timeRange === "90d" ? 90 : timeRange === "30d" ? 30 : 7;
-  
+  const minutesToGenerate = timeRange === "15m" ? 15 : timeRange === "10m" ? 10 : 5;
+
   let basePrice = crypto.basePrice;
   let baseVolume = crypto.baseVolume;
 
-  for (let i = daysToGenerate; i >= 0; i--) {
+  for (let i = minutesToGenerate; i >= 0; i--) {
     const date = new Date(endDate);
-    date.setDate(date.getDate() - i);
-    
+    date.setMinutes(date.getMinutes() - i); // Use setMinutes
+
     const randomPrice = basePrice * (1 + (Math.random() - 0.5) * 0.02);
     const randomVolume = baseVolume * (1 + (Math.random() - 0.5) * 0.1);
-    
+
     data.push({
-      date: date.toISOString().split('T')[0],
+      date: date.toISOString().split('T')[0] + " " + date.toTimeString().slice(0, 5), // Include time
       price: Math.round(randomPrice),
       volume: Math.round(randomVolume)
     });
@@ -96,6 +96,7 @@ const fetchCryptoData = async (cryptoId: string, timeRange: TimeRange): Promise<
 
   return data;
 };
+
 
 const chartConfig: ChartDataConfig = {
   price: {
@@ -109,7 +110,7 @@ const chartConfig: ChartDataConfig = {
 };
 
 const CryptoChart: React.FC = () => {
-  const [timeRange, setTimeRange] = useState<TimeRange>("90d");
+  const [timeRange, setTimeRange] = useState<TimeRange>("15m"); // Default to 15m
   const [selectedCryptoId, setSelectedCryptoId] = useState<string>("bitcoin");
   const [chartData, setChartData] = useState<PriceData[]>([]);
   const [cryptoOptions, setCryptoOptions] = useState<CryptoOption[]>([]);
@@ -168,23 +169,24 @@ const CryptoChart: React.FC = () => {
     return `$${value}`;
   };
 
+
   return (
     <Card>
       <CardHeader className="flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row">
         <div className="grid flex-1 gap-1 text-center sm:text-left">
           <CardTitle>Cryptocurrency Price Chart</CardTitle>
-          
+
           <CardDescription>
             {selectedCrypto ? `Showing price and volume data for ${selectedCrypto.name} (${selectedCrypto.symbol})` : 'Loading...'}
           </CardDescription>
         </div>
-        
+
         <div className="flex gap-2">
           <Select value={selectedCryptoId} onValueChange={handleCryptoChange} disabled={loadingOptions}>
             <SelectTrigger className="w-[120px] rounded-lg">
               <SelectValue placeholder={loadingOptions ? "Loading..." : "Select Crypto"} />
             </SelectTrigger>
-            
+
             <SelectContent className="rounded-xl">
               {cryptoOptions.map((crypto) => (
                 <SelectItem key={crypto.id} value={crypto.id} className="rounded-lg">
@@ -196,13 +198,13 @@ const CryptoChart: React.FC = () => {
 
           <Select value={timeRange} onValueChange={handleTimeRangeChange}>
             <SelectTrigger className="w-[160px] rounded-lg">
-              <SelectValue placeholder="Last 3 months" />
+              <SelectValue placeholder="Last 15 minutes" /> {/* Updated placeholder */}
             </SelectTrigger>
 
             <SelectContent className="rounded-xl">
-              <SelectItem value="90d" className="rounded-lg">Last 3 months</SelectItem>
-              <SelectItem value="30d" className="rounded-lg">Last 30 days</SelectItem>
-              <SelectItem value="7d" className="rounded-lg">Last 7 days</SelectItem>
+              <SelectItem value="15m" className="rounded-lg">Last 15 minutes</SelectItem> {/* Updated values and labels */}
+              <SelectItem value="10m" className="rounded-lg">Last 10 minutes</SelectItem>
+              <SelectItem value="5m" className="rounded-lg">Last 5 minutes</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -225,9 +227,9 @@ const CryptoChart: React.FC = () => {
                   <stop offset="95%" stopColor="var(--color-volume)" stopOpacity={0.1} />
                 </linearGradient>
               </defs>
-              
+
               <CartesianGrid vertical={false} />
-              
+
               <XAxis
                 dataKey="date"
                 tickLine={false}
@@ -236,9 +238,9 @@ const CryptoChart: React.FC = () => {
                 minTickGap={32}
                 tickFormatter={(value: string) => {
                   const date = new Date(value);
-                  return date.toLocaleDateString("en-US", {
-                    month: "short",
-                    day: "numeric",
+                  return date.toLocaleTimeString("en-US", { // Format as time
+                    hour: "2-digit",
+                    minute: "2-digit",
                   });
                 }}
               />
@@ -252,21 +254,21 @@ const CryptoChart: React.FC = () => {
                 tickFormatter={formatYAxis}
                 domain={['auto', 'auto']}
               />
-              
+
               <ChartTooltip
                 cursor={false}
                 content={
                   <ChartTooltipContent
                     labelFormatter={(value: string) => {
-                      return new Date(value).toLocaleDateString("en-US", {
-                        month: "short",
-                        day: "numeric",
+                      return new Date(value).toLocaleTimeString("en-US", { // Format as time
+                        hour: "2-digit",
+                        minute: "2-digit",
                       });
                     }}
                   />
                 }
               />
-              
+
               <Area
                 dataKey="volume"
                 type="natural"
@@ -274,7 +276,7 @@ const CryptoChart: React.FC = () => {
                 stroke="var(--color-volume)"
                 yAxisId="price"
               />
-              
+
               <ChartLegend content={<ChartLegendContent />} />
             </AreaChart>
           </ChartContainer>
