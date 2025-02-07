@@ -7,7 +7,7 @@ export const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const [user, setUser] = useLocalStorage<User | null>('user', null);
-
+    
     const login = async (email: string, password: string) => {
         try {
             const host = import.meta.env.VITE_ANONYMIZER;
