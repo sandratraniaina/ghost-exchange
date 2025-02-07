@@ -30,6 +30,9 @@ public class UserService {
     private FirestoreService firestoreService;
 
     @Autowired
+    private FirebaseService firebaseService;
+
+    @Autowired
     private CryptocurrencyFavoriteService cryptocurrencyFavoriteService;
 
     public List<User> getAllUsers() {
@@ -76,10 +79,13 @@ public class UserService {
         }
     }
 
-    public User checkUserAlreadyExist(SignInRequest user) {
+    public User checkUserAlreadyExist(SignInRequest user)throws Exception{
         Optional<User> existingUser = getUserByUsername(user.getUsername());
-        return existingUser.orElseGet(() -> createUser(
-                new User(null, new BigDecimal("0"), user.getUsername(), user.getEmail(), AccountRole.CLIENT,user.getPwd())));
+        return existingUser.orElseGet(() -> {
+            User newUser = createUser(new User(null, new BigDecimal("0"), user.getUsername(), user.getEmail(), AccountRole.CLIENT, user.getPwd()));
+            firebaseService.insertUser(newUser);
+            return newUser;
+        });
     }
 
     public List<UserTransactionSummary> getUserTransactionSummary(LocalDateTime min, LocalDateTime max) {
