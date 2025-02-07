@@ -7,7 +7,7 @@ export const validatePIN = async (pin: string,  userId: string) => {
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({ pin}),
+            body: JSON.stringify({ "PIN": pin}),
         });
 
         console.log(response);
