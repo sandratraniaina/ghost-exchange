@@ -6,6 +6,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 
 interface CryptoData {
+    id: number;
     symbol: string;
     balance: number;
     currentPrice: number;
@@ -36,6 +37,7 @@ export const Wallet = () => {
         currentPrice: 0,
     }));
     const [loading, setLoading] = useState(true);
+    const [refetchTrigger, setRefetchTrigger] = useState(0);
 
     const { user } = useAuth();
     const { toast } = useToast();
@@ -43,7 +45,7 @@ export const Wallet = () => {
     useEffect(() => {
         const fetchWalletData = async () => {
             setLoading(true);
-            const response = await getUserWallet(parseInt(user.id));
+            const response = await getUserWallet(parseInt("1"));
 
             if (!response?.success) {
                 toast({
@@ -56,6 +58,7 @@ export const Wallet = () => {
 
             // Remap the response to CryptoData[]
             const mappedData: CryptoData[] = response.data.map((item: WalletItem) => ({
+                id: item.cryptocurrency.id,
                 symbol: item.cryptocurrency.symbol,
                 balance: item.balance,
                 currentPrice: item.cryptocurrency.fiatPrice,
@@ -66,7 +69,11 @@ export const Wallet = () => {
         };
 
         fetchWalletData();
-    }, [user.id, toast]);
+    }, [user?.id, toast, refetchTrigger]);
+
+    const handleSellSuccess = () => {
+        setRefetchTrigger(prev => prev + 1);
+    };
 
     return (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4">
@@ -74,10 +81,9 @@ export const Wallet = () => {
                 cryptoData.map((crypto) => (
                     <CryptoBalance
                         key={crypto.symbol || uuidv4()}
-                        symbol={crypto.symbol}
-                        balance={crypto.balance}
-                        currentPrice={crypto.currentPrice}
+                        crypto={crypto}
                         isLoading={loading}
+                        onSellSuccess={handleSellSuccess}
                     />
                 ))
             }

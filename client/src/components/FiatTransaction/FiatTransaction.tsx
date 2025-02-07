@@ -47,6 +47,7 @@ const FiatTransaction: React.FC<FiatTransactionProps> = ({
     toast({
       title: "Success",
       description: type === 'deposit' ? "Deposit successful!" : "Withdrawal successful!",
+      className: "bg-green-600 text-white"
     });
 
     setAmount('');
