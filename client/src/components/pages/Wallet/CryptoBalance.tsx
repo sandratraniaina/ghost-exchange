@@ -44,7 +44,7 @@ const CryptoBalance: React.FC<CryptoBalanceProps> = ({ symbol, balance, currentP
             </div>
 
             <div className="text-sm text-muted-foreground">
-              Total Value: ${(balance * currentPrice).toFixed(2)}
+              Total Value: MGA{(balance * currentPrice).toFixed(2)}
             </div>
 
             <div className="flex space-x-4">
@@ -76,7 +76,7 @@ const CryptoBalance: React.FC<CryptoBalanceProps> = ({ symbol, balance, currentP
                       <Label>Current Price</Label>
                       <Input
                         type="text"
-                        value={`$${currentPrice.toFixed(2)}`}
+                        value={`MGA${currentPrice.toFixed(2)}`}
                         readOnly
                       />
                     </div>
@@ -85,7 +85,7 @@ const CryptoBalance: React.FC<CryptoBalanceProps> = ({ symbol, balance, currentP
                       <Label>Total Value</Label>
                       <Input
                         type="text"
-                        value={`$${(sellVolume * currentPrice).toFixed(2)}`}
+                        value={`MGA${(sellVolume * currentPrice).toFixed(2)}`}
                         readOnly
                       />
                     </div>
