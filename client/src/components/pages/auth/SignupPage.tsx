@@ -1,13 +1,15 @@
 // src/pages/auth/SignupPage.tsx
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Loader2} from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import EmailValidationDialog from './EmailValidationDialogue';
+
+import { AuthContext } from '../../../contexts/AuthContext';
 
 export interface SignupFormData {
     firstName: string;
@@ -17,22 +19,23 @@ export interface SignupFormData {
     username: string;
     email: string;
     password: string;
-    confirmPassword: string;
+    passwordConf: string;
 }
 
 export const SignupPage = () => {
+    const auth = useContext(AuthContext);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [showValidationDialog, setShowValidationDialog] = useState(false);
     const [formData, setFormData] = useState<SignupFormData>({
-        firstName: '',
-        lastName: '',
-        dateOfBirth: '',
-        genderId: '',
-        username: '',
-        email: '',
-        password: '',
-        confirmPassword: ''
+        firstName: 'Niaina',
+        lastName: 'Sandratra',
+        dateOfBirth: '2024-02-02',
+        genderId: '1',
+        username: 'sandratra',
+        email: 'sandratra2468@gmail.com',
+        password: 'Here is a 8 letters pwd',
+        passwordConf: 'Here is a 8 letters pwd'
     });
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
