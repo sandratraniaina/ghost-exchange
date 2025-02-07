@@ -87,7 +87,7 @@ public class UserService {
                 firebaseService.insertUser(newUser);
                 return newUser;
             } catch (Exception e) {
-                throw new RuntimeException("Failed to insert user into Firebase", e);
+                throw new RuntimeException("Failed to insert user into Firebase : "+e.getMessage());
             }
         });
     }

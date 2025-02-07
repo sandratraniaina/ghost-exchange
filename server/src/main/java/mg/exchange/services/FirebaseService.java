@@ -37,17 +37,17 @@ public class FirebaseService {
         return userRecord.getUid();
     }
 
-    public String sendNotification(String title, String body, String token) throws FirebaseMessagingException {
-        Notification notification = Notification.builder()
-                .setTitle(title)
-                .setBody(body)
-                .build();
+    // public String sendNotification(String title, String body, String token) throws FirebaseMessagingException {
+    //     Notification notification = Notification.builder()
+    //             .setTitle(title)
+    //             .setBody(body)
+    //             .build();
 
-        Message message = Message.builder()
-                .setToken(token)
-                .setNotification(notification)
-                .build();
+    //     Message message = Message.builder()
+    //             .setToken(token)
+    //             .setNotification(notification)
+    //             .build();
 
-        return firebaseMessaging.send(message);
-    }
+    //     return firebaseMessaging.send(message);
+    // }
 }

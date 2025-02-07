@@ -24,6 +24,9 @@ public class TransactionService {
     private UserService userService;
 
     @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
     private FirestoreService firestoreService;
 
     @Autowired
@@ -74,21 +77,50 @@ public class TransactionService {
         transactionRepository.deleteById(id);
     }
 
-    public Transaction validateTransaction(Long id) throws Exception{
+    public Transaction validateTransaction(Long id) throws Exception {
+        // Find the transaction or throw exception if not found
         Transaction transaction = transactionRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Transaction not found"));
-        transaction.setValidationTimestamp(LocalDate.now().atStartOfDay());
-        updateTransaction(id, transaction);
-        try {
-            firebaseService.sendNotification(
-                    "Transaction valider",
-                    "Votre " + transaction.getTransactionType().toString().toLowerCase()+ " a été validé par l'admin avec succès. Transaction N:"+transaction.getId(),
-                    ""
-            );
-        } catch (FirebaseMessagingException e) {
-            throw e;
-        }
-        return transaction;
+        
+        // Set validation timestamp
+        transaction.setValidationTimestamp(LocalDateTime.now());
+        
+        // // Get the user's FCM token from the transaction
+        // String userToken = userRepository.findById(transaction.getUser().getId())
+        //         .orElseThrow(() -> new RuntimeException("User not found"));
+                
+        // if (userToken == null || userToken.isEmpty()) {
+        //     throw new RuntimeException("User FCM token not found");
+        // }
+        
+        // try {
+        //     // Update the transaction first
+        //     transaction = updateTransaction(id, transaction);
+            
+        //     // Build notification message
+        //     String notificationTitle = "Transaction validée";
+        //     String notificationBody = String.format(
+        //         "Votre %s a été validé par l'admin avec succès. Transaction N°%d",
+        //         transaction.getTransactionType().toString().toLowerCase(),
+        //         transaction.getId()
+        //     );
+            
+        //     // Send notification
+        //     firebaseService.sendNotification(
+        //         notificationTitle,
+        //         notificationBody,
+        //         userToken
+        //     );
+            
+            return transaction;
+            
+        // } catch (FirebaseMessagingException e) {
+        //     return transaction;
+        // } 
+        // catch (Exception e) {
+        //     // For other exceptions, rollback by throwing
+        //     throw new RuntimeException("Failed to validate transaction: " + e.getMessage(), e);
+        // }
     }
 
     public List<Transaction> getHistoryTransaction(Long cryptoId, LocalDateTime min, LocalDateTime max, String type){

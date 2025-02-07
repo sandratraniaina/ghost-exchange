@@ -33,7 +33,6 @@ public class User implements FirestoreSyncable {
     @Column(name = "email", nullable = false, length = 100)
     private String email;
 
-    
     @Enumerated(EnumType.STRING)
     @Column(name = "account_role", nullable = false)
     private AccountRole accountRole;
@@ -41,6 +40,10 @@ public class User implements FirestoreSyncable {
     @Column(name = "pwd", nullable = false, length = 256)
     @JsonIgnore
     private String password;
+
+    // @Column(name = "fcm_token")
+    // private String fcmToken;
+    
     
     @Override
     public String getFirestoreCollectionName() {
@@ -53,17 +56,17 @@ public class User implements FirestoreSyncable {
     }
 
     @Override
-public Map<String, Object> toFirestoreMap() {
-    Map<String, Object> map = new HashMap<>();
-    
-    // Ajouter les champs uniquement s'ils ne sont pas null
-    if (id != null) map.put("id", id);
-    if (fiatBalance != null) map.put("fiatBalance", fiatBalance);
-    if (username != null) map.put("username", username);
-    if (email != null) map.put("email", email);
-    if (accountRole != null) map.put("accountRole", accountRole.name());
-    
-    return map;
-}
-
+    public Map<String, Object> toFirestoreMap() {
+        Map<String, Object> map = new HashMap<>();
+        
+        // Add fields only if they are not null
+        if (id != null) map.put("id", id);
+        if (fiatBalance != null) map.put("fiatBalance", fiatBalance);
+        if (username != null) map.put("username", username);
+        if (email != null) map.put("email", email);
+        if (accountRole != null) map.put("accountRole", accountRole.name());
+        // if (fcmToken != null) map.put("fcmToken", fcmToken);
+        
+        return map;
+    }
 }

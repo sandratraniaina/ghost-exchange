@@ -14,6 +14,7 @@ CREATE TABLE account(
   username varchar(100) NOT NULL UNIQUE,
   email varchar(100) NOT NULL,
   pwd varchar(256) NOT NULL,
+  fcm_token VARCHAR(255),
   CONSTRAINT account_pkey PRIMARY KEY(id)
 );
 
