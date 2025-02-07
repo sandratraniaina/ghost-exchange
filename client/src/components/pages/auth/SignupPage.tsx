@@ -56,7 +56,7 @@ export const SignupPage = () => {
     };
 
     const validateForm = () => {
-        if (formData.password !== formData.confirmPassword) {
+        if (formData.password !== formData.passwordConf) {
             setError('Passwords do not match');
             return false;
         }
@@ -233,18 +233,24 @@ export const SignupPage = () => {
                                     name="confirmPassword"
                                     type="password"
                                     placeholder="Confirm your password"
-                                    value={formData.confirmPassword}
+                                    value={formData.passwordConf}
                                     onChange={handleInputChange}
                                     required
                                     disabled={isLoading}
                                 />
                             </div>
+                            {error && (
+                                <Alert variant="destructive">
+                                    <AlertDescription>{error}</AlertDescription>
+                                </Alert>
+                            )}
                         </CardContent>
                         <CardFooter className="flex flex-col space-y-4">
                             <Button
                                 type="submit"
                                 className="w-full"
                                 disabled={isLoading}
+                                onClick={handleSubmit}
                             >
                                 {isLoading ? (
                                     <>
