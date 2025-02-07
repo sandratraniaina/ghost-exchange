@@ -1,5 +1,5 @@
 import { Tabs } from 'expo-router';
-import { Home, User, Bitcoin, History } from '@tamagui/lucide-icons';
+import { Home, User, Bitcoin, History, CreditCard } from '@tamagui/lucide-icons';
 
 export default function TabsLayout() {
     return (
@@ -23,6 +23,13 @@ export default function TabsLayout() {
                 options={{
                     tabBarIcon: ({ color }) => <History color={color} />,
                     tabBarLabel: 'History'
+                }}
+            />
+            <Tabs.Screen
+                name="fiat"
+                options={{
+                    tabBarIcon: ({ color }) => <CreditCard color={color} />,
+                    tabBarLabel: 'Fiat'
                 }}
             />
             <Tabs.Screen
