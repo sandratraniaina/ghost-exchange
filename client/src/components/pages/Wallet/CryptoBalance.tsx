@@ -66,9 +66,11 @@ const CryptoBalance: React.FC<CryptoBalanceProps> = ({ symbol, balance, currentP
                       <Input
                         type="number"
                         value={sellVolume}
+                        min={0}
                         max={balance}
                         onChange={(e) => setSellVolume(Number(e.target.value))}
                         placeholder={`Max: ${balance} ${symbol}`}
+                        className="[&:invalid]:border-red-500 [&:invalid]:text-red-600"
                       />
                     </div>
 
