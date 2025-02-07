@@ -1,4 +1,4 @@
-const validatePIN = async (pin: string,  userId: string) => {
+export const validatePIN = async (pin: string,  userId: string) => {
     try {
         const host = import.meta.env.VITE_ANONYMIZER;
         console.log("Lasa izy zay");
