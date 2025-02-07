@@ -11,4 +11,5 @@ public class SignInRequest {
     
     private String username; 
     private String email; 
+    private String pwd;
 }

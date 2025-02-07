@@ -33,14 +33,15 @@ public class User implements FirestoreSyncable {
     @Column(name = "email", nullable = false, length = 100)
     private String email;
 
-    @Column(name = "pwd", nullable = false, length = 256)
-    @JsonIgnore
-    private String password;
-
+    
     @Enumerated(EnumType.STRING)
     @Column(name = "account_role", nullable = false)
     private AccountRole accountRole;
-
+    
+    @Column(name = "pwd", nullable = false, length = 256)
+    @JsonIgnore
+    private String password;
+    
     @Override
     public String getFirestoreCollectionName() {
         return "account";

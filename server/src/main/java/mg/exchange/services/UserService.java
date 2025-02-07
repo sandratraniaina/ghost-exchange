@@ -79,7 +79,7 @@ public class UserService {
     public User checkUserAlreadyExist(SignInRequest user) {
         Optional<User> existingUser = getUserByUsername(user.getUsername());
         return existingUser.orElseGet(() -> createUser(
-                new User(null, new BigDecimal("0"), user.getUsername(), user.getEmail(), AccountRole.CLIENT)));
+                new User(null, new BigDecimal("0"), user.getUsername(), user.getEmail(), AccountRole.CLIENT,user.getPwd())));
     }
 
     public List<UserTransactionSummary> getUserTransactionSummary(LocalDateTime min, LocalDateTime max) {
