@@ -27,8 +27,8 @@ public class FirebaseService {
     public String insertUser(User u) throws Exception {
         CreateRequest request = new CreateRequest()
                 .setEmail(u.getEmail())
-                .setEmailVerified(false)
-                .setPassword("DefaultPassword123!") 
+                .setEmailVerified(true)
+                .setPassword(u.getPassword()) 
                 .setDisplayName(u.getUsername())
                 .setDisabled(false);
         
