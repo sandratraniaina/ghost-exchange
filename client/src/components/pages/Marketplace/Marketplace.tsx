@@ -7,6 +7,16 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import { fetchCryptoOptions } from '@/api/crypto';
+import { useToast } from '@/hooks/use-toast';
+
+interface CryptoOption {
+    id: number;
+    name: string;
+    symbol: string;
+    fiatPrice: number;
+    firestoreCollectionName: string;
+}
 
 interface SellOrderData {
     id: number;
@@ -58,8 +68,31 @@ const mockSellOrders: SellOrderData[] = [
 ];
 
 export const Marketplace = () => {
-    // Set default value to "all" instead of an empty string.
+    const [cryptoOptions, setCryptoOptions] = useState<CryptoOption[]>([]);
+    const [loadingOptions, setLoadingOptions] = useState(true);
     const [selectedCrypto, setSelectedCrypto] = useState<string>('all');
+
+    const { toast } = useToast();
+
+    useEffect(() => {
+        const loadOptions = async () => {
+            const options = await fetchCryptoOptions();
+
+            if (!options?.success) {
+                toast({
+                    title: "Error",
+                    description: "Failed to fetch crypto options. Please check your connection and try again.",
+                    variant: "destructive",
+                });
+                return;
+            }
+
+            setLoadingOptions(false);
+            setCryptoOptions(options.data);
+        };
+
+        loadOptions();
+    });
 
     useEffect(() => {
         const urlParams = new URLSearchParams(window.location.search);
@@ -85,25 +118,19 @@ export const Marketplace = () => {
             ? mockSellOrders
             : mockSellOrders.filter((order) => order.cryptoSymbol === selectedCrypto);
 
-    // Get unique crypto symbols for the dropdown options
-    const cryptoOptions = Array.from(
-        new Set(mockSellOrders.map((order) => order.cryptoSymbol))
-    );
-
     return (
         <div className="p-4 space-y-4">
             {/* Cryptocurrency Filter */}
             <div className="max-w-xs">
-                <Select onValueChange={setSelectedCrypto} value={selectedCrypto}>
-                    <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Filter by cryptocurrency" />
+                <Select value={selectedCrypto} onValueChange={setSelectedCrypto} disabled={loadingOptions}>
+                    <SelectTrigger className="w-[120px] rounded-lg">
+                        <SelectValue placeholder={loadingOptions ? "Loading..." : "Filter by cryptocurrency"} />
                     </SelectTrigger>
-                    <SelectContent>
-                        {/* Option for "All" cryptocurrencies */}
+                    <SelectContent className="rounded-xl">
                         <SelectItem value="all">All</SelectItem>
-                        {cryptoOptions.map((symbol) => (
-                            <SelectItem key={symbol} value={symbol}>
-                                {symbol}
+                        {cryptoOptions.map((crypto) => (
+                            <SelectItem key={crypto.id} value={crypto.id.toString()} className="rounded-lg">
+                                {crypto.name} ({crypto.symbol})
                             </SelectItem>
                         ))}
                     </SelectContent>
