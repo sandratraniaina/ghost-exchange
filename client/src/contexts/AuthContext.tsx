@@ -21,10 +21,13 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             });
 
             console.log(response);
-
+            
             const data = await response.json();
-
+            
             if (data.success) {
+                const newUser = new User();
+                newUser.id = data.data;
+                setUser(newUser);
                 return true;
             } else {
                 throw new Error(data.message);
