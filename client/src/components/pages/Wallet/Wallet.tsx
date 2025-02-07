@@ -29,7 +29,11 @@ interface WalletItem {
 }
 
 export const Wallet = () => {
-    const [cryptoData, setCryptoData] = useState<CryptoData[]>([]);
+    const [cryptoData, setCryptoData] = useState<CryptoData[]>(Array(5).fill({
+        symbol: "",
+        balance: 0,
+        currentPrice: 0,
+    }));
     const [loading, setLoading] = useState(true);
 
     const { user } = useAuth();
@@ -37,6 +41,7 @@ export const Wallet = () => {
 
     useEffect(() => {
         const fetchWalletData = async () => {
+            setLoading(true);
             const response = await getUserWallet(parseInt(user.id));
 
             if (!response?.success) {
@@ -56,23 +61,25 @@ export const Wallet = () => {
             }));
 
             setCryptoData(mappedData);
+            setLoading(false);
         };
 
-        setLoading(true);
         fetchWalletData();
-        setLoading(false);
     }, [user.id, toast]);
 
     return (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4">
-            {cryptoData.map((crypto) => (
-                <CryptoBalance
-                    key={crypto.symbol}
-                    symbol={crypto.symbol}
-                    balance={crypto.balance}
-                    currentPrice={crypto.currentPrice}
-                />
-            ))}
+            {
+                cryptoData.map((crypto) => (
+                    <CryptoBalance
+                        key={crypto.symbol}
+                        symbol={crypto.symbol}
+                        balance={crypto.balance}
+                        currentPrice={crypto.currentPrice}
+                        isLoading={loading}
+                    />
+                ))
+            }
         </div>
     );
 }
