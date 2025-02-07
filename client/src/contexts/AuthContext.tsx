@@ -11,7 +11,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const login = async (email: string, password: string) => {
         // Mock successful API login
         await new Promise(resolve => setTimeout(resolve, 1000));
-        
         // Create a new User instance with the provided email
         const mockUser = new User();
         mockUser.email = email;

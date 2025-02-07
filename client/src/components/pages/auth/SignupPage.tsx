@@ -70,16 +70,22 @@ export const SignupPage = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!validateForm()) return;
+        if (!auth) {
+            setError('Authentication context not available');
+            return;
+        }
 
         setIsLoading(true);
         setError(null);
 
         try {
-            // Mock sending verification email
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            console.log("Hello");
+            console.log(formData);
+            await auth.signup(formData);
             setShowValidationDialog(true);
+
         } catch (err) {
-            setError(err instanceof Error ? err.message : 'Failed to create account');
+            setError(err.message);
         } finally {
             setIsLoading(false);
         }
@@ -107,11 +113,6 @@ export const SignupPage = () => {
                     </CardHeader>
                     <form onSubmit={handleSubmit}>
                         <CardContent className="space-y-4">
-                            {error && (
-                                <Alert variant="destructive">
-                                    <AlertDescription>{error}</AlertDescription>
-                                </Alert>
-                            )}
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <label htmlFor="firstName" className="text-sm font-medium">
