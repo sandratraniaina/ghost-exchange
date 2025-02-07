@@ -11,6 +11,11 @@ export const fetchCryptoOptions = async () => {
     const url = `http://${apiHost}${uri}`;
 
     const response = await axios.get(url);
+
+    if (response.status !== 200) {
+      return null;
+    }
+
     return response.data.json();
 
   } catch (error) {
