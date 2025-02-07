@@ -27,7 +27,6 @@ import {
 interface PriceData {
   date: string;
   price: number;
-  volume: number;
 }
 
 interface CryptoOption {
@@ -35,15 +34,10 @@ interface CryptoOption {
   name: string;
   symbol: string;
   basePrice: number;
-  baseVolume: number;
 }
 
 interface ChartDataConfig extends ChartConfig {
   price: {
-    label: string;
-    color: string;
-  };
-  volume: {
     label: string;
     color: string;
   };
@@ -56,9 +50,9 @@ const fetchCryptoOptions = async (): Promise<CryptoOption[]> => {
   await new Promise(resolve => setTimeout(resolve, 300));
 
   return [
-    { id: "bitcoin", name: "Bitcoin", symbol: "BTC", basePrice: 52000, baseVolume: 28000 },
-    { id: "ethereum", name: "Ethereum", symbol: "ETH", basePrice: 3000, baseVolume: 15000 },
-    { id: "solana", name: "Solana", symbol: "SOL", basePrice: 120, baseVolume: 8000 },
+    { id: "bitcoin", name: "Bitcoin", symbol: "BTC", basePrice: 52000 },
+    { id: "ethereum", name: "Ethereum", symbol: "ETH", basePrice: 3000 },
+    { id: "solana", name: "Solana", symbol: "SOL", basePrice: 120 },
   ];
 };
 
@@ -75,23 +69,19 @@ const fetchCryptoData = async (cryptoId: string, timeRange: TimeRange): Promise<
   const minutesToGenerate = timeRange === "15m" ? 15 : timeRange === "10m" ? 10 : 5;
 
   let basePrice = crypto.basePrice;
-  let baseVolume = crypto.baseVolume;
 
   for (let i = minutesToGenerate; i >= 0; i--) {
     const date = new Date(endDate);
     date.setMinutes(date.getMinutes() - i); // Use setMinutes
 
     const randomPrice = basePrice * (1 + (Math.random() - 0.5) * 0.02);
-    const randomVolume = baseVolume * (1 + (Math.random() - 0.5) * 0.1);
 
     data.push({
       date: date.toISOString().split('T')[0] + " " + date.toTimeString().slice(0, 5), // Include time
-      price: Math.round(randomPrice),
-      volume: Math.round(randomVolume)
+      price: Math.round(randomPrice)
     });
 
     basePrice *= (1 + (Math.random() - 0.5) * 0.01);
-    baseVolume *= (1 + (Math.random() - 0.5) * 0.01);
   }
 
   return data;
@@ -102,10 +92,6 @@ const chartConfig: ChartDataConfig = {
   price: {
     label: "Price",
     color: "hsl(var(--chart-1))"
-  },
-  volume: {
-    label: "Volume",
-    color: "hsl(var(--chart-2))"
   }
 };
 
@@ -164,9 +150,9 @@ const CryptoChart: React.FC = () => {
 
   const formatYAxis = (value: number) => {
     if (value >= 1000) {
-      return `$${(value / 1000).toFixed(1)}k`;
+      return `$${(value / 1000).toFixed(1)} k`;
     }
-    return `$${value}`;
+    return `$${value} `;
   };
 
 
@@ -177,7 +163,7 @@ const CryptoChart: React.FC = () => {
           <CardTitle>Cryptocurrency Price Chart</CardTitle>
 
           <CardDescription>
-            {selectedCrypto ? `Showing price and volume data for ${selectedCrypto.name} (${selectedCrypto.symbol})` : 'Loading...'}
+            {selectedCrypto ? `Showing price data for ${selectedCrypto.name}(${selectedCrypto.symbol})` : 'Loading...'}
           </CardDescription>
         </div>
 
@@ -221,13 +207,6 @@ const CryptoChart: React.FC = () => {
             className="aspect-auto h-[250px] w-full"
           >
             <AreaChart data={chartData}>
-              <defs>
-                <linearGradient id="fillVolume" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="var(--color-volume)" stopOpacity={0.8} />
-                  <stop offset="95%" stopColor="var(--color-volume)" stopOpacity={0.1} />
-                </linearGradient>
-              </defs>
-
               <CartesianGrid vertical={false} />
 
               <XAxis
@@ -270,10 +249,9 @@ const CryptoChart: React.FC = () => {
               />
 
               <Area
-                dataKey="volume"
+                dataKey="price"
                 type="natural"
-                fill="url(#fillVolume)"
-                stroke="var(--color-volume)"
+                stroke="var(--color-price)"
                 yAxisId="price"
               />
 
