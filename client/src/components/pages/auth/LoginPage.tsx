@@ -22,8 +22,8 @@ export const LoginPage = () => {
     const [error, setError] = useState<string | null>(null);
     const [showPinValidation, setShowPinValidation] = useState(false);
     const [formData, setFormData] = useState<LoginFormData>({
-        email: '',
-        password: ''
+        email: 'sandratra2468@gmail.com',
+        password: 'Here is a 8 letters pwd'
     });
 
     const from = location.state?.from?.pathname || '/';
