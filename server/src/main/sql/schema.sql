@@ -8,17 +8,11 @@ CREATE TYPE transaction_type AS ENUM (
    'REFUND'  
 );
 
-CREATE TYPE account_role AS ENUM (
-  'CLIENT',
-  'ADMIN'
-);
-
 CREATE TABLE account(
   id serial NOT NULL,
   fiat_balance numeric(18, 2) NOT NULL,
   username varchar(100) NOT NULL UNIQUE,
   email varchar(100) NOT NULL,
-  account_role account_role NOT NULL,
   CONSTRAINT account_pkey PRIMARY KEY(id)
 );
 
@@ -35,6 +29,14 @@ CREATE TABLE cryptocurrency(
   symbol varchar(3) NOT NULL,
   fiat_price numeric(18, 2) NOT NULL,
   CONSTRAINT cryptocurrency_pkey PRIMARY KEY(id)
+);
+
+CREATE TABLE cryptocurrency_favorite(
+  id integer NOT NULL,
+  add_timestamp timestamp,
+  account_id integer NOT NULL,
+  cryptocurrency_id integer NOT NULL,
+  CONSTRAINT cryptocurrency_favorite_pkey PRIMARY KEY(id)
 );
 
 CREATE TABLE cryptocurrency_wallet(
@@ -114,4 +116,12 @@ ALTER TABLE cryptocurrency_wallet
 
 ALTER TABLE xe_history
   ADD CONSTRAINT xe_history_cryptocurrency_id_fkey
+    FOREIGN KEY (cryptocurrency_id) REFERENCES cryptocurrency (id);
+
+ALTER TABLE cryptocurrency_favorite
+  ADD CONSTRAINT cryptocurrency_favorite_account_id_fkey
+    FOREIGN KEY (account_id) REFERENCES account (id);
+
+ALTER TABLE cryptocurrency_favorite
+  ADD CONSTRAINT cryptocurrency_favorite_cryptocurrency_id_fkey
     FOREIGN KEY (cryptocurrency_id) REFERENCES cryptocurrency (id);
