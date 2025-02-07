@@ -55,8 +55,6 @@ export const LoginPage = () => {
     const handlePinSuccess = async () => {
         setIsLoading(true);
         try {
-            // Only create the user after successful PIN validation
-            await login(formData.email, formData.password);
             navigate(from, { replace: true });
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Failed to login');
