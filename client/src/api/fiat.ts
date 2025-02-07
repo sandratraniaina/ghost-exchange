@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-export const createTransaction = async (amount: number, transactionType: string) => {
+export const createTransaction = async (userId: number, amount: number, transactionType: string) => {
   try {
     const apiHost = import.meta.env.VITE_API_HOST;
 
@@ -17,7 +17,7 @@ export const createTransaction = async (amount: number, transactionType: string)
 
     const requestBody = {
         "user":{
-            "id":1
+            "id": userId
         },
         "amount": amount,
         "transactionType": transactionType
