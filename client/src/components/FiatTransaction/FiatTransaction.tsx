@@ -6,33 +6,31 @@ import TransactionDialog from './TransactionDialog';
 interface FiatTransactionProps {
   balance?: number;
   currency?: string;
-  onDeposit?: (amount: number, method: string) => void;
-  onWithdraw?: (amount: number, method: string) => void;
+  onDeposit?: (amount: number, transactionType: string) => void;
+  onWithdraw?: (amount: number, transactionType: string) => void;
 }
 
-const FiatTransaction: React.FC<FiatTransactionProps> = ({ 
+const FiatTransaction: React.FC<FiatTransactionProps> = ({
   balance = 150000.00,
   currency = 'MGA',
-  onDeposit = (amount: number, method: string) => console.log('Deposit:', amount, method),
-  onWithdraw = (amount: number, method: string) => console.log('Withdraw:', amount, method)
+  onDeposit = (amount: number, transactionType: string) => console.log(`Transaction (${transactionType}): ${amount}`),
+  onWithdraw = (amount: number, transactionType: string) => console.log(`Transaction (${transactionType}): ${amount}`)
 }) => {
   const [isDepositOpen, setIsDepositOpen] = useState(false);
   const [isWithdrawOpen, setIsWithdrawOpen] = useState(false);
   const [amount, setAmount] = useState('');
-  const [method, setMethod] = useState('');
 
   const handleTransaction = (type: 'deposit' | 'withdraw') => {
-    // TODO: Implement handleTransaction
+    // TODO: Replace with API call in production
     const numAmount = parseFloat(amount);
-    
+
     if (type === 'deposit') {
-      onDeposit(numAmount, method);
+      onDeposit(numAmount, "DEPOSIT");
     } else {
-      onWithdraw(numAmount, method);
+      onWithdraw(numAmount, "WITHDRAW");
     }
-    
+
     setAmount('');
-    setMethod('');
     setIsDepositOpen(false);
     setIsWithdrawOpen(false);
   };
@@ -47,7 +45,7 @@ const FiatTransaction: React.FC<FiatTransactionProps> = ({
         <div className="space-y-4">
           <div>
             <div className="text-sm text-gray-500">Available {currency}</div>
-            
+
             <div className="text-2xl font-bold">
               {new Intl.NumberFormat('en-US', {
                 style: 'currency',
@@ -57,15 +55,15 @@ const FiatTransaction: React.FC<FiatTransactionProps> = ({
           </div>
 
           <div className="flex space-x-2">
-            <Button 
-              className="flex-1" 
+            <Button
+              className="flex-1"
               onClick={() => setIsDepositOpen(true)}
             >
               Deposit
             </Button>
 
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               className="flex-1"
               onClick={() => setIsWithdrawOpen(true)}
             >
@@ -74,25 +72,21 @@ const FiatTransaction: React.FC<FiatTransactionProps> = ({
           </div>
         </div>
 
-        <TransactionDialog 
+        <TransactionDialog
           isOpen={isDepositOpen}
           setIsOpen={setIsDepositOpen}
-          type="deposit"
+          type="DEPOSIT"
           onAmountChange={setAmount}
-          onMethodChange={setMethod}
           amount={amount}
-          method={method}
           onSubmit={() => handleTransaction('deposit')}
         />
-        
-        <TransactionDialog 
+
+        <TransactionDialog
           isOpen={isWithdrawOpen}
           setIsOpen={setIsWithdrawOpen}
-          type="withdraw"
+          type="WITHDRAW"
           onAmountChange={setAmount}
-          onMethodChange={setMethod}
           amount={amount}
-          method={method}
           onSubmit={() => handleTransaction('withdraw')}
         />
       </CardContent>
