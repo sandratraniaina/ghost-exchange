@@ -37,6 +37,7 @@ export const Wallet = () => {
         currentPrice: 0,
     }));
     const [loading, setLoading] = useState(true);
+    const [refetchTrigger, setRefetchTrigger] = useState(0);
 
     const { user } = useAuth();
     const { toast } = useToast();
@@ -68,7 +69,11 @@ export const Wallet = () => {
         };
 
         fetchWalletData();
-    }, [user.id, toast]);
+    }, [user?.id, toast, refetchTrigger]);
+
+    const handleSellSuccess = () => {
+        setRefetchTrigger(prev => prev + 1);
+    };
 
     return (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4">
@@ -76,13 +81,9 @@ export const Wallet = () => {
                 cryptoData.map((crypto) => (
                     <CryptoBalance
                         key={crypto.symbol || uuidv4()}
-                        crypto={{
-                            id: crypto.id,
-                            symbol: crypto.symbol,
-                            balance: crypto.balance,
-                            currentPrice: crypto.currentPrice
-                        }}
+                        crypto={crypto}
                         isLoading={loading}
+                        onSellSuccess={handleSellSuccess}
                     />
                 ))
             }

@@ -20,9 +20,10 @@ interface CryptoData {
 interface CryptoBalanceProps {
   crypto: CryptoData;
   isLoading: boolean;
+  onSellSuccess: () => void;
 }
 
-const CryptoBalance: React.FC<CryptoBalanceProps> = ({ crypto, isLoading }) => {
+const CryptoBalance: React.FC<CryptoBalanceProps> = ({ crypto, isLoading, onSellSuccess }) => {
   const [sellVolume, setSellVolume] = useState<number>(0);
   const [loading, setLoading] = useState(false);
   const isVolumeValid = sellVolume >= 0 && sellVolume <= crypto.balance;
@@ -50,6 +51,7 @@ const CryptoBalance: React.FC<CryptoBalanceProps> = ({ crypto, isLoading }) => {
         description: "Cryptocurrency sold successfully!",
         className: "bg-green-600 text-white"
       });
+      onSellSuccess();
     }
 
     setSellVolume(0);
