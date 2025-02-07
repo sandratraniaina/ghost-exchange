@@ -6,6 +6,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 
 interface CryptoData {
+    id: number;
     symbol: string;
     balance: number;
     currentPrice: number;
@@ -43,7 +44,7 @@ export const Wallet = () => {
     useEffect(() => {
         const fetchWalletData = async () => {
             setLoading(true);
-            const response = await getUserWallet(parseInt(user.id));
+            const response = await getUserWallet(parseInt("1"));
 
             if (!response?.success) {
                 toast({
@@ -56,6 +57,7 @@ export const Wallet = () => {
 
             // Remap the response to CryptoData[]
             const mappedData: CryptoData[] = response.data.map((item: WalletItem) => ({
+                id: item.cryptocurrency.id,
                 symbol: item.cryptocurrency.symbol,
                 balance: item.balance,
                 currentPrice: item.cryptocurrency.fiatPrice,
@@ -74,9 +76,12 @@ export const Wallet = () => {
                 cryptoData.map((crypto) => (
                     <CryptoBalance
                         key={crypto.symbol || uuidv4()}
-                        symbol={crypto.symbol}
-                        balance={crypto.balance}
-                        currentPrice={crypto.currentPrice}
+                        crypto={{
+                            id: crypto.id,
+                            symbol: crypto.symbol,
+                            balance: crypto.balance,
+                            currentPrice: crypto.currentPrice
+                        }}
                         isLoading={loading}
                     />
                 ))
