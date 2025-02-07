@@ -80,7 +80,7 @@ const CryptoChart: React.FC = () => {
   const chartConfig: ChartDataConfig = {
     price: {
       label: "Price",
-      color: "hsl(var(--chart-1))",
+      color: "hsl(232 47% 38%)"
     },
   };
 
