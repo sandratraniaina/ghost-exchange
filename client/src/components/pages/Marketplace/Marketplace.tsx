@@ -108,7 +108,6 @@ export const Marketplace = () => {
         }
     }, []);
 
-    // Filter orders: if "all" is selected, show all orders.
     const filteredSellOrders =
         selectedCrypto === 'all'
             ? sellOrders
@@ -116,7 +115,6 @@ export const Marketplace = () => {
 
     return (
         <div className="p-4 space-y-4">
-            {/* Cryptocurrency Filter */}
             <div className="max-w-xs">
                 <Select value={selectedCrypto} onValueChange={setSelectedCrypto} disabled={loadingOptions}>
                     <SelectTrigger className="w-[120px] rounded-lg">
@@ -125,7 +123,7 @@ export const Marketplace = () => {
                     <SelectContent className="rounded-xl">
                         <SelectItem value="all">All</SelectItem>
                         {cryptoOptions.map((crypto) => (
-                            <SelectItem key={crypto.id} value={crypto.id.toString()} className="rounded-lg">
+                            <SelectItem key={crypto.id} value={crypto.symbol} className="rounded-lg">
                                 {crypto.name} ({crypto.symbol})
                             </SelectItem>
                         ))}
@@ -133,7 +131,6 @@ export const Marketplace = () => {
                 </Select>
             </div>
 
-            {/* Sell Orders Grid */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {filteredSellOrders.length > 0 ? (
                     filteredSellOrders.map((order) => (
