@@ -78,6 +78,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             value={{
                 isAuthenticated: !!user,
                 user: (user != null) ? user : new User(),
+                setUser,
                 login,
                 signup,
                 logout

@@ -12,6 +12,7 @@ export class User {
 export interface AuthContextType {
     isAuthenticated: boolean;
     user: User;
+    setUser: (user: User) => void;
     login: (email: string, password: string) => Promise<boolean>;
     signup: (user: SignupFormData) => Promise<boolean>;
     logout: () => void;
