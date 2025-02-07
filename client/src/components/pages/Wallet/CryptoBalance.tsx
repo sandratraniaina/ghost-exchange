@@ -65,6 +65,7 @@ const CryptoBalance: React.FC<CryptoBalanceProps> = ({ symbol, balance, currentP
                       <Label>Volume</Label>
                       <Input
                         type="number"
+                        step="any"
                         value={sellVolume}
                         min={0}
                         max={balance}
