@@ -3,17 +3,26 @@ package mg.exchange.services;
 import mg.exchange.models.Cryptocurrency;
 import mg.exchange.repository.CryptocurrencyRepository;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor
 public class CryptocurrencyService {
 
     private final CryptocurrencyRepository cryptocurrencyRepository;
     private final FirestoreService firestoreService;
+
+    @Autowired
+    public CryptocurrencyService(CryptocurrencyRepository cryptocurrencyRepository, FirestoreService firestoreService) {
+        this.cryptocurrencyRepository = cryptocurrencyRepository;
+        this.firestoreService = firestoreService;
+    }
+
+    
 
     public List<Cryptocurrency> getAllCryptocurrencies() {
         return cryptocurrencyRepository.findAll();

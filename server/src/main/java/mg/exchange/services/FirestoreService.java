@@ -85,7 +85,7 @@ public class FirestoreService {
         }
     }
 
-    private void listenToFirestoreChanges() {
+    public void listenToFirestoreChanges() {
         listenToCollectionChanges("cryptocurrency", Cryptocurrency.class, cryptocurrencyRepository);
         listenToCollectionChanges("xe_history", XeHistory.class, xeHistoryRepository);
         listenToCollectionChanges("transaction", Transaction.class, transactionRepository);
