@@ -5,10 +5,10 @@ export default function TabsLayout() {
     return (
         <Tabs screenOptions={{ headerShown: false }}>
             <Tabs.Screen
-                name="index"
+                name="history"
                 options={{
-                    tabBarIcon: ({ color }) => <Home color={color} />,
-                    tabBarLabel: 'Home'
+                    tabBarIcon: ({ color }) => <History color={color} />,
+                    tabBarLabel: 'History'
                 }}
             />
             <Tabs.Screen
@@ -19,10 +19,10 @@ export default function TabsLayout() {
                 }}
             />
             <Tabs.Screen
-                name="history"
+                name="index"
                 options={{
-                    tabBarIcon: ({ color }) => <History color={color} />,
-                    tabBarLabel: 'History'
+                    tabBarIcon: ({ color }) => <Home color={color} />,
+                    tabBarLabel: 'Home'
                 }}
             />
             <Tabs.Screen
