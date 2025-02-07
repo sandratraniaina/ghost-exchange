@@ -2,10 +2,8 @@ SET check_function_bodies = false
 ;
 
 CREATE TYPE transaction_type AS ENUM (
-   'DEBIT',   
-   'CREDIT',  
-   'TRANSFER',
-   'REFUND'  
+   'DEPOSIT',
+    'WITHDRAW',
 );
 
 CREATE TABLE account(
