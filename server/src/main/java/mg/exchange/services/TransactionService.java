@@ -8,6 +8,8 @@ import mg.exchange.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.firebase.messaging.FirebaseMessagingException;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -20,8 +22,13 @@ public class TransactionService {
     private final TransactionRepository transactionRepository;
     @Autowired
     private UserService userService;
+
     @Autowired
     private FirestoreService firestoreService;
+
+    @Autowired
+    private FirebaseService firebaseService;
+
 
     public List<Transaction> getAllTransactions() {
         return transactionRepository.findAll();
@@ -67,11 +74,20 @@ public class TransactionService {
         transactionRepository.deleteById(id);
     }
 
-    public Transaction validateTransaction(Long id) {
+    public Transaction validateTransaction(Long id) throws Exception{
         Transaction transaction = transactionRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Transaction not found"));
         transaction.setValidationTimestamp(LocalDate.now().atStartOfDay());
         updateTransaction(id, transaction);
+        try {
+            firebaseService.sendNotification(
+                    "Transaction valider",
+                    "Votre " + transaction.getTransactionType().toString().toLowerCase()+ " a été validé par l'admin avec succès. Transaction N:"+transaction.getId(),
+                    ""
+            );
+        } catch (FirebaseMessagingException e) {
+            throw e;
+        }
         return transaction;
     }
 

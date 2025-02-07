@@ -11,7 +11,7 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class FirebaseNotificationService {
+public class FirebaseService {
     private final FirebaseMessaging firebaseMessaging;
 
     public String sendNotification(String title, String body, String token) throws FirebaseMessagingException {
