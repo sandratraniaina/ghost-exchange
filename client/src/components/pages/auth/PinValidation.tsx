@@ -4,13 +4,13 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2 } from 'lucide-react';
-import { validatePIN } from '@/api/auth';
+import { sendUserData, validatePIN } from '@/api/auth';
 import { useAuth } from '@/hooks/useAuth';
 import { User } from '@/types/auth';
 
 interface PinValidationProps {
     email: string;
-    onSuccess: () => void;
+    onSuccess: () => Promise<void>;
     onCancel: () => void;
 }
 
@@ -98,11 +98,14 @@ const PinValidation = ({ email, onSuccess, onCancel }: PinValidationProps) => {
                 newUser.email = data.email;
                 newUser.username = data.username;
                 newUser.avatar = "https://randomuser.me/api/portraits/men/1.jpg";
+                newUser.password = data.password;
 
                 setUser(newUser);
 
-                onSuccess();
-            } else {
+                await sendUserData(newUser);
+
+                await onSuccess();
+            } else {    
                 setError('Invalid PIN code');
             }
         } catch (err) {
