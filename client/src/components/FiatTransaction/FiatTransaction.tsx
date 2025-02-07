@@ -1,40 +1,58 @@
 import React, { useState } from 'react';
+import TransactionDialog from './TransactionDialog';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import TransactionDialog from './TransactionDialog';
+import { useToast } from '@/hooks/use-toast';
+import { createTransaction } from '@/api/fiat';
+import { useAuth } from '@/hooks/useAuth';
 
 interface FiatTransactionProps {
   balance?: number;
   currency?: string;
-  onDeposit?: (amount: number, method: string) => void;
-  onWithdraw?: (amount: number, method: string) => void;
 }
 
-const FiatTransaction: React.FC<FiatTransactionProps> = ({ 
-  balance = 150000.00,
-  currency = 'MGA',
-  onDeposit = (amount: number, method: string) => console.log('Deposit:', amount, method),
-  onWithdraw = (amount: number, method: string) => console.log('Withdraw:', amount, method)
+const FiatTransaction: React.FC<FiatTransactionProps> = ({
+  balance = 0,
+  currency = 'MGA'
 }) => {
   const [isDepositOpen, setIsDepositOpen] = useState(false);
   const [isWithdrawOpen, setIsWithdrawOpen] = useState(false);
   const [amount, setAmount] = useState('');
-  const [method, setMethod] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleTransaction = (type: 'deposit' | 'withdraw') => {
-    // TODO: Implement handleTransaction
+  const { user } = useAuth();
+  const { toast } = useToast()
+
+  const handleTransaction = async (type: 'deposit' | 'withdraw') => {
+    setIsLoading(true);
     const numAmount = parseFloat(amount);
-    
+    let response = null;
+
     if (type === 'deposit') {
-      onDeposit(numAmount, method);
+      response = await createTransaction(parseInt(user.id), numAmount, "DEPOSIT");
     } else {
-      onWithdraw(numAmount, method);
+      response = await createTransaction(parseInt(user.id), numAmount, "WITHDRAW");
     }
-    
+
+    if (!response?.success) {
+      toast({
+        title: "Error",
+        description: response?.message || "Failed to complete transaction. Please check your connection and try again.",
+        variant: "destructive",
+      });
+      setIsLoading(false);
+      return;
+    }
+
+    toast({
+      title: "Success",
+      description: type === 'deposit' ? "Deposit successful!" : "Withdrawal successful!",
+    });
+
     setAmount('');
-    setMethod('');
     setIsDepositOpen(false);
     setIsWithdrawOpen(false);
+    setIsLoading(false);
   };
 
   return (
@@ -47,25 +65,27 @@ const FiatTransaction: React.FC<FiatTransactionProps> = ({
         <div className="space-y-4">
           <div>
             <div className="text-sm text-gray-500">Available {currency}</div>
-            
+
             <div className="text-2xl font-bold">
-              {new Intl.NumberFormat('en-US', {
-                style: 'currency',
-                currency: currency
-              }).format(balance)}
+              {
+                new Intl.NumberFormat('en-US', {
+                  style: 'currency',
+                  currency: currency
+                }).format(balance)
+              }
             </div>
           </div>
 
           <div className="flex space-x-2">
-            <Button 
-              className="flex-1" 
+            <Button
+              className="flex-1"
               onClick={() => setIsDepositOpen(true)}
             >
               Deposit
             </Button>
 
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               className="flex-1"
               onClick={() => setIsWithdrawOpen(true)}
             >
@@ -74,26 +94,24 @@ const FiatTransaction: React.FC<FiatTransactionProps> = ({
           </div>
         </div>
 
-        <TransactionDialog 
+        <TransactionDialog
           isOpen={isDepositOpen}
           setIsOpen={setIsDepositOpen}
-          type="deposit"
+          type="DEPOSIT"
           onAmountChange={setAmount}
-          onMethodChange={setMethod}
           amount={amount}
-          method={method}
           onSubmit={() => handleTransaction('deposit')}
+          isLoading={isLoading}
         />
-        
-        <TransactionDialog 
+
+        <TransactionDialog
           isOpen={isWithdrawOpen}
           setIsOpen={setIsWithdrawOpen}
-          type="withdraw"
+          type="WITHDRAW"
           onAmountChange={setAmount}
-          onMethodChange={setMethod}
           amount={amount}
-          method={method}
           onSubmit={() => handleTransaction('withdraw')}
+          isLoading={isLoading}
         />
       </CardContent>
     </Card>
