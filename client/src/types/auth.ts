@@ -1,4 +1,5 @@
 import { SignupFormData } from "@/components/pages/auth/SignupPage";
+import React from "react";
 
 export class User {
     id: string = "1";
@@ -12,7 +13,7 @@ export class User {
 export interface AuthContextType {
     isAuthenticated: boolean;
     user: User;
-    setUser: (user: User) => void;
+    setUser: (user: React.SetStateAction<User | null>) => void;
     login: (email: string, password: string) => Promise<boolean>;
     signup: (user: SignupFormData) => Promise<boolean>;
     logout: () => void;

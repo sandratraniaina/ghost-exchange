@@ -6,6 +6,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2 } from 'lucide-react';
 import { validatePIN } from '@/api/auth';
 import { useAuth } from '@/hooks/useAuth';
+import { User } from '@/types/auth';
 
 interface PinValidationProps {
     email: string;
@@ -19,7 +20,7 @@ const PinValidation = ({ email, onSuccess, onCancel }: PinValidationProps) => {
     const [error, setError] = useState<string | null>(null);
     const [timeLeft, setTimeLeft] = useState(90); // 5 minutes in seconds
 
-    const { user } = useAuth();
+    const { user, setUser } = useAuth();
 
     useEffect(() => {
         const timer = setInterval(() => {
@@ -90,6 +91,16 @@ const PinValidation = ({ email, onSuccess, onCancel }: PinValidationProps) => {
             const result = await validatePIN(pin, user.id);
 
             if (result) {
+                const data = result.data.user;
+                const newUser = new User();
+
+                newUser.id = data.account_id;
+                newUser.email = data.email;
+                newUser.username = data.username;
+                newUser.avatar = "https://randomuser.me/api/portraits/men/1.jpg";
+
+                setUser(newUser);
+
                 onSuccess();
             } else {
                 setError('Invalid PIN code');
