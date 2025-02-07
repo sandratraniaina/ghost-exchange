@@ -2,37 +2,46 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import TransactionDialog from './TransactionDialog';
+import { delay } from '@/utils/loading';
 
 interface FiatTransactionProps {
   balance?: number;
   currency?: string;
-  onDeposit?: (amount: number, transactionType: string) => void;
-  onWithdraw?: (amount: number, transactionType: string) => void;
+  onDeposit?: (amount: number, transactionType: string) => Promise<void>;
+  onWithdraw?: (amount: number, transactionType: string) => Promise<void>;
 }
 
 const FiatTransaction: React.FC<FiatTransactionProps> = ({
-  balance = 150000.00,
+  balance = 0,
   currency = 'MGA',
-  onDeposit = (amount: number, transactionType: string) => console.log(`Transaction (${transactionType}): ${amount}`),
-  onWithdraw = (amount: number, transactionType: string) => console.log(`Transaction (${transactionType}): ${amount}`)
+  onDeposit = async (amount: number, transactionType: string) => {
+    console.log(`Transaction (${transactionType}): ${amount}`);
+    await delay(1000);
+  },
+  onWithdraw = async (amount: number, transactionType: string) => {
+    console.log(`Transaction (${transactionType}): ${amount}`);
+    await delay(1000);
+  },
 }) => {
   const [isDepositOpen, setIsDepositOpen] = useState(false);
   const [isWithdrawOpen, setIsWithdrawOpen] = useState(false);
   const [amount, setAmount] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleTransaction = (type: 'deposit' | 'withdraw') => {
-    // TODO: Replace with API call in production
+  const handleTransaction = async (type: 'deposit' | 'withdraw') => {
+    setIsLoading(true);
     const numAmount = parseFloat(amount);
 
     if (type === 'deposit') {
-      onDeposit(numAmount, "DEPOSIT");
+      await onDeposit(numAmount, "DEPOSIT");
     } else {
-      onWithdraw(numAmount, "WITHDRAW");
+      await onWithdraw(numAmount, "WITHDRAW");
     }
 
     setAmount('');
     setIsDepositOpen(false);
     setIsWithdrawOpen(false);
+    setIsLoading(false);
   };
 
   return (
@@ -79,6 +88,7 @@ const FiatTransaction: React.FC<FiatTransactionProps> = ({
           onAmountChange={setAmount}
           amount={amount}
           onSubmit={() => handleTransaction('deposit')}
+          isLoading={isLoading}
         />
 
         <TransactionDialog
@@ -88,6 +98,7 @@ const FiatTransaction: React.FC<FiatTransactionProps> = ({
           onAmountChange={setAmount}
           amount={amount}
           onSubmit={() => handleTransaction('withdraw')}
+          isLoading={isLoading}
         />
       </CardContent>
     </Card>

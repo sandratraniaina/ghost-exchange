@@ -8,6 +8,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { cn } from "@/lib/utils";
 
 interface TransactionDialogProps {
   isOpen: boolean;
@@ -16,6 +17,7 @@ interface TransactionDialogProps {
   onAmountChange: (value: string) => void;
   amount: string;
   onSubmit: () => void;
+  isLoading: boolean;
 }
 
 const TransactionDialog: React.FC<TransactionDialogProps> = ({
@@ -24,7 +26,8 @@ const TransactionDialog: React.FC<TransactionDialogProps> = ({
   type,
   onAmountChange,
   amount,
-  onSubmit
+  onSubmit,
+  isLoading,
 }) => (
   <Dialog open={isOpen} onOpenChange={setIsOpen}>
     <DialogContent className="sm:max-w-md">
@@ -54,11 +57,35 @@ const TransactionDialog: React.FC<TransactionDialogProps> = ({
         </div>
 
         <Button
-          className="w-full"
+          className="w-full relative flex items-center justify-center"
           onClick={onSubmit}
-          disabled={!amount}
+          disabled={!amount || isLoading}
         >
-          {type === 'DEPOSIT' ? 'Deposit' : 'Withdraw'}
+          {isLoading && (
+            <svg
+              className="animate-spin h-5 w-5 text-white absolute"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                className="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="4"
+              />
+              <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c3.042 0 5.61 2.185 6.291 5.291l.33 1.005A8.002 8.002 0 0112 20v-2.001c.47-.001.933-.017 1.404-.052A8.005 8.005 0 0120 12a8 8 0 01-8-8V4a8 8 0 01-7.995 7.995L12 17.291z"
+              />
+            </svg>
+          )}
+          <span className={cn(isLoading && "opacity-0")}>
+            {type === 'DEPOSIT' ? 'Deposit' : 'Withdraw'}
+          </span>
         </Button>
       </div>
     </DialogContent>
