@@ -2,9 +2,9 @@ import axios from 'axios';
 
 export const fetchCryptoOptions = async () => {
   try {
-    const apiHost = process.env.REACT_APP_API_HOST;
+    const apiHost = import.meta.env.VITE_API_HOST;
     if (!apiHost) {
-      throw new Error('REACT_APP_API_HOST environment variable is not defined.');
+      throw new Error('VITE_API_HOST environment variable is not defined.');
     }
 
     const uri = '/cryptocurrencies';
