@@ -10,6 +10,24 @@ interface CryptoData {
     currentPrice: number;
 }
 
+interface WalletItem {
+    id: number;
+    user: {
+        id: number;
+        fiatBalance: number;
+        username: string;
+        email: string;
+        accountRole: string;
+    };
+    cryptocurrency: {
+        id: number;
+        name: string;
+        symbol: string;
+        fiatPrice: number;
+    };
+    balance: number;
+}
+
 export const Wallet = () => {
     const [cryptoData, setCryptoData] = useState<CryptoData[]>([]);
     const [loading, setLoading] = useState(true);
@@ -30,7 +48,14 @@ export const Wallet = () => {
                 return;
             }
 
-            setCryptoData(response);
+            // Remap the response to CryptoData[]
+            const mappedData: CryptoData[] = response.data.map((item: WalletItem) => ({
+                symbol: item.cryptocurrency.symbol,
+                balance: item.balance,
+                currentPrice: item.cryptocurrency.fiatPrice,
+            }));
+
+            setCryptoData(mappedData);
         };
 
         setLoading(true);
