@@ -25,6 +25,7 @@ public class SellOrderService {
     private final CommissionService commissionService;
     private final CryptocurrencyService cryptocurrencyService;
     private final CryptocurrencyWalletService cryptocurrencyWalletService;
+    private final FirestoreService firestoreService;
 
     public List<SellOrder> getAllSellOrders() {
         return sellOrderRepository.findAll();
@@ -46,7 +47,9 @@ public class SellOrderService {
 
         sellOrder.setSeller(seller);
         sellOrder.setCryptocurrency(cryptocurrency);
-        return sellOrderRepository.save(sellOrder);
+        SellOrder sellOrderSaved = sellOrderRepository.save(sellOrder);
+        firestoreService.syncToFirestore(sellOrderSaved);
+        return sellOrderSaved;
     }
 
     public SellOrder updateSellOrder(Long id, SellOrder sellOrderDetails) {
@@ -71,12 +74,16 @@ public class SellOrderService {
         sellOrder.setFiatPrice(sellOrderDetails.getFiatPrice());
         sellOrder.setTimestamp(sellOrderDetails.getTimestamp());
         sellOrder.setIsOpen(sellOrderDetails.getIsOpen());
+        firestoreService.syncToFirestore(sellOrder);
         return sellOrderRepository.save(sellOrder);
     }
 
 
     @Transactional
     public void deleteSellOrder(Long sellOrderId) {
+        SellOrder sellOrder = sellOrderRepository.findById(sellOrderId)
+                .orElseThrow(() -> new RuntimeException("Sell Order not found with id: " + sellOrderId));
+        ledgerService.deleteBySellOrderId(sellOrderId);
         sellOrderRepository.deleteById(sellOrderId);
     }
 

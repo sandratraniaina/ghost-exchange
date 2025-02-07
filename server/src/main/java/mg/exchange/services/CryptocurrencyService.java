@@ -13,6 +13,7 @@ import java.util.Optional;
 public class CryptocurrencyService {
 
     private final CryptocurrencyRepository cryptocurrencyRepository;
+    private final FirestoreService firestoreService;
 
     public List<Cryptocurrency> getAllCryptocurrencies() {
         return cryptocurrencyRepository.findAll();
@@ -23,7 +24,9 @@ public class CryptocurrencyService {
     }
 
     public Cryptocurrency createCryptocurrency(Cryptocurrency cryptocurrency) {
-        return cryptocurrencyRepository.save(cryptocurrency);
+        Cryptocurrency cryptocurrencySaved = cryptocurrencyRepository.save(cryptocurrency);
+        firestoreService.syncToFirestore(cryptocurrencySaved);
+        return cryptocurrencySaved;
     }
 
     public Cryptocurrency updateCryptocurrency(Long id, Cryptocurrency cryptocurrencyDetails) {
@@ -32,10 +35,14 @@ public class CryptocurrencyService {
         cryptocurrency.setName(cryptocurrencyDetails.getName());
         cryptocurrency.setSymbol(cryptocurrencyDetails.getSymbol());
         cryptocurrency.setFiatPrice(cryptocurrencyDetails.getFiatPrice());
+        firestoreService.syncToFirestore(cryptocurrency);
         return cryptocurrencyRepository.save(cryptocurrency);
     }
 
     public void deleteCryptocurrency(Long id) {
+        Cryptocurrency cryptocurrencyToDelete = cryptocurrencyRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Cryptocurrency not found"));
         cryptocurrencyRepository.deleteById(id);
+        firestoreService.deleteFromFirestore(cryptocurrencyToDelete);
     }
 }

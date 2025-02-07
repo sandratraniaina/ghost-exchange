@@ -19,6 +19,7 @@ public class CryptocurrencyWalletService {
     private final CryptocurrencyWalletRepository cryptocurrencyWalletRepository;
     private final UserRepository userRepository;
     private final CryptocurrencyRepository cryptocurrencyRepository;
+    private final FirestoreService firestoreService;
 
     public List<CryptocurrencyWallet> getAllWallets() {
         return cryptocurrencyWalletRepository.findAll();
@@ -40,7 +41,9 @@ public class CryptocurrencyWalletService {
 
         wallet.setUser(user);
         wallet.setCryptocurrency(cryptocurrency);
-        return cryptocurrencyWalletRepository.save(wallet);
+        CryptocurrencyWallet cryptocurrencyWalletSaved = cryptocurrencyWalletRepository.save(wallet);
+        firestoreService.syncToFirestore(cryptocurrencyWalletSaved);
+        return cryptocurrencyWalletSaved;
     }
 
     public CryptocurrencyWallet updateWallet(Long id, CryptocurrencyWallet walletDetails) {
@@ -62,12 +65,14 @@ public class CryptocurrencyWalletService {
         }
 
         wallet.setBalance(walletDetails.getBalance());
+        firestoreService.syncToFirestore(wallet);
         return cryptocurrencyWalletRepository.save(wallet);
     }
 
     public void deleteWallet(Long id) {
         CryptocurrencyWallet wallet = getWalletById(id);
         cryptocurrencyWalletRepository.deleteById(id);
+        firestoreService.deleteFromFirestore(wallet);
     }
 
     public Optional<CryptocurrencyWallet> getWalletByUserId(Long userId) {

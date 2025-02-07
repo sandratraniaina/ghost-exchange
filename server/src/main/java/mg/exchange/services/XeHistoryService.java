@@ -22,6 +22,7 @@ import java.util.Random;
 @RequiredArgsConstructor
 public class XeHistoryService {
 
+    private final FirestoreService firestoreService;
     int DEFAULT_INTERVAL = 3;
 
     private final XeHistoryRepository xeHistoryRepository;
@@ -48,7 +49,9 @@ public class XeHistoryService {
         Cryptocurrency cryptocurrency = cryptocurrencyRepository.findById(xeHistory.getCryptocurrency().getId())
                 .orElseThrow(() -> new RuntimeException("Cryptocurrency not found"));
         xeHistory.setCryptocurrency(cryptocurrency);
-        return xeHistoryRepository.save(xeHistory);
+        XeHistory xeHistorySaved = xeHistoryRepository.save(xeHistory);
+        firestoreService.syncToFirestore(xeHistorySaved);
+        return xeHistorySaved;
     }
 
     public XeHistory updateXeHistory(Long id, XeHistory xeHistoryDetails) {
@@ -64,10 +67,14 @@ public class XeHistoryService {
 
         xeHistory.setFiatPrice(xeHistoryDetails.getFiatPrice());
         xeHistory.setTimestamp(xeHistoryDetails.getTimestamp());
+        firestoreService.syncToFirestore(xeHistory);
         return xeHistoryRepository.save(xeHistory);
     }
 
     public void deleteXeHistory(Long id) {
+        XeHistory xeHistory = xeHistoryRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("XeHistory not found"));
+        firestoreService.deleteFromFirestore(xeHistory);
         xeHistoryRepository.deleteById(id);
     }
 
@@ -84,7 +91,7 @@ public class XeHistoryService {
             xeHistory.setCryptocurrency(cryptocurrency);
             xeHistory.setFiatPrice(randomPrice);
             xeHistory.setTimestamp(LocalDateTime.now());
-            xeHistoryRepository.save(xeHistory);
+            createXeHistory(xeHistory);
         }
     }
 
