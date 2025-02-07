@@ -16,7 +16,7 @@ export const fetchCryptoOptions = async () => {
       return null;
     }
 
-    return response.data.json();
+    return response.data;
 
   } catch (error) {
     console.error('Error fetching cryptocurrencies:', error);

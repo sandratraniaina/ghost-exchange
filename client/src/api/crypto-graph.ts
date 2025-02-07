@@ -11,7 +11,7 @@ export const fetchCryptoHistory = async () => {
     const url = `http://${apiHost}${uri}`;
 
     const response = await axios.post(url);
-    return response.data.json();
+    return response.data;
 
   } catch (error) {
     console.error('Error fetching graph data:', error);
