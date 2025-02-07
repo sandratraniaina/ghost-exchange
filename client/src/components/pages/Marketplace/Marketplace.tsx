@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import SellOrder from './SellOrder';
 import {
     Select,
@@ -60,6 +60,24 @@ const mockSellOrders: SellOrderData[] = [
 export const Marketplace = () => {
     // Set default value to "all" instead of an empty string.
     const [selectedCrypto, setSelectedCrypto] = useState<string>('all');
+
+    useEffect(() => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const cryptoParam = urlParams.get('crypto'); // Use get() to get the value
+
+        if (cryptoParam) {
+            const selectedCryptosFromUrl = cryptoParam.split(','); // Split by comma if multiple
+
+            if (selectedCryptosFromUrl.length === 1) {
+                setSelectedCrypto(selectedCryptosFromUrl[0].toUpperCase());
+            } else {
+                setSelectedCrypto('all');
+            }
+
+        } else {
+            setSelectedCrypto('all');
+        }
+    }, []);
 
     // Filter orders: if "all" is selected, show all orders.
     const filteredSellOrders =
