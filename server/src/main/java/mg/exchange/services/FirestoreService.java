@@ -16,6 +16,7 @@ import mg.exchange.repository.*;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +25,9 @@ import com.google.cloud.Timestamp;
 import com.google.cloud.firestore.*;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.cloud.FirestoreClient;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import mg.exchange.utils.FirestoreSyncable;
 import mg.exchange.utils.FirestoreTimeConverter;
@@ -35,9 +38,8 @@ import org.slf4j.Logger;
 public class FirestoreService {
     private static final Logger logger = LoggerFactory.getLogger(FirestoreService.class);
 
-    private Firestore db;
-    @Value("${firebase.serviceAccountKey}")
-    private String serviceAccountKey;
+
+    private final Firestore db;
 
     @Autowired
     private CryptocurrencyRepository cryptocurrencyRepository;
@@ -56,19 +58,9 @@ public class FirestoreService {
     @Autowired
     private UserRepository userRepository;
 
-    @PostConstruct
-    public void initialize() {
-        try {
-            FileInputStream serviceAccount = new FileInputStream(serviceAccountKey);
-            FirebaseOptions options = FirebaseOptions.builder()
-                    .setCredentials(GoogleCredentials.fromStream(serviceAccount))
-                    .build();
-            FirebaseApp.initializeApp(options);
-            db = FirestoreClient.getFirestore();
-            listenToFirestoreChanges();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    @Autowired
+    public FirestoreService(Firestore db) {
+        this.db = db;
     }
 
     public <T extends FirestoreSyncable> void syncToFirestore(T entity) {

@@ -1,5 +1,6 @@
 package mg.exchange.services;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -10,18 +11,18 @@ import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.Notification;
 
-import lombok.RequiredArgsConstructor;
 import mg.exchange.models.User;
 
 @Service
-@RequiredArgsConstructor
 public class FirebaseService {
 
     private final FirebaseMessaging firebaseMessaging;
     private final FirebaseAuth firebaseAuth;
 
-    public FirebaseAuth getFirebaseAuth() {
-        return firebaseAuth;
+    @Autowired
+    public FirebaseService(FirebaseMessaging firebaseMessaging, FirebaseAuth firebaseAuth) {
+        this.firebaseMessaging = firebaseMessaging;
+        this.firebaseAuth = firebaseAuth;
     }
 
     public String insertUser(User u) throws Exception {
