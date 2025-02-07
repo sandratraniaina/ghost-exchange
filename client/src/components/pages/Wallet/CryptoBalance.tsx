@@ -44,10 +44,12 @@ const CryptoBalance: React.FC<CryptoBalanceProps> = ({ crypto, isLoading }) => {
         description: "Failed to complete sell operation. Please check your connection and try again.",
         variant: "destructive",
       });
-
-      setSellVolume(0);
-      setLoading(false);
-      return;
+    } else {
+      toast({
+        title: "Success",
+        description: "Cryptocurrency sold successfully!",
+        className: "bg-green-600 text-white"
+      });
     }
 
     setSellVolume(0);
