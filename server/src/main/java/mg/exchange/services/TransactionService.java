@@ -78,49 +78,31 @@ public class TransactionService {
     }
 
     public Transaction validateTransaction(Long id) throws Exception {
-        // Find the transaction or throw exception if not found
         Transaction transaction = transactionRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Transaction not found"));
-        
-        // Set validation timestamp
         transaction.setValidationTimestamp(LocalDateTime.now());
-        
-        // // Get the user's FCM token from the transaction
-        // String userToken = userRepository.findById(transaction.getUser().getId())
-        //         .orElseThrow(() -> new RuntimeException("User not found"));
+        String userToken = transaction.getUser().getFcmToken();
+        transaction = updateTransaction(id, transaction);
+        if(userToken != null && !userToken.isEmpty()){
+            try {
+                String notificationTitle = "Transaction validée";
+                String notificationBody = String.format(
+                    "Votre %s a été validé par l'admin avec succès. Transaction N°%d",
+                    transaction.getTransactionType().toString().toLowerCase(),
+                    transaction.getId()
+                );
                 
-        // if (userToken == null || userToken.isEmpty()) {
-        //     throw new RuntimeException("User FCM token not found");
-        // }
-        
-        // try {
-        //     // Update the transaction first
-        //     transaction = updateTransaction(id, transaction);
-            
-        //     // Build notification message
-        //     String notificationTitle = "Transaction validée";
-        //     String notificationBody = String.format(
-        //         "Votre %s a été validé par l'admin avec succès. Transaction N°%d",
-        //         transaction.getTransactionType().toString().toLowerCase(),
-        //         transaction.getId()
-        //     );
-            
-        //     // Send notification
-        //     firebaseService.sendNotification(
-        //         notificationTitle,
-        //         notificationBody,
-        //         userToken
-        //     );
-            
-            return transaction;
-            
-        // } catch (FirebaseMessagingException e) {
-        //     return transaction;
-        // } 
-        // catch (Exception e) {
-        //     // For other exceptions, rollback by throwing
-        //     throw new RuntimeException("Failed to validate transaction: " + e.getMessage(), e);
-        // }
+                firebaseService.sendNotification(
+                    notificationTitle,
+                    notificationBody,
+                    userToken
+                ); 
+                return transaction;   
+            } catch (FirebaseMessagingException e) {
+                e.printStackTrace();
+            } 
+        }
+        return transaction;   
     }
 
     public List<Transaction> getHistoryTransaction(Long cryptoId, LocalDateTime min, LocalDateTime max, String type){
