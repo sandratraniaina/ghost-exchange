@@ -1,16 +1,19 @@
-import { useRouter } from 'expo-router';
-import { View, Text } from 'react-native';
-import { Button } from 'tamagui';
+import { CryptoChart } from '@/components/CryptoChart';
+import { CryptoWallet } from '@/components/CryptoWallet';
+import React from 'react';
+import { ScrollView } from 'react-native';
+import { YStack } from 'tamagui';
 
-export default function HomeScreen() {
-    const router = useRouter();
-
+// Main App Component
+const CryptoApp = () => {
     return (
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <Text style={{ fontSize: 24 }}>Home Screen</Text>
-            <Button theme="active" onPress={() => router.push('/login')}>
-                Click Me
-            </Button>
-        </View>
+        <ScrollView style={{ flex: 1 }}>
+            <YStack padding="$4" gap="$4">
+                <CryptoChart />
+                <CryptoWallet />
+            </YStack>
+        </ScrollView>
     );
-}
+};
+
+export default CryptoApp;
