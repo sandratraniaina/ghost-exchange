@@ -49,10 +49,12 @@ const FiatTransaction: React.FC<FiatTransactionProps> = ({
             <div className="text-sm text-gray-500">Available {currency}</div>
 
             <div className="text-2xl font-bold">
-              {new Intl.NumberFormat('en-US', {
-                style: 'currency',
-                currency: currency
-              }).format(balance)}
+              {
+                new Intl.NumberFormat('en-US', {
+                  style: 'currency',
+                  currency: currency
+                }).format(balance)
+              }
             </div>
           </div>
 

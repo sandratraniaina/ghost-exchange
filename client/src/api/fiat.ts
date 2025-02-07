@@ -9,23 +9,22 @@ export const createTransaction = async (userId: number, amount: number, transact
     }
 
     if (!["WITHDRAW", "DEPOSIT"].includes(transactionType)) {
-        throw new Error('Invalid transaction type.');
+      throw new Error('Invalid transaction type.');
     }
 
     const uri = '/transactions';
     const url = `http://${apiHost}${uri}`;
 
     const requestBody = {
-        "user":{
-            "id": userId
-        },
-        "amount": amount,
-        "transactionType": transactionType
+      "user": {
+        "id": userId
+      },
+      "amount": amount,
+      "transactionType": transactionType
     };
 
     const response = await axios.post(url, requestBody);
     return response.data;
-
   } catch (error) {
     console.error('Error performing transaction operation:', error);
     return null;
