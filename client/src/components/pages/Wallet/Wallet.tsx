@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { v4 as uuidv4 } from 'uuid';
 import CryptoBalance from "./CryptoBalance";
 import { getUserWallet } from '@/api/wallet';
 import { useAuth } from '@/hooks/useAuth';
@@ -72,7 +73,7 @@ export const Wallet = () => {
             {
                 cryptoData.map((crypto) => (
                     <CryptoBalance
-                        key={crypto.symbol}
+                        key={crypto.symbol || uuidv4()}
                         symbol={crypto.symbol}
                         balance={crypto.balance}
                         currentPrice={crypto.currentPrice}
