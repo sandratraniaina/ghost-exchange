@@ -18,6 +18,3 @@ cryptocurrency.schedule.interval=360000
 
 #Firebase configuration
 firebase.serviceAccountKey=C://Users//rakot//OneDrive//Documents//S5//Cloud//firstproject-cda07-firebase-adminsdk-omwyo-20bef4f23a.json
-
-# Activer CORS globalement
-spring.web.resources.add-mappings=true
