@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-export const fetchCryptoHistory = async () => {
+export const fetchCryptoHistory = async (exchangeId: number) => {
   try {
     const apiHost = import.meta.env.VITE_API_HOST;
     if (!apiHost) {
@@ -10,7 +10,9 @@ export const fetchCryptoHistory = async () => {
     const uri = '/exchanges?interval=1';
     const url = `http://${apiHost}${uri}`;
 
-    const response = await axios.post(url);
+    const requestBody = [ {id: exchangeId} ];
+
+    const response = await axios.post(url, requestBody);
     return response.data;
 
   } catch (error) {

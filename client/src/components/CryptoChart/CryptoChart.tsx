@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import { fetchCryptoOptions } from "@/api/crypto";
+import { fetchCryptoHistory } from "@/api/crypto-graph";
 
 import {
   Card,
@@ -38,6 +39,14 @@ interface CryptoOption {
   firestoreCollectionName: string;
 }
 
+interface HistoryData {
+  id: number,
+  cryptocurrency: CryptoOption,
+  fiatPrice: number,
+  timestamp: string,
+  firestoreCollectionName: string
+}
+
 interface ChartDataConfig extends ChartConfig {
   price: {
     label: string;
@@ -47,51 +56,23 @@ interface ChartDataConfig extends ChartConfig {
 
 type TimeRange = "15m" | "10m" | "5m";
 
-// Simulated API call for price data (modified to handle minutes)
-const fetchCryptoData = async (cryptoId: string, timeRange: TimeRange): Promise<PriceData[]> => {
-  await new Promise(resolve => setTimeout(resolve, 500));
+// Fetch historical price data
+const fetchCryptoData = async (exchangeId: number): Promise<PriceData[]> => {
+  const response = await fetchCryptoHistory(exchangeId);
 
-  const options = await fetchCryptoOptions();
-  const crypto = Array.isArray(options) ? options.find((c: CryptoOption) => c.id.toString() === cryptoId) : undefined; // Type added to parameter 'c'
-  if (!crypto) throw new Error("Cryptocurrency not found");
+  if (!response.success) throw new Error("Error fetching cryptocurrency history");
 
-  const data: PriceData[] = [];
-  const endDate = new Date();
-
-  let minutesToGenerate;
-  if (timeRange === "15m") {
-    minutesToGenerate = 15;
-  } else if (timeRange === "10m") {
-    minutesToGenerate = 10;
-  } else {
-    minutesToGenerate = 5;
-  }
-
-  let basePrice = crypto.fiatPrice;
-
-  for (let i = minutesToGenerate; i >= 0; i--) {
-    const date = new Date(endDate);
-    date.setMinutes(date.getMinutes() - i); // Use setMinutes
-
-    const randomPrice = basePrice * (1 + (Math.random() - 0.5) * 0.02);
-
-    data.push({
-      date: date.toISOString().split('T')[0] + " " + date.toTimeString().slice(0, 5), // Include time
-      price: Math.round(randomPrice)
-    });
-
-    basePrice *= (1 + (Math.random() - 0.5) * 0.01);
-  }
-
-  return data;
+  return response.data.map((entry: HistoryData) => ({
+    date: entry.timestamp,
+    price: entry.fiatPrice,
+  }));
 };
-
 
 const chartConfig: ChartDataConfig = {
   price: {
     label: "Price",
-    color: "hsl(var(--chart-1))"
-  }
+    color: "hsl(var(--chart-1))",
+  },
 };
 
 const CryptoChart: React.FC = () => {
@@ -109,7 +90,7 @@ const CryptoChart: React.FC = () => {
         const options = await fetchCryptoOptions();
         setCryptoOptions(options.data);
       } catch (error) {
-        console.error('Error fetching crypto options:', error);
+        console.error("Error fetching crypto options:", error);
       } finally {
         setLoadingOptions(false);
       }
@@ -123,10 +104,10 @@ const CryptoChart: React.FC = () => {
     const loadData = async () => {
       setLoading(true);
       try {
-        const data = await fetchCryptoData(selectedCryptoId, timeRange);
+        const data = await fetchCryptoData(parseInt(selectedCryptoId));
         setChartData(data);
       } catch (error) {
-        console.error('Error fetching price data:', error);
+        console.error("Error fetching price data:", error);
       } finally {
         setLoading(false);
       }
@@ -137,7 +118,7 @@ const CryptoChart: React.FC = () => {
     }
   }, [timeRange, selectedCryptoId, loadingOptions]);
 
-  const selectedCrypto = cryptoOptions.find(c => c.id.toString() === selectedCryptoId);
+  const selectedCrypto = cryptoOptions.find((c) => c.id.toString() === selectedCryptoId);
 
   const handleTimeRangeChange = (value: string) => {
     setTimeRange(value as TimeRange);
@@ -149,9 +130,9 @@ const CryptoChart: React.FC = () => {
 
   const formatYAxis = (value: number) => {
     if (value >= 1000) {
-      return `$${(value / 1000).toFixed(1)}k`;
+      return `Ar${(value / 1000).toFixed(1)}k`;
     }
-    return `$${value}`;
+    return `Ar${value}`;
   };
 
   return (
@@ -161,7 +142,7 @@ const CryptoChart: React.FC = () => {
           <CardTitle>Cryptocurrency Price Chart</CardTitle>
 
           <CardDescription>
-            {selectedCrypto ? `Showing price data for ${selectedCrypto.name} (${selectedCrypto.symbol})` : 'Loading...'}
+            {selectedCrypto ? `Showing price data for ${selectedCrypto.name} (${selectedCrypto.symbol})` : "Loading..."}
           </CardDescription>
         </div>
 
@@ -172,13 +153,11 @@ const CryptoChart: React.FC = () => {
             </SelectTrigger>
 
             <SelectContent className="rounded-xl">
-              {
-                cryptoOptions.map((crypto) => (
-                  <SelectItem key={crypto.id} value={crypto.id.toString()} className="rounded-lg">
-                    {crypto.name} ({crypto.symbol})
-                  </SelectItem>
-                ))
-              }
+              {cryptoOptions.map((crypto) => (
+                <SelectItem key={crypto.id} value={crypto.id.toString()} className="rounded-lg">
+                  {crypto.name} ({crypto.symbol})
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
 
@@ -198,14 +177,9 @@ const CryptoChart: React.FC = () => {
 
       <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
         {loading || loadingOptions ? (
-          <div className="flex h-[250px] items-center justify-center">
-            Loading...
-          </div>
+          <div className="flex h-[250px] items-center justify-center">Loading...</div>
         ) : (
-          <ChartContainer
-            config={chartConfig}
-            className="aspect-auto h-[250px] w-full"
-          >
+          <ChartContainer config={chartConfig} className="aspect-auto h-[250px] w-full">
             <AreaChart data={chartData}>
               <CartesianGrid vertical={false} />
 
@@ -217,7 +191,7 @@ const CryptoChart: React.FC = () => {
                 minTickGap={32}
                 tickFormatter={(value: string) => {
                   const date = new Date(value);
-                  return date.toLocaleTimeString("en-US", { // Format as time
+                  return date.toLocaleTimeString("en-US", {
                     hour: "2-digit",
                     minute: "2-digit",
                   });
@@ -231,7 +205,7 @@ const CryptoChart: React.FC = () => {
                 axisLine={false}
                 tickMargin={8}
                 tickFormatter={formatYAxis}
-                domain={['auto', 'auto']}
+                domain={["auto", "auto"]}
               />
 
               <ChartTooltip
@@ -239,7 +213,7 @@ const CryptoChart: React.FC = () => {
                 content={
                   <ChartTooltipContent
                     labelFormatter={(value: string) => {
-                      return new Date(value).toLocaleTimeString("en-US", { // Format as time
+                      return new Date(value).toLocaleTimeString("en-US", {
                         hour: "2-digit",
                         minute: "2-digit",
                       });
@@ -248,12 +222,7 @@ const CryptoChart: React.FC = () => {
                 }
               />
 
-              <Area
-                dataKey="price"
-                type="natural"
-                stroke="var(--color-price)"
-                yAxisId="price"
-              />
+              <Area dataKey="price" type="natural" stroke="var(--color-price)" yAxisId="price" />
 
               <ChartLegend content={<ChartLegendContent />} />
             </AreaChart>
