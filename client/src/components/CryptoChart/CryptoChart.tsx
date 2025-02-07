@@ -68,6 +68,22 @@ const fetchCryptoData = async (exchangeId: number): Promise<PriceData[]> => {
   }));
 };
 
+const filterDataByTimeRange = (data: PriceData[], timeRange: TimeRange): PriceData[] => {
+  const now = new Date();
+  const timeRangeMap = {
+    "5m": 5 * 60 * 1000,     // 5 minutes
+    "10m": 10 * 60 * 1000,   // 10 minutes
+    "15m": 15 * 60 * 1000    // 15 minutes
+  };
+
+  return data
+    .filter((point) => {
+      const pointTime = new Date(point.date);
+      return (now.getTime() - pointTime.getTime()) <= timeRangeMap[timeRange];
+    })
+    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+};
+
 const CryptoChart: React.FC = () => {
   const [timeRange, setTimeRange] = useState<TimeRange>("15m");
   const [selectedCryptoId, setSelectedCryptoId] = useState<string>("1");
@@ -106,12 +122,13 @@ const CryptoChart: React.FC = () => {
       setLoading(true);
       try {
         const data = await fetchCryptoData(parseInt(selectedCryptoId));
-        setChartData(data);
+        const filteredData = filterDataByTimeRange(data, timeRange);
+        setChartData(filteredData);
 
         // Calculate price change percentage using previous point
-        if (data.length >= 2) {
-          const previousPrice = data[data.length - 2].price;
-          const currentPrice = data[data.length - 1].price;
+        if (filteredData.length >= 2) {
+          const previousPrice = filteredData[filteredData.length - 2].price;
+          const currentPrice = filteredData[filteredData.length - 1].price;
           const changePercentage = ((currentPrice - previousPrice) / previousPrice) * 100;
           setPriceChange(changePercentage);
         }
@@ -132,12 +149,13 @@ const CryptoChart: React.FC = () => {
     const intervalId = setInterval(async () => {
       try {
         const data = await fetchCryptoData(parseInt(selectedCryptoId));
-        setChartData(data);
+        const filteredData = filterDataByTimeRange(data, timeRange);
+        setChartData(filteredData);
 
         // Calculate price change percentage using previous point
-        if (data.length >= 2) {
-          const previousPrice = data[data.length - 2].price;
-          const currentPrice = data[data.length - 1].price;
+        if (filteredData.length >= 2) {
+          const previousPrice = filteredData[filteredData.length - 2].price;
+          const currentPrice = filteredData[filteredData.length - 1].price;
           const changePercentage = ((currentPrice - previousPrice) / previousPrice) * 100;
           setPriceChange(changePercentage);
         }
@@ -147,7 +165,7 @@ const CryptoChart: React.FC = () => {
     }, 10000);
 
     return () => clearInterval(intervalId);
-  }, [selectedCryptoId]);
+  }, [selectedCryptoId, timeRange]);
 
   const selectedCrypto = cryptoOptions.find((c) => c.id.toString() === selectedCryptoId);
 
