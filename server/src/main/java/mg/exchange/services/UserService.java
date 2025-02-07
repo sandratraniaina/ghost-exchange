@@ -79,12 +79,16 @@ public class UserService {
         }
     }
 
-    public User checkUserAlreadyExist(SignInRequest user)throws Exception{
+    public User checkUserAlreadyExist(SignInRequest user) throws Exception {
         Optional<User> existingUser = getUserByUsername(user.getUsername());
         return existingUser.orElseGet(() -> {
-            User newUser = createUser(new User(null, new BigDecimal("0"), user.getUsername(), user.getEmail(), AccountRole.CLIENT, user.getPwd()));
-            firebaseService.insertUser(newUser);
-            return newUser;
+            try {
+                User newUser = createUser(new User(null, new BigDecimal("0"), user.getUsername(), user.getEmail(), AccountRole.CLIENT, user.getPwd()));
+                firebaseService.insertUser(newUser);
+                return newUser;
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to insert user into Firebase", e);
+            }
         });
     }
 
