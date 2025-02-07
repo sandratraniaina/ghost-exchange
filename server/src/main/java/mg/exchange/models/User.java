@@ -41,9 +41,8 @@ public class User implements FirestoreSyncable {
     @JsonIgnore
     private String password;
 
-    // @Column(name = "fcm_token")
-    // private String fcmToken;
-    
+    @Column(name = "fcm_token", nullable = true)
+    private String fcmToken;
     
     @Override
     public String getFirestoreCollectionName() {
