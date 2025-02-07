@@ -4,6 +4,8 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2 } from 'lucide-react';
+import { validatePIN } from '@/api/auth';
+import { useAuth } from '@/hooks/useAuth';
 
 interface PinValidationProps {
     email: string;
@@ -16,6 +18,8 @@ const PinValidation = ({ email, onSuccess, onCancel }: PinValidationProps) => {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [timeLeft, setTimeLeft] = useState(90); // 5 minutes in seconds
+
+    const { user } = useAuth();
 
     useEffect(() => {
         const timer = setInterval(() => {
@@ -83,16 +87,16 @@ const PinValidation = ({ email, onSuccess, onCancel }: PinValidationProps) => {
         }
 
         try {
-            // Mock API validation - pretend '123456' is the correct PIN
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            if (pin === '123456') {
+            const result = await validatePIN(pin, user.id);
+
+            if (result) {
                 onSuccess();
             } else {
                 setError('Invalid PIN code');
             }
         } catch (err) {
             console.error(err);
-            setError('Failed to validate PIN');
+            setError(err.message);
         } finally {
             setIsLoading(false);
         }
