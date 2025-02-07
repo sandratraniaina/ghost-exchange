@@ -108,11 +108,11 @@ const CryptoChart: React.FC = () => {
         const data = await fetchCryptoData(parseInt(selectedCryptoId));
         setChartData(data);
 
-        // Calculate price change percentage
+        // Calculate price change percentage using previous point
         if (data.length >= 2) {
-          const firstPrice = data[0].price;
-          const lastPrice = data[data.length - 1].price;
-          const changePercentage = ((lastPrice - firstPrice) / firstPrice) * 100;
+          const previousPrice = data[data.length - 2].price;
+          const currentPrice = data[data.length - 1].price;
+          const changePercentage = ((currentPrice - previousPrice) / previousPrice) * 100;
           setPriceChange(changePercentage);
         }
       } catch (error) {
@@ -134,11 +134,11 @@ const CryptoChart: React.FC = () => {
         const data = await fetchCryptoData(parseInt(selectedCryptoId));
         setChartData(data);
 
-        // Recalculate price change
+        // Calculate price change percentage using previous point
         if (data.length >= 2) {
-          const firstPrice = data[0].price;
-          const lastPrice = data[data.length - 1].price;
-          const changePercentage = ((lastPrice - firstPrice) / firstPrice) * 100;
+          const previousPrice = data[data.length - 2].price;
+          const currentPrice = data[data.length - 1].price;
+          const changePercentage = ((currentPrice - previousPrice) / previousPrice) * 100;
           setPriceChange(changePercentage);
         }
       } catch (error) {
@@ -275,7 +275,7 @@ const CryptoChart: React.FC = () => {
           </div>
         )}
         <div className="leading-none text-muted-foreground">
-          Showing price data for the selected time range
+          Showing trend based on the previous price data
         </div>
       </CardFooter>
     </Card>
