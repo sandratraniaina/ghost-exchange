@@ -43,9 +43,7 @@ export const LoginPage = () => {
         setError(null);
 
         try {
-            // Mock API validation of credentials before showing PIN
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            // If credentials are valid, show PIN validation
+            await login(formData.email, formData.password);
             setShowPinValidation(true);
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Invalid credentials');
