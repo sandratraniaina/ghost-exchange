@@ -27,7 +27,7 @@ WORKDIR /app
 COPY pom.xml .
 
 # Step 7: Build the application dependencies
-RUN mvn dependency:go-offline
+RUN mvn clean package -DskipTests
 
 # Step 8: Copy the rest of the application source code
 COPY src ./src
@@ -36,4 +36,4 @@ COPY src ./src
 EXPOSE 8080
 
 # Step 10: Set the entrypoint to run the Spring Boot application using Maven
-CMD ["mvn", "spring-boot:run"]
+CMD ["java", "-jar", "target/ghost-exchange-0.0.1-SNAPSHOT.jar"]
