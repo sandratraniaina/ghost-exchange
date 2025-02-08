@@ -7,12 +7,18 @@ import { Button, YStack, Input } from 'tamagui';
 export default function LoginScreen() {
     const router = useRouter();
     const { login } = useAuth();
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+    const [email, setEmail] = useState('sandratra2468@gmail.com');
+    const [password, setPassword] = useState('Here is a 8 letters pwd');
 
-    const handleLogin = () => {
-        login(email, password);
-        router.replace('/');
+    const [error, setError] = useState('');
+
+    const handleLogin = async () => {
+        try {
+            await login(email, password);
+            router.replace('/');
+        } catch (error) {
+            setError(error.message)
+        }
     };
 
     return (
@@ -32,6 +38,10 @@ export default function LoginScreen() {
                     secureTextEntry
                     style={{ borderWidth: 1, padding: 10 }}
                 />
+                {
+                    error &&
+                    <Text >{error}</Text>
+                }
                 <Button
                     backgroundColor="#1D88AF"
                     color="white"
