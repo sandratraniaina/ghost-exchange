@@ -1,5 +1,7 @@
 package mg.exchange.controllers;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +48,7 @@ public class TransactionController {
             if (transaction == null) {
                 throw new Exception("Cannot save a transaction of a value null");
             }
+            transaction.updateTimestamp();
             transaction = transactionService.createTransaction(transaction);
             return ResponseUtil.sendResponse(HttpStatus.OK, true, "Transaction saved successfully", (T) transaction);
         } catch (Exception e) {
