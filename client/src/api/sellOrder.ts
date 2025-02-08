@@ -12,7 +12,7 @@ export const buyCrypto = async (sellOrderId: number, buyerId: number) => {
         const url = `http://${apiHost}${uri}`;
 
         const requestBody = {
-            "buyerId": buyerId
+            "id": buyerId
         };
 
         const response = await axios.post(url, requestBody);
