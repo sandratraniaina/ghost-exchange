@@ -53,6 +53,7 @@ public class SellOrderService {
             throw new Exception("You don't have enough crypto for the amount you want to sell");
         }
         BigDecimal newBalance = wallet.getBalance().subtract(sellOrder.getAmount());
+        System.out.println("balance : "+newBalance);
         wallet.setBalance(newBalance);
         cryptocurrencyWalletService.updateWallet(wallet.getId(), wallet);
         SellOrder sellOrderSaved = sellOrderRepository.save(sellOrder);
@@ -111,15 +112,12 @@ public class SellOrderService {
             throw new IllegalArgumentException("Sell order and buyer must not be null");
         }
 
-        // Close the sell order
         sellOrder.setIsOpen(false);
         sellOrderRepository.save(sellOrder);
 
-        // Retrieve commission details
         Commission com = commissionService.getCommissionById(1L);
         System.out.println(com);
 
-        // Create and save ledger entry
         Ledger ledger = new Ledger();
         ledger.setSellOrder(sellOrder);
         ledger.setBuyer(buyer);
@@ -128,18 +126,6 @@ public class SellOrderService {
         ledger.setSalesCommission(com.getSalesCommission());
         ledgerService.createLedger(ledger);
 
-        // Get or create seller's wallet
-        CryptocurrencyWallet sellerWallet = cryptocurrencyWalletService
-            .getWalletByUserIdAndCrypotCurrencyId(sellOrder.getSeller().getId(), sellOrder.getCryptocurrency().getId())
-            .orElseGet(() -> {
-                CryptocurrencyWallet newWallet = new CryptocurrencyWallet();
-                newWallet.setUser(sellOrder.getSeller());
-                newWallet.setCryptocurrency(sellOrder.getCryptocurrency());
-                newWallet.setBalance(BigDecimal.ZERO);
-                return cryptocurrencyWalletService.createWallet(newWallet);
-            });
-
-        // Get or create buyer's wallet
         CryptocurrencyWallet buyerWallet = cryptocurrencyWalletService
             .getWalletByUserIdAndCrypotCurrencyId(buyer.getId(), sellOrder.getCryptocurrency().getId())
             .orElseGet(() -> {
@@ -150,12 +136,7 @@ public class SellOrderService {
                 return cryptocurrencyWalletService.createWallet(newWallet);
             });
 
-        // Update wallet balances
-        sellerWallet.setBalance(sellerWallet.getBalance().subtract(sellOrder.getAmount()));
         buyerWallet.setBalance(buyerWallet.getBalance().add(sellOrder.getAmount()));
-
-        // Save updated wallets
-        cryptocurrencyWalletService.updateWallet(sellerWallet.getId(), sellerWallet);
         cryptocurrencyWalletService.updateWallet(buyerWallet.getId(), buyerWallet);
     }
 
