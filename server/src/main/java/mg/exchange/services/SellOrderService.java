@@ -113,9 +113,13 @@ public class SellOrderService {
     }
 
     @Transactional
-    public void buyCrypto(SellOrder sellOrder, User buyer) {
+    public void buyCrypto(SellOrder sellOrder, User buyer)throws Exception {
         if (sellOrder == null || buyer == null) {
             throw new IllegalArgumentException("Sell order and buyer must not be null");
+        }
+
+        if(buyer.getFiatBalance().doubleValue() < sellOrder.getFiatPrice().doubleValue()){
+            throw new RuntimeException("Solde insuffisant");
         }
 
         sellOrder.setIsOpen(false);
