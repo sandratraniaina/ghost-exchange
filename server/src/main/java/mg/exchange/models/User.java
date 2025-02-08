@@ -38,7 +38,6 @@ public class User implements FirestoreSyncable {
     private AccountRole accountRole;
     
     @Column(name = "pwd", nullable = false, length = 256)
-    @JsonIgnore
     private String password;
 
     @Column(name = "fcm_token", nullable = true)

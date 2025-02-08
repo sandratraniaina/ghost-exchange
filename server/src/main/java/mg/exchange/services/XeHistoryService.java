@@ -100,9 +100,9 @@ public class XeHistoryService {
 
             cryptocurrency.setFiatPrice(newPrice);
             cryptocurrencyService.updateCryptocurrency(cryptocurrency.getId(), cryptocurrency);
+            xeHistoryRepository.save(xeHistory);
 
         }
-        xeHistoryRepository.saveAll(newXeHistories);
     }
 
     public List<XeHistory> findHistory(List<Cryptocurrency> cryptocurrencies, Integer interval) {
