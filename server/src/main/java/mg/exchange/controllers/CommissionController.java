@@ -1,6 +1,7 @@
 package mg.exchange.controllers;
 
 import mg.exchange.dto.CommissionSummaryDTO;
+import mg.exchange.dto.CommissionSummaryTotal;
 import mg.exchange.models.Commission;
 import mg.exchange.models.Response;
 import mg.exchange.services.CommissionService;
@@ -43,8 +44,14 @@ public class CommissionController {
         try {
             Timestamp minTimestamp = (min != null) ? Timestamp.valueOf(min) : null;
             Timestamp maxTimestamp = (max != null) ? Timestamp.valueOf(max) : null;
-            List<CommissionSummaryDTO> summary = commissionService.getCommissionSummary(cryptoId, type, minTimestamp, maxTimestamp);
-            return ResponseUtil.sendResponse(HttpStatus.OK, true, "Commission summary retrieved successfully", (T) summary);
+            if (cryptoId == null) {
+                CommissionSummaryTotal commissionSummaryTotal = commissionService.getCommissionSummaryTotal(type, minTimestamp, maxTimestamp);
+                return ResponseUtil.sendResponse(HttpStatus.OK, true, "Commission summary retrieved successfully", (T) commissionSummaryTotal);
+            } else {
+                CommissionSummaryDTO summary = commissionService.getCommissionSummary(cryptoId, type, minTimestamp, maxTimestamp);
+                return ResponseUtil.sendResponse(HttpStatus.OK, true, "Commission summary retrieved successfully", (T) summary);
+            }
+
         } catch (Exception e) {
             return ResponseUtil.sendResponse(HttpStatus.BAD_REQUEST, false, "Error retrieving commission summary", (T) e.getMessage());
         }
