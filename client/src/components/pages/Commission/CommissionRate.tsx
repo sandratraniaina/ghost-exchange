@@ -36,13 +36,13 @@ export const CommissionRate = () => {
     };
 
     fetchCommissionRates();
-  });
+  }, [toast]);
 
   const handleChange = (key: keyof CommissionRates, value: number) => {
-    setCommissionRates({
-      ...commissionRates,
+    setCommissionRates(prevRates => ({
+      ...prevRates,
       [key]: value,
-    });
+    }));
   };
 
   const handleSubmit = async () => {
@@ -92,7 +92,7 @@ export const CommissionRate = () => {
                   id="buyCommission"
                   name="buyCommission"
                   type="number"
-                  step="0.1"
+                  step="0.01"
                   min="0"
                   max="100"
                   value={commissionRates?.buyCommission}
@@ -114,7 +114,7 @@ export const CommissionRate = () => {
                   id="sellCommission"
                   name="sellCommission"
                   type="number"
-                  step="0.1"
+                  step="0.01"
                   min="0"
                   max="100"
                   value={commissionRates?.sellCommission}
