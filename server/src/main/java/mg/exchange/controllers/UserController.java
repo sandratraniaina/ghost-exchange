@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -149,6 +150,20 @@ public class UserController {
         }
     }
 
+
+    @PostMapping("/balances")
+    public <T> ResponseEntity<Response<T>> getUserBalance(@RequestParam("userId") Long userId) {
+        try {
+            User user = userService.getUserById(userId);
+            if (user == null) {
+                return ResponseUtil.sendResponse(HttpStatus.NOT_FOUND, false, "User not found", null);
+            }
+            return ResponseUtil.sendResponse(HttpStatus.OK, true, "User balance fetched successfully", (T)user.getFiatBalance());
+        } catch (Exception e) {
+            return ResponseUtil.sendResponse(HttpStatus.BAD_REQUEST, false, "Error while retrieving user balance", null);
+        }
+   }
+  
     @SuppressWarnings("unchecked")
     @GetMapping
     public <T> ResponseEntity<Response<T>> getUserByEmail(@RequestParam(required = false) String email){
