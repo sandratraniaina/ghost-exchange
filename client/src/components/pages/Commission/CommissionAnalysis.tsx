@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { AlertTriangle, TrendingUp } from "lucide-react";
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from "recharts";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import {
@@ -17,7 +17,8 @@ type AnalysisType = 'sum' | 'average';
 
 interface ChartDataItem {
   crypto: string;
-  commission: number;
+  salesCommission: number;
+  purchaseCommission: number;
 }
 
 const analysisTypes = [
@@ -25,18 +26,18 @@ const analysisTypes = [
   { value: 'average' as AnalysisType, label: 'Average (Moyenne)' }
 ];
 
-// Sample commission data in MGA
+// Updated sample data to include both commission types
 const chartData: ChartDataItem[] = [
-  { crypto: 'Bitcoin', commission: 1250000 },
-  { crypto: 'Ethereum', commission: 850000 },
-  { crypto: 'Tether', commission: 120000 },
-  { crypto: 'Binance Coin', commission: 450000 },
-  { crypto: 'Solana', commission: 380000 },
-  { crypto: 'Cardano', commission: 180000 },
-  { crypto: 'XRP', commission: 220000 },
-  { crypto: 'Polkadot', commission: 290000 },
-  { crypto: 'Dogecoin', commission: 150000 },
-  { crypto: 'Avalanche', commission: 320000 }
+  { crypto: 'Bitcoin', salesCommission: 1250000, purchaseCommission: 980000 },
+  { crypto: 'Ethereum', salesCommission: 850000, purchaseCommission: 720000 },
+  { crypto: 'Tether', salesCommission: 120000, purchaseCommission: 95000 },
+  { crypto: 'Binance Coin', salesCommission: 450000, purchaseCommission: 380000 },
+  { crypto: 'Solana', salesCommission: 380000, purchaseCommission: 320000 },
+  { crypto: 'Cardano', salesCommission: 180000, purchaseCommission: 150000 },
+  { crypto: 'XRP', salesCommission: 220000, purchaseCommission: 190000 },
+  { crypto: 'Polkadot', salesCommission: 290000, purchaseCommission: 250000 },
+  { crypto: 'Dogecoin', salesCommission: 150000, purchaseCommission: 130000 },
+  { crypto: 'Avalanche', salesCommission: 320000, purchaseCommission: 280000 }
 ];
 
 const formatMGA = (value: number) => {
@@ -158,8 +159,8 @@ export const CommissionAnalysis = () => {
             </CardTitle>
             <CardDescription>
               {selectedCrypto === 'all'
-                ? "Total Commission Earnings (MGA) for all cryptocurrencies"
-                : `Commission Earnings (MGA) for ${selectedCrypto}`}
+                ? "Sales and Purchase Commission Earnings (MGA) for all cryptocurrencies"
+                : `Sales and Purchase Commission Earnings (MGA) for ${selectedCrypto}`}
             </CardDescription>
           </CardHeader>
 
@@ -187,9 +188,20 @@ export const CommissionAnalysis = () => {
                   <Tooltip
                     formatter={(value) => [`${value.toLocaleString()} MGA`, "Commission"]}
                   />
+                  <Legend
+                    verticalAlign="top"
+                    height={36}
+                  />
                   <Bar
-                    dataKey="commission"
+                    name="Sales Commission"
+                    dataKey="salesCommission"
                     fill="hsl(var(--primary))"
+                    radius={[4, 4, 0, 0]}
+                  />
+                  <Bar
+                    name="Purchase Commission"
+                    dataKey="purchaseCommission"
+                    fill="hsl(var(--primary) / 0.5)"
                     radius={[4, 4, 0, 0]}
                   />
                 </BarChart>
