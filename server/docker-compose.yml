@@ -9,6 +9,8 @@ services:
       - postgres
     networks:
       - app-network
+    volumes:
+      - maven_dependencies:/root/.m2/repository
 
   # TODO: Copy anonymizer's init.sql to initdb.d in production
   # TODO: Copy backend's init.sql to initdb.d in production
@@ -29,3 +31,4 @@ networks:
 
 volumes:
   postgres_data:
+  maven_dependencies:
