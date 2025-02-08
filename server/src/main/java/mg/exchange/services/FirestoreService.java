@@ -148,6 +148,7 @@ public class FirestoreService {
             logger.info("Document added: " + document.getId());
         } catch (Exception e) {
             logger.error("Failed to handle document added: " + document.getId(), e);
+            logger.error("Failed to handle document added: " + document, e);
         }
     }
 
