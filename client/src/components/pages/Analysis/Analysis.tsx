@@ -148,7 +148,7 @@ export const Analysis = () => {
           {!(dateRange.min || dateRange.max) && (
             <div className="flex items-center space-x-2 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4" role="alert">
               <AlertTriangle className="h-5 w-5" />
-              <p>No date range was provided, displaying today's data.</p>
+              <p>No date range was provided, displaying data within the last 24 hours.</p>
             </div>
           )}
         </CardContent>
