@@ -94,7 +94,7 @@ export const CommissionRate = () => {
                   type="number"
                   step="0.01"
                   min="0"
-                  max="100"
+                  max="1"
                   value={commissionRates?.buyCommission}
                   onChange={(e) => handleChange("buyCommission", parseFloat(e.target.value))}
                   disabled={!isEditing}
@@ -116,7 +116,7 @@ export const CommissionRate = () => {
                   type="number"
                   step="0.01"
                   min="0"
-                  max="100"
+                  max="1"
                   value={commissionRates?.sellCommission}
                   onChange={(e) => handleChange("sellCommission", parseFloat(e.target.value))}
                   disabled={!isEditing}
