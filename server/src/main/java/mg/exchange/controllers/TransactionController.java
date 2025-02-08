@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import mg.exchange.models.Response;
@@ -29,11 +30,15 @@ public class TransactionController {
 
     @SuppressWarnings("unchecked")
     @GetMapping
-    public <T> ResponseEntity<Response<T>> getAllTransactions(){
+    public <T> ResponseEntity<Response<T>> getAllTransactions(@RequestParam(required = false) String type){
         try {
-            List<Transaction> transactions = transactionService.getAllTransactions();
-            if(transactions.size() == 0){
-                return ResponseUtil.sendResponse(HttpStatus.OK, true, "List of transaction fetched successfully but empty", (T) transactions);
+            List<Transaction> transactions = null;
+            if(type != null && type.equalsIgnoreCase("open")){
+                transactions = transactionService.getAllOpenTransactions();
+            }else if(type != null && !type.equalsIgnoreCase("open")){
+                throw new Exception("Unknown type "+type+" for transactions");
+            }else{
+                transactions = transactionService.getAllTransactions();
             }
             return ResponseUtil.sendResponse(HttpStatus.OK, true, "List of transactions fetched successfully", (T)transactions);
         } catch (Exception e) {
