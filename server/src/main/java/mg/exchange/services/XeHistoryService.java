@@ -101,11 +101,10 @@ public class XeHistoryService {
                 xeHistory.setCryptocurrency(cryptocurrency);
                 xeHistory.setFiatPrice(newPrice);
                 xeHistory.setTimestamp(LocalDateTime.now());
-
                 cryptocurrency.setFiatPrice(newPrice);
                 cryptocurrencyService.updateCryptocurrency(cryptocurrency.getId(), cryptocurrency);
-
                 createXeHistory(xeHistory);
+
             } catch (StaleObjectStateException e) {
                 // Log the error and retry or skip
                 logger.error("Conflict detected for cryptocurrency: " + cryptocurrency.getId());
