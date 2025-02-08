@@ -12,7 +12,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-type AnalysisType = 'firstQuartile' | 'max' | 'min' | 'mean' | 'stdDev';
+type AnalysisType = '1q' | 'max' | 'min' | 'avg' | 'standard-deviation';
 type CryptoId = 'btc' | 'eth' | 'usdt' | 'bnb' | 'sol' | 'ada' | 'xrp' | 'dot' | 'doge' | 'avax';
 
 interface DateRange {
@@ -26,11 +26,11 @@ interface ChartDataItem {
 }
 
 const analysisTypes = [
-  { value: 'firstQuartile' as AnalysisType, label: 'First Quartile' },
+  { value: '1q' as AnalysisType, label: 'First Quartile' },
   { value: 'max' as AnalysisType, label: 'Maximum' },
   { value: 'min' as AnalysisType, label: 'Minimum' },
-  { value: 'mean' as AnalysisType, label: 'Mean' },
-  { value: 'stdDev' as AnalysisType, label: 'Standard Deviation' }
+  { value: 'avg' as AnalysisType, label: 'Mean' },
+  { value: 'standard-deviation' as AnalysisType, label: 'Standard Deviation' }
 ];
 
 // TODO: Replace mock data with API call in production
