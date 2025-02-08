@@ -10,9 +10,15 @@ export default function LoginScreen() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
-    const handleLogin = () => {
-        login(email, password);
-        router.replace('/');
+    const [error, setError] = useState('');
+
+    const handleLogin = async () => {
+        try {
+            await login(email, password);
+            router.replace('/');
+        } catch (error) {
+            setError(error.message)
+        }
     };
 
     return (
@@ -32,6 +38,10 @@ export default function LoginScreen() {
                     secureTextEntry
                     style={{ borderWidth: 1, padding: 10 }}
                 />
+                {
+                    error &&
+                    <Text >{error}</Text>
+                }
                 <Button
                     backgroundColor="#1D88AF"
                     color="white"
