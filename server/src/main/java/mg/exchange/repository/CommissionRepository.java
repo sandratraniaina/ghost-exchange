@@ -1,6 +1,7 @@
 package mg.exchange.repository;
 
 import mg.exchange.dto.CommissionSummaryDTO;
+import mg.exchange.dto.CommissionSummaryTotal;
 import mg.exchange.models.Commission;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -58,7 +59,7 @@ public interface CommissionRepository extends JpaRepository<Commission, Long> {
                 WHERE (CAST(:min AS TIMESTAMP) IS NULL OR so.timestamp >= :min)
                   AND (CAST(:max AS TIMESTAMP) IS NULL OR so.timestamp <= :max);
             """, nativeQuery = true)
-    CommissionSummaryDTO getCommissionSummaryTotal(
+    CommissionSummaryTotal getCommissionSummaryTotal(
             @Param("type_analyse") String type_analyse,
             @Param("min") Timestamp min,
             @Param("max") Timestamp max);

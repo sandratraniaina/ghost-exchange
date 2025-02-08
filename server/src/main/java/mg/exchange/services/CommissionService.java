@@ -1,6 +1,7 @@
 package mg.exchange.services;
 
 import mg.exchange.dto.CommissionSummaryDTO;
+import mg.exchange.dto.CommissionSummaryTotal;
 import mg.exchange.models.Commission;
 import mg.exchange.repository.CommissionRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +24,7 @@ public class CommissionService {
 
     public Commission getCommissionById(Long id) {
         return commissionRepository.findById(id)
-        .orElseThrow(() -> new RuntimeException("Commission not found"));
+                .orElseThrow(() -> new RuntimeException("Commission not found"));
 
     }
 
@@ -52,5 +53,9 @@ public class CommissionService {
 
     public CommissionSummaryDTO getCommissionSummary(Long cryptocurrency_id, String typeAnalyse, Timestamp min, Timestamp max) {
         return commissionRepository.getCommissionSummarByCryptoCurrencyId(cryptocurrency_id, typeAnalyse, min, max);
+    }
+
+    public CommissionSummaryTotal getCommissionSummaryTotal(String typeAnalyse, Timestamp min, Timestamp max) {
+        return commissionRepository.getCommissionSummaryTotal(typeAnalyse, min, max);
     }
 }
