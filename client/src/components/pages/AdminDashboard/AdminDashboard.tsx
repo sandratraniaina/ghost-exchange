@@ -162,7 +162,6 @@ const AdminDashboard = () => {
                                                 variant="outline"
                                                 className="w-8 h-8 p-0 hover:bg-green-100 hover:text-green-800 hover:border-green-800 text-green-800 border-green-800"
                                                 onClick={() => handleAccept(transaction.id)}
-                                                disabled={transaction.status !== 'PENDING'}
                                             >
                                                 <Check className="h-4 w-4" />
                                             </Button>
@@ -171,7 +170,6 @@ const AdminDashboard = () => {
                                                 variant="outline"
                                                 className="w-8 h-8 p-0 hover:bg-red-100 hover:text-red-800 hover:border-red-800 text-red-800 border-red-800"
                                                 onClick={() => handleDecline(transaction.id)}
-                                                disabled={transaction.status !== 'PENDING'}
                                             >
                                                 <X className="h-4 w-4" />
                                             </Button>
