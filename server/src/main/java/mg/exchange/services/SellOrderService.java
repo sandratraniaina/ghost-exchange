@@ -78,7 +78,6 @@ public class SellOrderService {
         return sellOrderRepository.save(sellOrder);
     }
 
-
     @Transactional
     public void deleteSellOrder(Long sellOrderId) {
         SellOrder sellOrder = sellOrderRepository.findById(sellOrderId)
@@ -86,7 +85,6 @@ public class SellOrderService {
         ledgerService.deleteBySellOrderId(sellOrderId);
         sellOrderRepository.deleteById(sellOrderId);
     }
-
 
     public List<SellOrder> getOpenSellOrders() {
         return sellOrderRepository.findOpenSellOrders();

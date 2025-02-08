@@ -85,7 +85,7 @@ public class FirestoreService {
         }
     }
 
-    private void listenToFirestoreChanges() {
+    public void listenToFirestoreChanges() {
         listenToCollectionChanges("cryptocurrency", Cryptocurrency.class, cryptocurrencyRepository);
         listenToCollectionChanges("xe_history", XeHistory.class, xeHistoryRepository);
         listenToCollectionChanges("transaction", Transaction.class, transactionRepository);
@@ -93,7 +93,7 @@ public class FirestoreService {
         listenToCollectionChanges("commission", Commission.class, commissionRepository);
         listenToCollectionChanges("cryptocurrency_wallet", CryptocurrencyWallet.class, cryptocurrencyWalletRepository);
         listenToCollectionChanges("ledger", Ledger.class, ledgerRepository);
-        listenToCollectionChanges("user", User.class, userRepository);
+        listenToCollectionChanges("account", User.class, userRepository);
     }
 
     private <T> void listenToCollectionChanges(String collectionName, Class<T> entityClass,
@@ -148,6 +148,7 @@ public class FirestoreService {
             logger.info("Document added: " + document.getId());
         } catch (Exception e) {
             logger.error("Failed to handle document added: " + document.getId(), e);
+            logger.error("Failed to handle document added: " + document, e);
         }
     }
 

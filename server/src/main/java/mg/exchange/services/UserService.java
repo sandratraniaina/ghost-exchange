@@ -83,7 +83,7 @@ public class UserService {
         Optional<User> existingUser = getUserByUsername(user.getUsername());
         return existingUser.orElseGet(() -> {
             try {
-                User newUser = createUser(new User(null, new BigDecimal("0"), user.getUsername(), user.getEmail(), AccountRole.CLIENT, user.getPwd()));
+                User newUser = createUser(new User(null, new BigDecimal("0"), user.getUsername(), user.getEmail(), AccountRole.CLIENT, user.getPwd(),null));
                 firebaseService.insertUser(newUser);
                 return newUser;
             } catch (Exception e) {
