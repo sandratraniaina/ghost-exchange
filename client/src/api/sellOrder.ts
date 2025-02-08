@@ -31,7 +31,7 @@ export const fetchSellOrders = async () => {
             throw new Error('VITE_API_HOST environment variable is not defined.');
         }
 
-        const uri = '/sell-orders';
+        const uri = '/sell-orders?type=open';
         const url = `http://${apiHost}${uri}`;
 
         const response = await axios.get(url);
