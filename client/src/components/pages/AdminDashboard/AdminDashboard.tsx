@@ -56,9 +56,9 @@ const AdminDashboard = () => {
 
     // Filter transactions based on selected filters
     const filteredTransactions = transactions.filter(transaction => {
-        const matchesType = !filters.transactionType ||
+        const matchesType = filters.transactionType != "all" ||
             transaction.transactionType === filters.transactionType;
-        const matchesUser = !filters.userId ||
+        const matchesUser = filters.userId != "all" ||
             transaction.user.id.toString() === filters.userId;
         return matchesType && matchesUser;
     });
@@ -87,7 +87,7 @@ const AdminDashboard = () => {
                             <SelectValue placeholder="Transaction Type" />
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="0">All Types</SelectItem>
+                            <SelectItem value="all">All Types</SelectItem>
                             <SelectItem value="CREDIT">Credit</SelectItem>
                             <SelectItem value="DEBIT">Debit</SelectItem>
                         </SelectContent>
@@ -103,7 +103,7 @@ const AdminDashboard = () => {
                             <SelectValue placeholder="Select User" />
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="0">All Users</SelectItem>
+                            <SelectItem value="all">All Users</SelectItem>
                             {uniqueUserIds.map(id => (
                                 <SelectItem key={id} value={id.toString()}>
                                     User ID: {id}
