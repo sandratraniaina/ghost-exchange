@@ -150,8 +150,9 @@ public class UserController {
         }
     }
 
+
     @PostMapping("/balances")
-    public <T> ResponseEntity<Response<T>> getUserBalance(@Param("userId") Long userId) {
+    public <T> ResponseEntity<Response<T>> getUserBalance(@RequestParam("userId") Long userId) {
         try {
             User user = userService.getUserById(userId);
             if (user == null) {
@@ -160,6 +161,20 @@ public class UserController {
             return ResponseUtil.sendResponse(HttpStatus.OK, true, "User balance fetched successfully", (T)user.getFiatBalance());
         } catch (Exception e) {
             return ResponseUtil.sendResponse(HttpStatus.BAD_REQUEST, false, "Error while retrieving user balance", null);
+        }
+   }
+  
+    @SuppressWarnings("unchecked")
+    @GetMapping
+    public <T> ResponseEntity<Response<T>> getUserByEmail(@RequestParam(required = false) String email){
+        try {
+            Optional<User> user = userService.getUserByEmail(email);
+            if(user == null){
+                throw new Exception("No user found for email : "+email);
+            }
+            return ResponseUtil.sendResponse(HttpStatus.OK, true, "User fetched successfully" , (T)user.get());
+        } catch (Exception e) {
+            return ResponseUtil.sendResponse(HttpStatus.BAD_REQUEST, false, "Error while retrieving user for email "+email , (T)e.getMessage());
         }
     }
 }
