@@ -12,14 +12,10 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
+import { DateRange } from '../Analysis/Analysis';
 
 type AnalysisType = 'sum' | 'average';
 type CryptoId = 'btc' | 'eth' | 'usdt' | 'bnb' | 'sol' | 'ada' | 'xrp' | 'dot' | 'doge' | 'avax';
-
-interface DateRange {
-    min: string;
-    max: string;
-}
 
 interface ChartDataItem {
     crypto: string;
