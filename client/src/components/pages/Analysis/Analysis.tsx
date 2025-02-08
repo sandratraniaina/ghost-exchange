@@ -70,7 +70,7 @@ export const Analysis = () => {
       if (selectedAnalysis) {
         const data = await fetchCryptoAnalysis(selectedAnalysis, selectedCryptos, dateRange);
         if (data) {
-          setChartData(data);
+          setChartData(data.data);
         }
       }
     };
