@@ -3,6 +3,7 @@ package mg.exchange.config;
 import mg.exchange.models.Commission;
 import mg.exchange.repository.CommissionRepository;
 import mg.exchange.services.CommissionService;
+import mg.exchange.services.CryptocurrencyService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,20 +18,22 @@ import java.util.List;
 @Component
 public class CryptocurrencyInitializer implements CommandLineRunner {
 
-    private final CryptocurrencyRepository cryptocurrencyRepository;
+
     private final CommissionService commissionService;
+    private final CryptocurrencyService cryptocurrencyService;
 
 
-    public CryptocurrencyInitializer(CryptocurrencyRepository cryptocurrencyRepository, CommissionService commissionService) {
-        this.cryptocurrencyRepository = cryptocurrencyRepository;
+    public CryptocurrencyInitializer(CommissionService commissionService, CryptocurrencyService cryptocurrencyService) {
+
         this.commissionService = commissionService;
+        this.cryptocurrencyService = cryptocurrencyService;
     }
 
     @Override
     @Transactional
     public void run(String... args) {
         // Check if the table is empty
-        if (cryptocurrencyRepository.count() == 0) {
+        if (cryptocurrencyService.getAllCryptocurrencies().size() == 0) {
             List<Cryptocurrency> cryptocurrencies = Arrays.asList(
                     new Cryptocurrency(null, "Bitcoin", "BTC", BigDecimal.valueOf(42000)),
                     new Cryptocurrency(null, "Ethereum", "ETH", BigDecimal.valueOf(3000)),
@@ -43,7 +46,9 @@ public class CryptocurrencyInitializer implements CommandLineRunner {
                     new Cryptocurrency(null, "Litecoin", "LTC", BigDecimal.valueOf(120)),
                     new Cryptocurrency(null, "Chainlink", "LIN", BigDecimal.valueOf(20))
             );
-            cryptocurrencyRepository.saveAll(cryptocurrencies);
+            for (Cryptocurrency cryptocurrency : cryptocurrencies) {
+                cryptocurrencyService.createCryptocurrency(cryptocurrency);
+            }
             System.out.println("Cryptocurrencies initialized successfully!");
         } else {
             System.out.println("Cryptocurrencies already exist. Skipping initialization.");
