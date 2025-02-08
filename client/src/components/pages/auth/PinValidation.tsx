@@ -99,13 +99,14 @@ const PinValidation = ({ email, onSuccess, onCancel }: PinValidationProps) => {
                 newUser.username = data.username;
                 newUser.avatar = "https://randomuser.me/api/portraits/men/1.jpg";
                 newUser.password = data.password;
+                newUser.fiatBalance = data.fiat_balance;
 
                 setUser(newUser);
 
                 await sendUserData(newUser);
 
                 await onSuccess();
-            } else {    
+            } else {
                 setError('Invalid PIN code');
             }
         } catch (err) {
