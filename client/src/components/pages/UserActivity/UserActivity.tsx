@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -16,6 +16,7 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
+import { getUserActivity } from '@/api/userActivity';
 
 
 export const UserActivity = () => {
@@ -26,11 +27,19 @@ export const UserActivity = () => {
 
     const [datas, setDatas] = useState([]);
 
-    const handleFilter = () => {
-        // TODO: Replace with API call in production
-        // Add filter logic here
-        console.log("Filtering data for date range:", dateRange);
-    };
+    const loadActivities = async () => {
+        const data = await getUserActivity(dateRange.min, dateRange.max)
+        setDatas(data);
+        return data;
+    }
+
+    useEffect(() => {
+        loadActivities();
+    }, []);
+
+    const handleFilter = async () => {
+        await loadActivities();    
+    }
 
     return (
         <Card className="w-full">
