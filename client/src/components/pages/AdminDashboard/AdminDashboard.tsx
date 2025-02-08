@@ -42,8 +42,8 @@ const AdminDashboard = () => {
     }, []);
 
     const [filters, setFilters] = useState({
-        transactionType: '',
-        userId: ''
+        transactionType: 'all',
+        userId: 'all'
     });
 
     const handleAccept = (transactionId: number) => {
@@ -56,11 +56,10 @@ const AdminDashboard = () => {
 
     // Filter transactions based on selected filters
     const filteredTransactions = transactions.filter(transaction => {
-        const matchesType = filters.transactionType != "all" ||
-            transaction.transactionType === filters.transactionType;
-        const matchesUser = filters.userId != "all" ||
-            transaction.user.id.toString() === filters.userId;
-        return matchesType && matchesUser;
+        const matchesType = (filters.transactionType == "all") ? true : transaction.transactionType === filters.transactionType;
+        const matchesUser = (filters.userId == "all") ? true :  transaction.user.id.toString() === filters.userId;
+        console.log(matchesType);
+        return (matchesType) && (matchesUser);
     });
 
     // Get unique user IDs for the filter
