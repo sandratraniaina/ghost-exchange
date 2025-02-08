@@ -29,6 +29,6 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
         @Param("type") String type
     );
 
-    @Query("SELECT t FROM Transaction t WHERE t.validation_timestamp IS NULL")
+    @Query("SELECT t FROM Transaction t WHERE t.validationTimestamp IS NULL")
     List<Transaction> findOpenTransactions();
 }
