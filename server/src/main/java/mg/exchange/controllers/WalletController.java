@@ -1,5 +1,6 @@
 package mg.exchange.controllers;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +31,7 @@ public class WalletController {
     @GetMapping
     public <T> ResponseEntity<Response<T>> getWalletByUserId(@RequestParam Long userId){
         try {
-            Optional<CryptocurrencyWallet> wallets = walletService.getWalletByUserId(userId);
+            List<CryptocurrencyWallet> wallets = walletService.getWalletByUserId(userId);
             return ResponseUtil.sendResponse(HttpStatus.OK, true, "Wallet fetched successfully", (T)wallets);
         } catch (Exception e) {
             return ResponseUtil.sendResponse(HttpStatus.BAD_REQUEST, false, "Error while retrieving wallet for user "+userId, (T)e.getMessage());

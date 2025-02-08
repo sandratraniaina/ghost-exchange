@@ -73,7 +73,8 @@ public class SellOrderService {
 
         // Update cryptocurrency if provided
         if (sellOrderDetails.getCryptocurrency() != null) {
-            Cryptocurrency cryptocurrency = cryptocurrencyRepository.findById(sellOrderDetails.getCryptocurrency().getId())
+            Cryptocurrency cryptocurrency = cryptocurrencyRepository
+                    .findById(sellOrderDetails.getCryptocurrency().getId())
                     .orElseThrow(() -> new RuntimeException("Cryptocurrency not found"));
             sellOrder.setCryptocurrency(cryptocurrency);
         }
@@ -127,29 +128,33 @@ public class SellOrderService {
         ledgerService.createLedger(ledger);
 
         CryptocurrencyWallet buyerWallet = cryptocurrencyWalletService
-            .getWalletByUserIdAndCrypotCurrencyId(buyer.getId(), sellOrder.getCryptocurrency().getId())
-            .orElseGet(() -> {
-                CryptocurrencyWallet newWallet = new CryptocurrencyWallet();
-                newWallet.setUser(buyer);
-                newWallet.setCryptocurrency(sellOrder.getCryptocurrency());
-                newWallet.setBalance(BigDecimal.ZERO);
-                return cryptocurrencyWalletService.createWallet(newWallet);
-            });
+                .getWalletByUserIdAndCrypotCurrencyId(buyer.getId(), sellOrder.getCryptocurrency().getId())
+                .orElseGet(() -> {
+                    CryptocurrencyWallet newWallet = new CryptocurrencyWallet();
+                    newWallet.setId(0L);
+                    newWallet.setUser(buyer);
+                    newWallet.setCryptocurrency(sellOrder.getCryptocurrency());
+                    newWallet.setBalance(BigDecimal.ZERO);
+                    return cryptocurrencyWalletService.createWallet(newWallet);
+                });
 
         buyerWallet.setBalance(buyerWallet.getBalance().add(sellOrder.getAmount()));
         cryptocurrencyWalletService.updateWallet(buyerWallet.getId(), buyerWallet);
     }
-
 
     @Transactional
     public void cancelSellOrder(SellOrder sellOrder) {
         sellOrder.setIsOpen(true);
         ledgerService.deleteBySellOrderId(sellOrder.getId());
         updateSellOrder(sellOrder.getId(), sellOrder);
-        Ledger ledger = ledgerService.getLedgerBySellOrderId(sellOrder.getId()).orElseThrow(() -> new RuntimeException("Ledger not found for the SellOrder"));
-        CryptocurrencyWallet sellerWallet = cryptocurrencyWalletService.getWalletByUserIdAndCrypotCurrencyId(sellOrder.getSeller().getId(), sellOrder.getCryptocurrency().getId()).get();
+        Ledger ledger = ledgerService.getLedgerBySellOrderId(sellOrder.getId())
+                .orElseThrow(() -> new RuntimeException("Ledger not found for the SellOrder"));
+        CryptocurrencyWallet sellerWallet = cryptocurrencyWalletService.getWalletByUserIdAndCrypotCurrencyId(
+                sellOrder.getSeller().getId(), sellOrder.getCryptocurrency().getId()).get();
         sellerWallet.setBalance(sellerWallet.getBalance().add(sellOrder.getAmount()));
-        CryptocurrencyWallet buyerWallet = cryptocurrencyWalletService.getWalletByUserIdAndCrypotCurrencyId(ledger.getBuyer().getId(), sellOrder.getCryptocurrency().getId()).get();
+        CryptocurrencyWallet buyerWallet = cryptocurrencyWalletService
+                .getWalletByUserIdAndCrypotCurrencyId(ledger.getBuyer().getId(), sellOrder.getCryptocurrency().getId())
+                .get();
         buyerWallet.setBalance(buyerWallet.getBalance().subtract(sellOrder.getAmount()));
         cryptocurrencyWalletService.updateWallet(sellerWallet.getId(), sellerWallet);
         cryptocurrencyWalletService.updateWallet(buyerWallet.getId(), buyerWallet);

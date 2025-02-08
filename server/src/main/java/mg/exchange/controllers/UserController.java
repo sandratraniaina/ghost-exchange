@@ -108,7 +108,7 @@ public class UserController {
     @GetMapping("/{userId}/wallets")
     public <T> ResponseEntity<Response<T>> getWalletByUserId(@PathVariable Long userId) {
         try {
-            Optional<CryptocurrencyWallet> wallets = walletService.getWalletByUserId(userId);
+            List<CryptocurrencyWallet> wallets = walletService.getWalletByUserId(userId);
             return ResponseUtil.sendResponse(HttpStatus.OK, true, "Wallet fetched successfully", (T) wallets);
         } catch (Exception e) {
             return ResponseUtil.sendResponse(HttpStatus.BAD_REQUEST, false,
