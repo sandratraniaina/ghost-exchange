@@ -20,6 +20,7 @@ public class SellOrderService {
 
     private final SellOrderRepository sellOrderRepository;
     private final UserRepository userRepository;
+    private final UserService userService ;
     private final CryptocurrencyRepository cryptocurrencyRepository;
     private final LedgerService ledgerService;
     private final CommissionService commissionService;
@@ -36,19 +37,25 @@ public class SellOrderService {
                 .orElseThrow(() -> new RuntimeException("Sell Order not found with id: " + id));
     }
 
-    public SellOrder createSellOrder(SellOrder sellOrder) {
-        // Ensure the seller exists
+    public SellOrder createSellOrder(SellOrder sellOrder) throws Exception {
         User seller = userRepository.findById(sellOrder.getSeller().getId())
                 .orElseThrow(() -> new RuntimeException("Seller not found"));
-
-        // Ensure the cryptocurrency exists
         Cryptocurrency cryptocurrency = cryptocurrencyRepository.findById(sellOrder.getCryptocurrency().getId())
                 .orElseThrow(() -> new RuntimeException("Cryptocurrency not found"));
-
         sellOrder.setSeller(seller);
         sellOrder.setCryptocurrency(cryptocurrency);
+        Optional<CryptocurrencyWallet> walletOptional = cryptocurrencyWalletService.getWalletByUserIdAndCrypotCurrencyId(seller.getId(), cryptocurrency.getId());
+        if (walletOptional.isEmpty()) {
+            throw new Exception("You don't have a wallet for that crypto to sell");
+        }
+        CryptocurrencyWallet wallet = walletOptional.get();
+        if (wallet.getBalance().compareTo(sellOrder.getAmount()) < 0) {
+            throw new Exception("You don't have enough crypto for the amount you want to sell");
+        }
+        BigDecimal newBalance = wallet.getBalance().subtract(sellOrder.getAmount());
+        wallet.setBalance(newBalance);
+        cryptocurrencyWalletService.updateWallet(wallet.getId(), wallet);
         SellOrder sellOrderSaved = sellOrderRepository.save(sellOrder);
-        firestoreService.syncToFirestore(sellOrderSaved);
         return sellOrderSaved;
     }
 
