@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Percent } from "lucide-react";
 import { fetchCommissions, updateCommissions } from '@/api/commission';
 import { useToast } from '@/hooks/use-toast';
+import { cn } from '@/lib/utils';
 
 interface CommissionRates {
   buyCommission: number;
@@ -15,6 +16,7 @@ interface CommissionRates {
 export const CommissionRate = () => {
   const [commissionRates, setCommissionRates] = useState<CommissionRates>({ buyCommission: 0, sellCommission: 0 });
   const [isEditing, setIsEditing] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const { toast } = useToast();
 
@@ -44,10 +46,13 @@ export const CommissionRate = () => {
   };
 
   const handleSubmit = async () => {
+    setIsLoading(true);
     const result = await updateCommissions(
       commissionRates.sellCommission,
       commissionRates.buyCommission
     );
+
+    setIsLoading(false);
 
     if (result) {
       toast({
@@ -64,7 +69,6 @@ export const CommissionRate = () => {
       });
     }
   };
-
 
   return (
     <Card className="w-full">
@@ -139,9 +143,33 @@ export const CommissionRate = () => {
                 <Button
                   type="button"
                   onClick={() => handleSubmit()}
-                  className="w-full"
+                  className="w-full relative flex items-center justify-center"
                 >
-                  Save Changes
+                  {isLoading && (
+                    <svg
+                      className="animate-spin h-5 w-5 text-white absolute"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      />
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c3.042 0 5.61 2.185 6.291 5.291l.33 1.005A8.002 8.002 0 0112 20v-2.001c.47-.001.933-.017 1.404-.052A8.005 8.005 0 0120 12a8 8 0 01-8-8V4a8 8 0 01-7.995 7.995L12 17.291z"
+                      />
+                    </svg>
+                  )}
+                  <span className={cn(isLoading && "opacity-0")}>
+                    Save Changes
+                  </span>
                 </Button>
                 <Button
                   type="button"
