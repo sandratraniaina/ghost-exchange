@@ -8,6 +8,7 @@ export class User {
     role: string = "User";
     password: string = "";
     username: string = "";
+    fiatBalance: number = 0;
 }
 
 export interface AuthContextType {
