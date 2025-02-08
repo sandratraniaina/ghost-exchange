@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { TrendingUp, AlertTriangle } from "lucide-react";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -11,9 +11,17 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { fetchCryptoOptions } from '@/api/crypto';
 
 type AnalysisType = '1q' | 'max' | 'min' | 'avg' | 'standard-deviation';
-type CryptoId = 'btc' | 'eth' | 'usdt' | 'bnb' | 'sol' | 'ada' | 'xrp' | 'dot' | 'doge' | 'avax';
+
+interface CryptoOption {
+  id: number;
+  name: string;
+  symbol: string;
+  fiatPrice: number;
+  firestoreCollectionName: string;
+}
 
 interface DateRange {
   min: string;
@@ -31,20 +39,6 @@ const analysisTypes = [
   { value: 'min' as AnalysisType, label: 'Minimum' },
   { value: 'avg' as AnalysisType, label: 'Mean' },
   { value: 'standard-deviation' as AnalysisType, label: 'Standard Deviation' }
-];
-
-// TODO: Replace mock data with API call in production
-const cryptocurrencies = [
-  { id: 'btc' as CryptoId, label: 'Bitcoin' },
-  { id: 'eth' as CryptoId, label: 'Ethereum' },
-  { id: 'usdt' as CryptoId, label: 'Tether' },
-  { id: 'bnb' as CryptoId, label: 'Binance Coin' },
-  { id: 'sol' as CryptoId, label: 'Solana' },
-  { id: 'ada' as CryptoId, label: 'Cardano' },
-  { id: 'xrp' as CryptoId, label: 'XRP' },
-  { id: 'dot' as CryptoId, label: 'Polkadot' },
-  { id: 'doge' as CryptoId, label: 'Dogecoin' },
-  { id: 'avax' as CryptoId, label: 'Avalanche' }
 ];
 
 // TODO: Replace mock data with API call in production
@@ -69,8 +63,19 @@ const formatMGA = (value: number) => {
 
 export const Analysis = () => {
   const [selectedAnalysis, setSelectedAnalysis] = useState<AnalysisType | ''>('');
-  const [selectedCryptos, setSelectedCryptos] = useState<CryptoId[]>([]);
+  const [selectedCryptos, setSelectedCryptos] = useState<CryptoOption[]>([]);
   const [dateRange, setDateRange] = useState<DateRange>({ min: '', max: '' });
+
+  const [cryptoOptions, setCryptoOptions] = useState<CryptoOption[]>([]);
+
+  useEffect(() => {
+    const loadOptions = async () => {
+      const options = await fetchCryptoOptions();
+      setCryptoOptions(options.data);
+    };
+
+    loadOptions();
+  }, []);
 
   return (
     <div className="space-y-6">
@@ -101,20 +106,20 @@ export const Analysis = () => {
           <div className="space-y-2">
             <Label>Cryptocurrencies</Label>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-              {cryptocurrencies.map((crypto) => (
+              {cryptoOptions.map((crypto: CryptoOption) => (
                 <div key={crypto.id} className="flex items-center space-x-2">
                   <Checkbox
-                    id={crypto.id}
-                    checked={selectedCryptos.includes(crypto.id)}
+                    id={`${crypto.id}`}
+                    checked={selectedCryptos.includes(crypto)}
                     onCheckedChange={(checked) => {
                       if (checked) {
-                        setSelectedCryptos([...selectedCryptos, crypto.id]);
+                        setSelectedCryptos([...selectedCryptos, crypto]);
                       } else {
-                        setSelectedCryptos(selectedCryptos.filter(id => id !== crypto.id));
+                        setSelectedCryptos(selectedCryptos.filter(cryptoItem => cryptoItem.id !== crypto.id));
                       }
                     }}
                   />
-                  <Label htmlFor={crypto.id} className="text-sm">{crypto.label}</Label>
+                  <Label htmlFor={`${crypto.id}`} className="text-sm">{crypto.name}</Label>
                 </div>
               ))}
             </div>
