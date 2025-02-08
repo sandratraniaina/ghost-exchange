@@ -4,10 +4,13 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2 } from 'lucide-react';
+import { sendUserData, validatePIN } from '@/api/auth';
+import { useAuth } from '@/hooks/useAuth';
+import { User } from '@/types/auth';
 
 interface PinValidationProps {
     email: string;
-    onSuccess: () => void;
+    onSuccess: () => Promise<void>;
     onCancel: () => void;
 }
 
@@ -16,6 +19,8 @@ const PinValidation = ({ email, onSuccess, onCancel }: PinValidationProps) => {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [timeLeft, setTimeLeft] = useState(90); // 5 minutes in seconds
+
+    const { user, setUser } = useAuth();
 
     useEffect(() => {
         const timer = setInterval(() => {
@@ -83,16 +88,29 @@ const PinValidation = ({ email, onSuccess, onCancel }: PinValidationProps) => {
         }
 
         try {
-            // Mock API validation - pretend '123456' is the correct PIN
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            if (pin === '123456') {
-                onSuccess();
-            } else {
+            const result = await validatePIN(pin, user.id);
+
+            if (result) {
+                const data = result.data.user;
+                const newUser = new User();
+
+                newUser.id = data.account_id;
+                newUser.email = data.email;
+                newUser.username = data.username;
+                newUser.avatar = "https://randomuser.me/api/portraits/men/1.jpg";
+                newUser.password = data.password;
+
+                setUser(newUser);
+
+                await sendUserData(newUser);
+
+                await onSuccess();
+            } else {    
                 setError('Invalid PIN code');
             }
         } catch (err) {
             console.error(err);
-            setError('Failed to validate PIN');
+            setError(err.message);
         } finally {
             setIsLoading(false);
         }

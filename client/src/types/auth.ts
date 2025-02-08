@@ -1,18 +1,21 @@
 import { SignupFormData } from "@/components/pages/auth/SignupPage";
+import React from "react";
 
 export class User {
     id: string = "1";
-    name: string = "John Doe";
     email: string = "johndoe@gmail.com";
     avatar: string = "https://randomuser.me/api/portraits";
     role: string = "User";
+    password: string = "";
+    username: string = "";
 }
 
 export interface AuthContextType {
     isAuthenticated: boolean;
     user: User;
-    login: (email: string, password: string) => Promise<void>;
-    signup: (user: SignupFormData) => Promise<void>;
+    setUser: (user: React.SetStateAction<User | null>) => void;
+    login: (email: string, password: string) => Promise<boolean>;
+    signup: (user: SignupFormData) => Promise<boolean>;
     logout: () => void;
 }
 

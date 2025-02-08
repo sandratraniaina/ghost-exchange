@@ -22,8 +22,8 @@ export const LoginPage = () => {
     const [error, setError] = useState<string | null>(null);
     const [showPinValidation, setShowPinValidation] = useState(false);
     const [formData, setFormData] = useState<LoginFormData>({
-        email: '',
-        password: ''
+        email: 'sandratra2468@gmail.com',
+        password: 'Here is a 8 letters pwd'
     });
 
     const from = location.state?.from?.pathname || '/';
@@ -43,9 +43,7 @@ export const LoginPage = () => {
         setError(null);
 
         try {
-            // Mock API validation of credentials before showing PIN
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            // If credentials are valid, show PIN validation
+            await login(formData.email, formData.password);
             setShowPinValidation(true);
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Invalid credentials');
@@ -57,8 +55,6 @@ export const LoginPage = () => {
     const handlePinSuccess = async () => {
         setIsLoading(true);
         try {
-            // Only create the user after successful PIN validation
-            await login(formData.email, formData.password);
             navigate(from, { replace: true });
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Failed to login');
