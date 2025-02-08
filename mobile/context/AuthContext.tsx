@@ -1,7 +1,7 @@
 import { useRouter, useSegments } from "expo-router";
 import { createContext, useEffect, useState } from "react";
 import { signInWithEmailAndPassword, signOut, onAuthStateChanged, User as FirebaseUser } from "firebase/auth";
-import { doc, getDoc } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, query, where } from "firebase/firestore";
 import { auth, db } from "@/firebase"; // Import Firebase auth & Firestore
 
 class User {
@@ -27,40 +27,35 @@ export function AuthProvider({ children }: { readonly children: React.ReactNode 
     const segments = useSegments();
     const router = useRouter();
 
-    // Fetch user details from Firestore
     const fetchUserData = async (email: string) => {
         try {
-            const userDoc = await getDoc(doc(db, "account", email));
-            if (userDoc.exists()) {
+            const usersCollection = collection(db, "account");
+            const q = query(usersCollection, where("email", "==", email)); // Query by email
+
+            const querySnapshot = await getDocs(q);
+
+            if (querySnapshot.size > 0) {
+                const userDoc = querySnapshot.docs[0]; // Get the first document (assuming only one match)
                 const userData = userDoc.data();
-                setUser({
+                const user: User = {
                     id: userDoc.id,
                     email: userData.email,
                     username: userData.username,
                     avatar: userData.avatar,
-                    balance: userData.balance
-                });
+                    balance: userData.fiatBalance
+                };
+                return user;
             } else {
-                console.log("No user found in Firestore.");
-                setUser(null);
+                console.log("No user found with that email.");
+                return null;
             }
         } catch (error) {
             console.error("Error fetching user data:", error);
+            return null;
         }
     };
 
     // Handle Firebase authentication state changes
-    useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, (firebaseUser: FirebaseUser | null) => {
-            if (firebaseUser) {
-                fetchUserData(firebaseUser.email!);
-            } else {
-                setUser(null);
-            }
-        });
-
-        return () => unsubscribe();
-    }, []);
 
     // Redirect to login if user is not authenticated
     useEffect(() => {
@@ -74,10 +69,7 @@ export function AuthProvider({ children }: { readonly children: React.ReactNode 
     const login = async (email: string, password: string) => {
         try {
             await signInWithEmailAndPassword(auth, email, password);
-            const newUser = new User();
-            newUser.email = email; 
-            setUser(newUser);
-            console.log("I am logged in");
+            setUser(await fetchUserData(email));
         } catch (error) {
             console.error("Login failed:", error.message);
             throw error;
