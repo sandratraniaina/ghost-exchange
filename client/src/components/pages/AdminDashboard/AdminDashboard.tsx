@@ -88,8 +88,8 @@ const AdminDashboard = () => {
                         </SelectTrigger>
                         <SelectContent>
                             <SelectItem value="all">All Types</SelectItem>
-                            <SelectItem value="CREDIT">Credit</SelectItem>
-                            <SelectItem value="DEBIT">Debit</SelectItem>
+                            <SelectItem value="DEPOSIT">Deposit</SelectItem>
+                            <SelectItem value="WITHDRAW">Withdraw</SelectItem>
                         </SelectContent>
                     </Select>
 
