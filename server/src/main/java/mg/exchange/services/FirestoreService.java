@@ -3,7 +3,9 @@ package mg.exchange.services;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 
@@ -18,7 +20,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.Timestamp;
@@ -37,7 +42,6 @@ import org.slf4j.Logger;
 @Service
 public class FirestoreService {
     private static final Logger logger = LoggerFactory.getLogger(FirestoreService.class);
-
 
     private final Firestore db;
 
@@ -121,79 +125,87 @@ public class FirestoreService {
     }
 
     private <T> void handleDocumentAdded(DocumentSnapshot document, Class<T> entityClass,
-                                         JpaRepository<T, Long> repository) {
+            JpaRepository<T, Long> repository) {
         try {
             Map<String, Object> data = document.getData();
-            
-
             if (data != null) {
-                // Correction pour timestamp
-                if (data.containsKey("timestamp")) {
-                    Object timestampObj = data.get("timestamp");
-                    LocalDateTime localDateTime = convertToLocalDateTime(timestampObj);
-                    data.put("timestamp", localDateTime);
+                Long id = Long.parseLong(document.getId());
+                Optional<T> existingEntity = repository.findById(id);
+                if (existingEntity.isPresent()) {
+                    ObjectMapper objectMapper = new ObjectMapper();
+                    objectMapper.registerModule(new JavaTimeModule());
+                    objectMapper.updateValue(existingEntity.get(), data);
+                    repository.save(existingEntity.get());
+                } else {
+                    data.put("version", 0L);
+                    if (data.containsKey("timestamp")) {
+                        Object timestampObj = data.get("timestamp");
+                        LocalDateTime localDateTime = convertToLocalDateTime(timestampObj);
+                        data.put("timestamp", localDateTime);
+                    }
+                    if (data.containsKey("validationTimestamp")) {
+                        Object validationTimestampObj = data.get("validationTimestamp");
+                        LocalDateTime validationDateTime = convertToLocalDateTime(validationTimestampObj);
+                        data.put("validationTimestamp", validationDateTime);
+                    }
+
+                    T entity = createEntityFromMap(data, entityClass);
+                    repository.save(entity);
                 }
 
-                // Correction pour validationTimestamp
-                if (data.containsKey("validationTimestamp")) {
-                    Object validationTimestampObj = data.get("validationTimestamp");
-                    LocalDateTime validationDateTime = convertToLocalDateTime(validationTimestampObj);
-                    data.put("validationTimestamp", validationDateTime);
-                }
+                logger.info("Document processed successfully: " + document.getId());
             }
-
-            // Utiliser une création manuelle de l'entité au lieu de document.toObject()
-            T entity = createEntityFromMap(data, entityClass);
-            repository.save(entity);
-            logger.info("Document added: " + document.getId());
         } catch (Exception e) {
-            logger.error("Failed to handle document added: " + document.getId(), e);
-            logger.error("Failed to handle document added: " + document, e);
+            logger.error("Failed to handle document added: " + document.getId() + " - " + e.getMessage());
         }
     }
 
-
     private LocalDateTime convertToLocalDateTime(Object timestampObj) {
-        if (timestampObj instanceof Timestamp) {
-            return FirestoreTimeConverter.toLocalDateTime((Timestamp) timestampObj);
-        } else if (timestampObj instanceof String) {
-            return LocalDateTime.parse((String) timestampObj);
+        LocalDateTime result = null;
+        try {
+            if (timestampObj instanceof Timestamp) {
+                logger.info("Converting Timestamp to LocalDateTime");
+                result = FirestoreTimeConverter.toLocalDateTime((Timestamp) timestampObj);
+            } else if (timestampObj instanceof String) {
+                logger.info("Converting String to LocalDateTime");
+                LocalDateTime parsed = LocalDateTime.parse((String) timestampObj);
+                result = parsed.truncatedTo(ChronoUnit.MICROS);
+            }
+            if (result == null) {
+                logger.error("Error of type timestamp", new IllegalArgumentException("Unknown timestamp format: " + timestampObj));
+            }
+        } catch (Exception e) {
+            logger.error("Error converting timestamp: " + timestampObj, e);
         }
-        throw new IllegalArgumentException("Unknown timestamp format: " + timestampObj);
+        return result;
     }
 
     private <T> T createEntityFromMap(Map<String, Object> data, Class<T> entityClass) throws Exception {
+        logger.info("Data from Firestore: " + data);
         ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new JavaTimeModule()); // Permet la conversion LocalDateTime
-        return objectMapper.convertValue(data, entityClass);
+        objectMapper.registerModule(new JavaTimeModule());
+        T entity = objectMapper.convertValue(data, entityClass);
+        logger.info("Entity created: " + entity);
+        return entity;
     }
 
-
-
-
     private <T> void handleDocumentModified(DocumentSnapshot document, Class<T> entityClass,
-                                            JpaRepository<T, Long> repository) {
+            JpaRepository<T, Long> repository) {
         try {
             Map<String, Object> data = document.getData();
-            
 
             if (data != null) {
-                // Correction pour timestamp
                 if (data.containsKey("timestamp")) {
                     Object timestampObj = data.get("timestamp");
                     LocalDateTime localDateTime = convertToLocalDateTime(timestampObj);
                     data.put("timestamp", localDateTime);
                 }
-
-                // Correction pour validationTimestamp
                 if (data.containsKey("validationTimestamp")) {
                     Object validationTimestampObj = data.get("validationTimestamp");
                     LocalDateTime validationDateTime = convertToLocalDateTime(validationTimestampObj);
                     data.put("validationTimestamp", validationDateTime);
                 }
             }
-
-            // Utiliser une création manuelle de l'entité au lieu de document.toObject()
             T entity = createEntityFromMap(data, entityClass);
             repository.save(entity);
             logger.info("Document modified: " + document.getId());
@@ -201,7 +213,6 @@ public class FirestoreService {
             logger.error("Failed to handle document modified: " + document.getId(), e);
         }
     }
-
 
     private <T> void handleDocumentRemoved(DocumentSnapshot document, JpaRepository<T, Long> repository) {
         try {

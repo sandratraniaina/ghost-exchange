@@ -9,6 +9,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 @Data
 @NoArgsConstructor
@@ -35,6 +36,10 @@ public class XeHistory implements FirestoreSyncable {
         return "xe_history";
     }
 
+    @Version
+    @Column(nullable = false)
+    private Long version = 0L;
+
     @Override
     public Long getId() {
         return id;
@@ -50,5 +55,22 @@ public class XeHistory implements FirestoreSyncable {
         if (timestamp != null) map.put("timestamp", timestamp.toString());
         
         return map;
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof XeHistory)) return false;
+        XeHistory xeHistory = (XeHistory) o;
+        return Objects.equals(id, xeHistory.id) &&
+               Objects.equals(timestamp, xeHistory.timestamp) &&
+               Objects.equals(fiatPrice, xeHistory.fiatPrice) &&
+               Objects.equals(version, xeHistory.version);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, timestamp, fiatPrice, version);
     }
 }

@@ -5,6 +5,9 @@ import mg.exchange.repository.SellOrderRepository;
 import mg.exchange.repository.UserRepository;
 import mg.exchange.repository.CryptocurrencyRepository;
 import lombok.RequiredArgsConstructor;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,8 +21,11 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class SellOrderService {
 
+    private static final Logger logger = LoggerFactory.getLogger(SellOrderService.class);
+
     private final SellOrderRepository sellOrderRepository;
     private final UserRepository userRepository;
+    private final UserService userService ;
     private final CryptocurrencyRepository cryptocurrencyRepository;
     private final LedgerService ledgerService;
     private final CommissionService commissionService;
@@ -36,19 +42,26 @@ public class SellOrderService {
                 .orElseThrow(() -> new RuntimeException("Sell Order not found with id: " + id));
     }
 
-    public SellOrder createSellOrder(SellOrder sellOrder) {
-        // Ensure the seller exists
+    public SellOrder createSellOrder(SellOrder sellOrder) throws Exception {
         User seller = userRepository.findById(sellOrder.getSeller().getId())
                 .orElseThrow(() -> new RuntimeException("Seller not found"));
-
-        // Ensure the cryptocurrency exists
         Cryptocurrency cryptocurrency = cryptocurrencyRepository.findById(sellOrder.getCryptocurrency().getId())
                 .orElseThrow(() -> new RuntimeException("Cryptocurrency not found"));
-
         sellOrder.setSeller(seller);
         sellOrder.setCryptocurrency(cryptocurrency);
+        Optional<CryptocurrencyWallet> walletOptional = cryptocurrencyWalletService.getWalletByUserIdAndCrypotCurrencyId(seller.getId(), cryptocurrency.getId());
+        if (walletOptional.isEmpty()) {
+            throw new Exception("You don't have a wallet for that crypto to sell");
+        }
+        CryptocurrencyWallet wallet = walletOptional.get();
+        if (wallet.getBalance().compareTo(sellOrder.getAmount()) < 0) {
+            throw new Exception("You don't have enough crypto for the amount you want to sell");
+        }
+        BigDecimal newBalance = wallet.getBalance().subtract(sellOrder.getAmount());
+        logger.info("balance : "+newBalance);
+        wallet.setBalance(newBalance);
+        cryptocurrencyWalletService.updateWallet(wallet.getId(), wallet);
         SellOrder sellOrderSaved = sellOrderRepository.save(sellOrder);
-        firestoreService.syncToFirestore(sellOrderSaved);
         return sellOrderSaved;
     }
 
@@ -100,20 +113,20 @@ public class SellOrderService {
     }
 
     @Transactional
-    public void buyCrypto(SellOrder sellOrder, User buyer) {
+    public void buyCrypto(SellOrder sellOrder, User buyer)throws Exception {
         if (sellOrder == null || buyer == null) {
             throw new IllegalArgumentException("Sell order and buyer must not be null");
         }
 
-        // Close the sell order
+        if(buyer.getFiatBalance().doubleValue() < sellOrder.getFiatPrice().doubleValue()){
+            throw new RuntimeException("Solde insuffisant");
+        }
+
         sellOrder.setIsOpen(false);
         sellOrderRepository.save(sellOrder);
 
-        // Retrieve commission details
         Commission com = commissionService.getCommissionById(1L);
-        System.out.println(com);
 
-        // Create and save ledger entry
         Ledger ledger = new Ledger();
         ledger.setSellOrder(sellOrder);
         ledger.setBuyer(buyer);
@@ -122,20 +135,6 @@ public class SellOrderService {
         ledger.setSalesCommission(com.getSalesCommission());
         ledgerService.createLedger(ledger);
 
-        // Get or create seller's wallet
-        CryptocurrencyWallet sellerWallet = cryptocurrencyWalletService
-                .getWalletByUserIdAndCrypotCurrencyId(sellOrder.getSeller().getId(),
-                        sellOrder.getCryptocurrency().getId())
-                .orElseGet(() -> {
-                    CryptocurrencyWallet newWallet = new CryptocurrencyWallet();
-                    newWallet.setId(0L);
-                    newWallet.setUser(sellOrder.getSeller());
-                    newWallet.setCryptocurrency(sellOrder.getCryptocurrency());
-                    newWallet.setBalance(BigDecimal.ZERO);
-                    return cryptocurrencyWalletService.createWallet(newWallet);
-                });
-
-        // Get or create buyer's wallet
         CryptocurrencyWallet buyerWallet = cryptocurrencyWalletService
                 .getWalletByUserIdAndCrypotCurrencyId(buyer.getId(), sellOrder.getCryptocurrency().getId())
                 .orElseGet(() -> {
@@ -147,13 +146,15 @@ public class SellOrderService {
                     return cryptocurrencyWalletService.createWallet(newWallet);
                 });
 
-        // Update wallet balances
-        sellerWallet.setBalance(sellerWallet.getBalance().subtract(sellOrder.getAmount()));
         buyerWallet.setBalance(buyerWallet.getBalance().add(sellOrder.getAmount()));
-
-        // Save updated wallets
-        cryptocurrencyWalletService.updateWallet(sellerWallet.getId(), sellerWallet);
         cryptocurrencyWalletService.updateWallet(buyerWallet.getId(), buyerWallet);
+
+        User seller = sellOrder.getSeller();
+        buyer.setFiatBalance(buyer.getFiatBalance().subtract(sellOrder.getFiatPrice()));
+        seller.setFiatBalance(seller.getFiatBalance().add(sellOrder.getFiatPrice()));
+        userService.updateUser(buyer.getId(),buyer);
+        userService.updateUser(seller.getId(),seller);
+        
     }
 
     @Transactional
