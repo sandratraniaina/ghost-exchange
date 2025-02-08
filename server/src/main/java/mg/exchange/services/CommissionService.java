@@ -50,7 +50,7 @@ public class CommissionService {
         firestoreService.deleteFromFirestore(commissionToDelete);
     }
 
-    public List<CommissionSummaryDTO> getCommissionSummary(Long cryptocurrency_id, String typeAnalyse, Timestamp min, Timestamp max) {
-        return commissionRepository.getCommissionSummary(cryptocurrency_id, typeAnalyse, min, max);
+    public CommissionSummaryDTO getCommissionSummary(Long cryptocurrency_id, String typeAnalyse, Timestamp min, Timestamp max) {
+        return commissionRepository.getCommissionSummarByCryptoCurrencyId(cryptocurrency_id, typeAnalyse, min, max);
     }
 }
