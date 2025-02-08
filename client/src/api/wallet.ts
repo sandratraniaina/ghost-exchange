@@ -11,11 +11,14 @@ export const fetchUserBalance = async (userId: number) => {
         const uri = `/users/balances`;
         const url = `http://${apiHost}${uri}`;
 
-        const requestBody = {
-            userId: userId
-        }
+        const formData = new FormData();
+        formData.append('userId', `${userId}`);
 
-        const response = await axios.post(url, requestBody);
+        const response = await axios.post(url, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        });
         return response.data;
     } catch (error) {
         console.error('Error fetching user wallet:', error);
