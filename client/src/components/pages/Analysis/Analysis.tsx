@@ -44,9 +44,9 @@ const analysisTypes = [
 
 const formatMGA = (value: number) => {
   if (value >= 1000000) {
-    return `${(value / 1000000).toFixed(1)}M`;
+    return `MGA{(value / 1000000).toFixed(1)}M`;
   } else if (value >= 1000) {
-    return `${(value / 1000).toFixed(0)}k`;
+    return `MGA{(value / 1000).toFixed(0)}k`;
   } else {
     return value.toLocaleString();
   }
