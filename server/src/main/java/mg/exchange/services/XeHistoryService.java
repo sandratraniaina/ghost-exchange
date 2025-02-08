@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
@@ -27,11 +28,12 @@ public class XeHistoryService {
 
     private final XeHistoryRepository xeHistoryRepository;
     private final CryptocurrencyRepository cryptocurrencyRepository;
+    private final CryptocurrencyService cryptocurrencyService;
     @Value("${cryptocurrency.price.min}")
-    private double priceMin;
+    private double min;
 
     @Value("${cryptocurrency.price.max}")
-    private double priceMax;
+    private double max;
 
     @Value("${cryptocurrency.schedule.interval}")
     private long scheduleInterval;
@@ -83,16 +85,24 @@ public class XeHistoryService {
     public void generateNewExchanges() {
         List<Cryptocurrency> cryptocurrencies = cryptocurrencyRepository.findAll();
         Random random = new Random();
+        List<XeHistory> newXeHistories = new ArrayList<>();
+
         for (Cryptocurrency cryptocurrency : cryptocurrencies) {
-            double randomPriceValue = priceMin + (priceMax - priceMin) * random.nextDouble();
-            BigDecimal randomPrice = new BigDecimal(randomPriceValue)
-                    .setScale(2, RoundingMode.HALF_UP);
+            BigDecimal lastPrice = cryptocurrency.getFiatPrice();
+            double percentageChange = min + (max - min) * random.nextDouble();
+            BigDecimal newPrice = lastPrice.multiply(BigDecimal.ONE.add(BigDecimal.valueOf(percentageChange / 100)))
+                                        .setScale(2, RoundingMode.HALF_UP);
             XeHistory xeHistory = new XeHistory();
             xeHistory.setCryptocurrency(cryptocurrency);
-            xeHistory.setFiatPrice(randomPrice);
+            xeHistory.setFiatPrice(newPrice);
             xeHistory.setTimestamp(LocalDateTime.now());
-            createXeHistory(xeHistory);
+            newXeHistories.add(xeHistory);
+
+            cryptocurrency.setFiatPrice(newPrice);
+            cryptocurrencyService.updateCryptocurrency(cryptocurrency.getId(), cryptocurrency);
+
         }
+        xeHistoryRepository.saveAll(newXeHistories);
     }
 
     public List<XeHistory> findHistory(List<Cryptocurrency> cryptocurrencies, Integer interval) {
