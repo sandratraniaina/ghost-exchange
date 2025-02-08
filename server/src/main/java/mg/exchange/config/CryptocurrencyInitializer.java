@@ -2,6 +2,7 @@ package mg.exchange.config;
 
 import mg.exchange.models.Commission;
 import mg.exchange.repository.CommissionRepository;
+import mg.exchange.services.CommissionService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,11 +18,12 @@ import java.util.List;
 public class CryptocurrencyInitializer implements CommandLineRunner {
 
     private final CryptocurrencyRepository cryptocurrencyRepository;
-    private final CommissionRepository commissionRepository;
+    private final CommissionService commissionService;
 
-    public CryptocurrencyInitializer(CryptocurrencyRepository cryptocurrencyRepository, CommissionRepository commissionRepository) {
+
+    public CryptocurrencyInitializer(CryptocurrencyRepository cryptocurrencyRepository, CommissionService commissionService) {
         this.cryptocurrencyRepository = cryptocurrencyRepository;
-        this.commissionRepository = commissionRepository;
+        this.commissionService = commissionService;
     }
 
     @Override
@@ -46,11 +48,9 @@ public class CryptocurrencyInitializer implements CommandLineRunner {
         } else {
             System.out.println("Cryptocurrencies already exist. Skipping initialization.");
         }
-        if (commissionRepository.count() == 0) {
-            commissionRepository.save(new Commission(1L, new BigDecimal(0.13), new BigDecimal(0.15)));
-            System.out.println("Commissions initialized successfully!");
-        } else {
-            System.out.println("Commissions already exist. Skipping initialization.");
+        if (commissionService.getAllCommissions().size()==0) {
+            Commission commission = new Commission(null,new BigDecimal(0.13), new BigDecimal(0.15));
+            commissionService.createCommission(commission);
         }
     }
 }
