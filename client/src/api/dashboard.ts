@@ -1,7 +1,7 @@
 export const getOpenTransaction = async () => {
     try {
         const host = import.meta.env.VITE_API_HOST;
-        const response = await fetch(`${host}/transactions?type=open`, {
+        const response = await fetch(`http://${host}/transactions?type=open`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
