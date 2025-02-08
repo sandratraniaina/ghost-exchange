@@ -77,6 +77,17 @@ public class TransactionService {
         transaction.setTransactionType(transactionDetails.getTransactionType());
         transaction.setTimestamp(transactionDetails.getTimestamp());
         transaction.setValidationTimestamp(transactionDetails.getValidationTimestamp());
+
+        //Udapte the balance of the user
+        if (transaction.getTransactionType() == TransactionType.DEPOSIT) {
+            User user = transaction.getUser();
+            user.setFiatBalance(user.getFiatBalance().add(transaction.getAmount()));
+            userRepository.save(user);
+        } else if (transaction.getTransactionType() == TransactionType.WITHDRAW) {
+            User user = transaction.getUser();
+            user.setFiatBalance(user.getFiatBalance().subtract(transaction.getAmount()));
+            userRepository.save(user);
+        }
         firestoreService.syncToFirestore(transaction);
         return transactionRepository.save(transaction);
     }
