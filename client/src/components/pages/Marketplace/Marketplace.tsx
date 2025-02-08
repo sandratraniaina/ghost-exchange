@@ -9,7 +9,8 @@ import {
 } from '@/components/ui/select';
 import { fetchCryptoOptions } from '@/api/crypto';
 import { useToast } from '@/hooks/use-toast';
-import { getSellOrders } from '@/api/sellOrder';
+import { buyCrypto, getSellOrders } from '@/api/sellOrder';
+import { useAuth } from '@/hooks/useAuth';
 
 interface CryptoOption {
     id: number;
@@ -49,6 +50,7 @@ export const Marketplace = () => {
     const [selectedCrypto, setSelectedCrypto] = useState<string>('all');
     const [loadingOptions, setLoadingOptions] = useState(true);
 
+    const { user } = useAuth();
     const { toast } = useToast();
 
     useEffect(() => {
@@ -142,7 +144,8 @@ export const Marketplace = () => {
                             price={order.fiatPrice}
                             cryptoName={order.cryptocurrency.name}
                             cryptoSymbol={order.cryptocurrency.symbol}
-                            handleBuy={() => console.log(`Buying from ${order.seller.username}`)}
+                            canBuy={order.fiatPrice <= user.fiatBalance}
+                            handleBuy={() => buyCrypto(order.id, parseInt(user.id))}
                         />
                     ))
                 ) : (

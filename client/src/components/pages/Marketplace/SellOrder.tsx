@@ -11,6 +11,7 @@ interface CryptoCardProps {
     cryptoSymbol: string;
     volume: number;
     price: number;
+    canBuy: boolean;
     handleBuy: () => void;
 }
 
@@ -21,6 +22,7 @@ const SellOrder: React.FC<CryptoCardProps> = ({
     cryptoSymbol,
     volume,
     price,
+    canBuy,
     handleBuy,
 }) => {
     return (
@@ -58,8 +60,7 @@ const SellOrder: React.FC<CryptoCardProps> = ({
                     </div>
                 </div>
 
-                {/* Buy Button */}
-                <Button onClick={handleBuy} className="w-full">
+                <Button onClick={handleBuy} className="w-full" disabled={!canBuy}>
                     BUY
                 </Button>
             </CardContent>
