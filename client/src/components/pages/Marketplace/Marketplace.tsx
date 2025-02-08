@@ -53,6 +53,25 @@ export const Marketplace = () => {
     const { user } = useAuth();
     const { toast } = useToast();
 
+    const handleBuy = async (sellOrderId: number, buyerId: number) => {
+        const response = await buyCrypto(sellOrderId, buyerId);
+
+        if (!response?.success) {
+            toast({
+                title: "Error",
+                description: "Failed to buy cryptocurrency. Please check your connection and try again.",
+                variant: "destructive",
+            });
+            return;
+        }
+
+        toast({
+            title: "Success",
+            description: "Cryptocurrency bought successfully!",
+            className: "bg-green-600 text-white"
+        });
+    }
+
     useEffect(() => {
         const loadOptions = async () => {
             const options = await fetchCryptoOptions();
@@ -145,7 +164,7 @@ export const Marketplace = () => {
                             cryptoName={order.cryptocurrency.name}
                             cryptoSymbol={order.cryptocurrency.symbol}
                             canBuy={order.fiatPrice <= user.fiatBalance}
-                            handleBuy={() => buyCrypto(order.id, parseInt(user.id))}
+                            handleBuy={() => handleBuy(order.id, parseInt(user.id))}
                         />
                     ))
                 ) : (
