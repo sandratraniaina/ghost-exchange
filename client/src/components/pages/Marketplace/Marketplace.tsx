@@ -49,27 +49,49 @@ export const Marketplace = () => {
     const [sellOrders, setSellOrders] = useState<SellOrder[]>([]);
     const [selectedCrypto, setSelectedCrypto] = useState<string>('all');
     const [loadingOptions, setLoadingOptions] = useState(true);
+    const [isLoading, setIsLoading] = useState<boolean[]>([]);
 
     const { user } = useAuth();
     const { toast } = useToast();
 
-    const handleBuy = async (sellOrderId: number, buyerId: number) => {
-        const response = await buyCrypto(sellOrderId, buyerId);
+    const handleBuy = async (sellOrderId: number, buyerId: number, sellOrderIndex: number) => {
+        try {
+            setIsLoading(prevLoading => {
+                const newLoading = [...prevLoading];
+                newLoading[sellOrderIndex] = true;
+                return newLoading;
+            });
 
-        if (!response?.success) {
+            const response = await buyCrypto(sellOrderId, buyerId);
+
+            if (response?.status != 200) {
+                throw new Error;
+            } else if (response?.status == 200 && !response?.success) {
+                toast({
+                    title: "Denied",
+                    description: "Operation denied. You have insufficient balance.",
+                    className: "bg-yellow-500 text-black",
+                });
+            } else {
+                toast({
+                    title: "Success",
+                    description: "Cryptocurrency bought successfully!",
+                    className: "bg-green-600 text-white"
+                });
+            }
+        } catch {
             toast({
                 title: "Error",
                 description: "Failed to buy cryptocurrency. Please check your connection and try again.",
                 variant: "destructive",
             });
-            return;
+        } finally {
+            setIsLoading(prevLoading => {
+                const newLoading = [...prevLoading];
+                newLoading[sellOrderIndex] = false;
+                return newLoading;
+            });
         }
-
-        toast({
-            title: "Success",
-            description: "Cryptocurrency bought successfully!",
-            className: "bg-green-600 text-white"
-        });
     }
 
     useEffect(() => {
@@ -106,6 +128,14 @@ export const Marketplace = () => {
             }
 
             setSellOrders(options.data);
+
+            // Preserve existing isLoading state if it exists and matches the new data length
+            if (isLoading.length === options.data.length) {
+                return; // Do nothing, keep the current isLoading state
+            }
+
+            // Otherwise, reset isLoading to match the new data
+            setIsLoading(Array(options.data.length).fill(false));
         };
 
         loadSellOrders();
@@ -154,7 +184,7 @@ export const Marketplace = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {filteredSellOrders.length > 0 ? (
-                    filteredSellOrders.map((order) => (
+                    filteredSellOrders.map((order, index) => (
                         <SellOrder
                             key={order.id}
                             username={order.seller.username}
@@ -164,7 +194,8 @@ export const Marketplace = () => {
                             cryptoName={order.cryptocurrency.name}
                             cryptoSymbol={order.cryptocurrency.symbol}
                             canBuy={order.fiatPrice <= user.fiatBalance}
-                            handleBuy={() => handleBuy(order.id, parseInt(user.id))}
+                            isLoading={isLoading[index]}
+                            handleBuy={() => handleBuy(order.id, parseInt(user.id), index)}
                         />
                     ))
                 ) : (

@@ -12,7 +12,7 @@ export const buyCrypto = async (sellOrderId: number, buyerId: number) => {
         const url = `http://${apiHost}${uri}`;
 
         const requestBody = {
-            "buyerId": buyerId
+            "id": buyerId
         };
 
         const response = await axios.post(url, requestBody);
@@ -31,7 +31,7 @@ export const fetchSellOrders = async () => {
             throw new Error('VITE_API_HOST environment variable is not defined.');
         }
 
-        const uri = '/sell-orders';
+        const uri = '/sell-orders?type=open';
         const url = `http://${apiHost}${uri}`;
 
         const response = await axios.get(url);
