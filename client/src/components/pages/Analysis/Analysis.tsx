@@ -1,10 +1,9 @@
 import { useState } from 'react';
-import { TrendingUp } from "lucide-react";
+import { TrendingUp, AlertTriangle } from "lucide-react";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
-import { AlertTriangle } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -140,10 +139,12 @@ export const Analysis = () => {
               />
             </div>
           </div>
-          <div className="flex items-center space-x-2 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4" role="alert">
-            <AlertTriangle className="h-5 w-5" />
-            <p>No date range was provided, displaying today's data.</p>
-          </div>
+          {!(dateRange.min || dateRange.max) && (
+            <div className="flex items-center space-x-2 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4" role="alert">
+              <AlertTriangle className="h-5 w-5" />
+              <p>No date range was provided, displaying today's data.</p>
+            </div>
+          )}
         </CardContent>
       </Card>
 
