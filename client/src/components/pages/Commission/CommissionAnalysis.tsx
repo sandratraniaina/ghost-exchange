@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { AlertTriangle, TrendingUp } from "lucide-react";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import {
   Card,
@@ -48,7 +47,7 @@ const formatMGA = (value: number) => {
 
 export const CommissionAnalysis = () => {
   const [selectedAnalysis, setSelectedAnalysis] = useState<AnalysisType | ''>('');
-  const [selectedCryptos, setSelectedCryptos] = useState<CryptoOption[]>([]);
+  const [selectedCrypto, setSelectedCrypto] = useState<string>('all');
   const [dateRange, setDateRange] = useState<DateRange>({ min: '', max: '' });
   const [cryptoOptions, setCryptoOptions] = useState<CryptoOption[]>([]);
 
@@ -61,11 +60,10 @@ export const CommissionAnalysis = () => {
     loadOptions();
   }, []);
 
-  // Filter chart data based on selected cryptocurrencies
-  const filteredChartData = chartData.filter(item =>
-    selectedCryptos.length === 0 ||
-    selectedCryptos.some(crypto => crypto.name === item.crypto)
-  );
+  // Filter chart data based on selected cryptocurrency
+  const filteredChartData = selectedCrypto === 'all'
+    ? chartData
+    : chartData.filter(item => item.crypto === selectedCrypto);
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -97,27 +95,25 @@ export const CommissionAnalysis = () => {
               </Select>
             </div>
 
-            {/* Cryptocurrency Checkboxes */}
+            {/* Cryptocurrency Select */}
             <div className="space-y-2">
-              <Label>Cryptocurrencies</Label>
-              <div className="grid grid-cols-1 gap-2">
-                {cryptoOptions.map((crypto: CryptoOption) => (
-                  <div key={crypto.id} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`${crypto.id}`}
-                      checked={selectedCryptos.some(selected => selected.id === crypto.id)}
-                      onCheckedChange={(checked) => {
-                        if (checked) {
-                          setSelectedCryptos([...selectedCryptos, crypto]);
-                        } else {
-                          setSelectedCryptos(selectedCryptos.filter(cryptoItem => cryptoItem.id !== crypto.id));
-                        }
-                      }}
-                    />
-                    <Label htmlFor={`${crypto.id}`} className="text-sm">{crypto.name}</Label>
-                  </div>
-                ))}
-              </div>
+              <Label>Cryptocurrency</Label>
+              <Select
+                onValueChange={(value: string) => setSelectedCrypto(value)}
+                value={selectedCrypto}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select cryptocurrency" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Cryptocurrencies</SelectItem>
+                  {cryptoOptions.map((crypto: CryptoOption) => (
+                    <SelectItem key={crypto.id} value={crypto.name}>
+                      {crypto.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             {/* Date Range */}
@@ -161,9 +157,9 @@ export const CommissionAnalysis = () => {
               Commission Earnings
             </CardTitle>
             <CardDescription>
-              {selectedCryptos.length === 0
+              {selectedCrypto === 'all'
                 ? "Total Commission Earnings (MGA) for all cryptocurrencies"
-                : `Commission Earnings (MGA) for ${selectedCryptos.map(c => c.name).join(', ')}`}
+                : `Commission Earnings (MGA) for ${selectedCrypto}`}
             </CardDescription>
           </CardHeader>
 
