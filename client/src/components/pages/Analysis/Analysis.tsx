@@ -12,10 +12,11 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { fetchCryptoOptions } from '@/api/crypto';
+import { fetchCryptoAnalysis } from '@/api/analysis';
 
-type AnalysisType = '1q' | 'max' | 'min' | 'avg' | 'standard-deviation';
+export type AnalysisType = '1q' | 'max' | 'min' | 'avg' | 'standard-deviation';
 
-interface CryptoOption {
+export interface CryptoOption {
   id: number;
   name: string;
   symbol: string;
@@ -23,14 +24,14 @@ interface CryptoOption {
   firestoreCollectionName: string;
 }
 
-interface DateRange {
+export interface DateRange {
   min: string;
   max: string;
 }
 
 interface ChartDataItem {
-  crypto: string;
-  price: number;
+  cryptocurrency: CryptoOption;
+  value: number;
 }
 
 const analysisTypes = [
@@ -39,20 +40,6 @@ const analysisTypes = [
   { value: 'min' as AnalysisType, label: 'Minimum' },
   { value: 'avg' as AnalysisType, label: 'Mean' },
   { value: 'standard-deviation' as AnalysisType, label: 'Standard Deviation' }
-];
-
-// TODO: Replace mock data with API call in production
-const chartData: ChartDataItem[] = [
-  { crypto: 'Bitcoin', price: 45000 },
-  { crypto: 'Ethereum', price: 3200 },
-  { crypto: 'Tether', price: 10000 },
-  { crypto: 'Binance Coin', price: 3800 },
-  { crypto: 'Solana', price: 9500 },
-  { crypto: 'Cardano', price: 1.2 },
-  { crypto: 'XRP', price: 8500 },
-  { crypto: 'Polkadot', price: 1500 },
-  { crypto: 'Dogecoin', price: 1200 },
-  { crypto: 'Avalanche', price: 3500 }
 ];
 
 const formatMGA = (value: number) => {
@@ -67,6 +54,7 @@ export const Analysis = () => {
   const [dateRange, setDateRange] = useState<DateRange>({ min: '', max: '' });
 
   const [cryptoOptions, setCryptoOptions] = useState<CryptoOption[]>([]);
+  const [chartData, setChartData] = useState<ChartDataItem[]>([]);
 
   useEffect(() => {
     const loadOptions = async () => {
@@ -76,6 +64,19 @@ export const Analysis = () => {
 
     loadOptions();
   }, []);
+
+  useEffect(() => {
+    const analyzeData = async () => {
+      if (selectedAnalysis) {
+        const data = await fetchCryptoAnalysis(selectedAnalysis, selectedCryptos, dateRange);
+        if (data) {
+          setChartData(data);
+        }
+      }
+    };
+
+    analyzeData();
+  }, [selectedAnalysis, selectedCryptos, dateRange]);
 
   return (
     <div className="space-y-6">
@@ -169,7 +170,7 @@ export const Analysis = () => {
                 <BarChart data={chartData} margin={{ top: 20, right: 30, left: 35, bottom: 50 }}>
                   <CartesianGrid vertical={false} />
                   <XAxis
-                    dataKey="crypto"
+                    dataKey="cryptocurrency.name"
                     tickLine={false}
                     tickMargin={10}
                     axisLine={false}
@@ -188,7 +189,7 @@ export const Analysis = () => {
                     formatter={(value) => [`${value.toLocaleString()}`, "Price"]}
                   />
                   <Bar
-                    dataKey="price"
+                    dataKey="value"
                     fill="hsl(var(--primary))"
                     radius={[4, 4, 0, 0]}
                   />
