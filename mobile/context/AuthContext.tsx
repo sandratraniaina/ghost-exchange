@@ -1,18 +1,21 @@
 import { useRouter, useSegments } from "expo-router";
 import { createContext, useEffect, useState } from "react";
+import { signInWithEmailAndPassword, signOut, onAuthStateChanged, User as FirebaseUser } from "firebase/auth";
+import { doc, getDoc } from "firebase/firestore";
+import { auth, db } from "@/firebase"; // Import Firebase auth & Firestore
 
-type User = {
-    id: string;
-    email: string;
-    username: string;
-    avatar: string;
-    balance: number;
-} | null;
+class User {
+    id: string = "";
+    email: string = "";
+    username: string = "";
+    avatar: string = "";
+    balance: number = 0;
+} ;
 
 export const AuthContext = createContext<{
-    user: User;
-    login: (email: string, password: string) => void;
-    logout: () => void;
+    user: User | null;
+    login: (email: string, password: string) => Promise<void>;
+    logout: () => Promise<void>;
 }>({
     user: null,
     login: () => { },
@@ -20,7 +23,7 @@ export const AuthContext = createContext<{
 });
 
 export function AuthProvider({ children }: { readonly children: React.ReactNode }) {
-    const [user, setUser] = useState<User>(null);
+    const [user, setUser] = useState<User | null>(null);
     const segments = useSegments();
     const router = useRouter();
 
@@ -42,13 +45,7 @@ export function AuthProvider({ children }: { readonly children: React.ReactNode 
     }, [user, segments]);
 
     return (
-        <AuthContext.Provider
-            value={{
-                user,
-                login: () => setUser(mockUser),
-                logout: () => setUser(null),
-            }}
-        >
+        <AuthContext.Provider value={{ user, login, logout }}>
             {children}
         </AuthContext.Provider>
     );
