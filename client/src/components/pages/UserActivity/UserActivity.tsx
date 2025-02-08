@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -17,39 +17,6 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 
-// Sample data type
-type UserData = {
-    username: string;
-    avatarUrl?: string;
-    totalSales: number;
-    totalPurchase: number;
-    portfolioValue: number;
-};
-
-// TODO: Replace mock data with API call in production
-const sampleData: UserData[] = [
-    {
-        username: "alice_crypto",
-        avatarUrl: "/api/placeholder/32/32",
-        totalSales: 25000,
-        totalPurchase: 22000,
-        portfolioValue: 35000,
-    },
-    {
-        username: "bob_trader",
-        avatarUrl: "/api/placeholder/32/32",
-        totalSales: 18000,
-        totalPurchase: 20000,
-        portfolioValue: 28000,
-    },
-    {
-        username: "carol_investor",
-        avatarUrl: "/api/placeholder/32/32",
-        totalSales: 32000,
-        totalPurchase: 30000,
-        portfolioValue: 42000,
-    },
-];
 
 export const UserActivity = () => {
     const [dateRange, setDateRange] = React.useState({
@@ -57,20 +24,14 @@ export const UserActivity = () => {
         max: ''
     });
 
+    const [datas, setDatas] = useState([]);
+
     const handleFilter = () => {
         // TODO: Replace with API call in production
         // Add filter logic here
         console.log("Filtering data for date range:", dateRange);
     };
 
-    // Function to get initials from username
-    const getInitials = (username: string) => {
-        return username
-            .split('_')
-            .map(part => part[0])
-            .join('')
-            .toUpperCase();
-    };
     return (
         <Card className="w-full">
             <CardHeader>
@@ -113,26 +74,26 @@ export const UserActivity = () => {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {sampleData.map((user) => (
-                            <TableRow key={user.username}>
+                        {datas.map((data) => (
+                            <TableRow key={data.user.username}>
                                 <TableCell>
                                     <div className="flex items-center gap-2">
                                         <Avatar className="h-8 w-8 mr-2">
-                                            <AvatarImage src={user.avatarUrl} alt={user.username} />
-                                            <AvatarFallback>{getInitials(user.username)}</AvatarFallback>
+                                            <AvatarImage src={data.user.avatar} alt={data.user.username} />
+                                            <AvatarFallback>{data.user.username}</AvatarFallback>
                                         </Avatar>
 
-                                        <span className="font-medium">{user.username}</span>
+                                        <span className="font-medium">{data.user.username}</span>
                                     </div>
                                 </TableCell>
                                 <TableCell className="text-right">
-                                    {user.totalSales.toLocaleString()}
+                                    {data.totalSale.toLocaleString()}
                                 </TableCell>
                                 <TableCell className="text-right">
-                                    {user.totalPurchase.toLocaleString()}
+                                    {data.totalPurchase.toLocaleString()}
                                 </TableCell>
                                 <TableCell className="text-right">
-                                    {user.portfolioValue.toLocaleString()}
+                                    {data.portfolioValue.toLocaleString()}
                                 </TableCell>
                             </TableRow>
                         ))}
