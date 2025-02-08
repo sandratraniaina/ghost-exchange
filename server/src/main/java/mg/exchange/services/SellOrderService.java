@@ -148,6 +148,13 @@ public class SellOrderService {
 
         buyerWallet.setBalance(buyerWallet.getBalance().add(sellOrder.getAmount()));
         cryptocurrencyWalletService.updateWallet(buyerWallet.getId(), buyerWallet);
+
+        User seller = sellOrder.getSeller();
+        buyer.setFiatBalance(buyer.getFiatBalance().subtract(sellOrder.getFiatPrice()));
+        seller.setFiatBalance(seller.getFiatBalance().add(sellOrder.getFiatPrice()));
+        userService.updateUser(buyer.getId(),buyer);
+        userService.updateUser(seller.getId(),seller);
+        
     }
 
     @Transactional
