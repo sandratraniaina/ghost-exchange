@@ -23,7 +23,7 @@ public class CommissionController {
     private CommissionService commissionService;
 
     @PutMapping("/{id}")
-    public<T> ResponseEntity<Response<T>> updateCommission(
+    public <T> ResponseEntity<Response<T>> updateCommission(
             @PathVariable Long id,
             @RequestBody Commission commissionDetails) {
         try {
@@ -47,6 +47,16 @@ public class CommissionController {
             return ResponseUtil.sendResponse(HttpStatus.OK, true, "Commission summary retrieved successfully", (T) summary);
         } catch (Exception e) {
             return ResponseUtil.sendResponse(HttpStatus.BAD_REQUEST, false, "Error retrieving commission summary", (T) e.getMessage());
+        }
+    }
+
+    @GetMapping
+    public <T> ResponseEntity<Response<T>> getCommission() {
+        try {
+            Commission commissions = commissionService.getCommissionById(1L);
+            return ResponseUtil.sendResponse(HttpStatus.OK, true, "Commissions retrieved successfully", (T) commissions);
+        } catch (Exception e) {
+            return ResponseUtil.sendResponse(HttpStatus.BAD_REQUEST, false, "Error retrieving commissions", (T) e.getMessage());
         }
     }
 }
