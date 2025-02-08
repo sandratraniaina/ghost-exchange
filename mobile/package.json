@@ -48,7 +48,9 @@
     "react-native-screens": "~4.4.0",
     "react-native-web": "~0.19.13",
     "react-native-webview": "13.12.5",
-    "tamagui": "^1.124.3"
+    "tamagui": "^1.124.3",
+    "expo-device": "~7.0.2",
+    "expo-notifications": "~0.29.13"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
