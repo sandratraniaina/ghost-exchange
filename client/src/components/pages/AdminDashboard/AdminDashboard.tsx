@@ -18,7 +18,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Check, X } from "lucide-react";
 import { useToast } from '@/hooks/use-toast';
-import { getOpenTransaction } from '@/api/dashboard';
+import { acceptTransaction, declineTransaction, getOpenTransaction } from '@/api/dashboard';
 
 const AdminDashboard = () => {
     const { toast } = useToast();
@@ -46,8 +46,8 @@ const AdminDashboard = () => {
         userId: 'all'
     });
 
-    const handleAccept = (transactionId: number) => {
-        // TODO: Handle accept
+    const handleAccept = async (transactionId: number) => {
+        await acceptTransaction(transactionId);
     };
 
     const handleDecline = (transactionId: number) => {
