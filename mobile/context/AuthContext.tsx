@@ -10,7 +10,7 @@ class User {
     username: string = "";
     avatar: string = "";
     balance: number = 0;
-} ;
+};
 
 export const AuthContext = createContext<{
     user: User | null;
@@ -75,7 +75,8 @@ export function AuthProvider({ children }: { readonly children: React.ReactNode 
         try {
             await signInWithEmailAndPassword(auth, email, password);
             const newUser = new User();
-            newUser
+            newUser.email = email; 
+            setUser(newUser);
             console.log("I am logged in");
         } catch (error) {
             console.error("Login failed:", error.message);
