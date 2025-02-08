@@ -14,11 +14,7 @@ import java.util.List;
 public interface CommissionRepository extends JpaRepository<Commission, Long> {
     @Query(value = """
             SELECT
-                CASE
-                    WHEN :cryptocurrency_id IS NOT NULL THEN so.cryptocurrency_id
-                    ELSE NULL
-                    END AS cryptocurrency_id,
-            
+                so.cryptocurrency_id ,
                 -- Conditional SUM or AVG for sales commission
                 CASE
                     WHEN :type_analyse = 'sum' THEN SUM(l.sales_commission * so.amount * so.fiat_price)
