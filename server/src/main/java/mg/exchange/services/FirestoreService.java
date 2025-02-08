@@ -147,24 +147,30 @@ public class FirestoreService {
             repository.save(entity);
             logger.info("Document added: " + document.getId());
         } catch (Exception e) {
-            logger.error("Failed to handle document added: " + document.getId(), e);
-            logger.error("Failed to handle document added: " + document, e);
+            logger.error("Failed to handle document added: " + document.getId()+" - "+e.getMessage()+" "+e.getLocalizedMessage());
         }
     }
 
 
     private LocalDateTime convertToLocalDateTime(Object timestampObj) {
+        LocalDateTime result = null;
         if (timestampObj instanceof Timestamp) {
-            return FirestoreTimeConverter.toLocalDateTime((Timestamp) timestampObj);
+            logger.info("Converting Timestamp to LocaldateTime");
+            result = FirestoreTimeConverter.toLocalDateTime((Timestamp) timestampObj);
         } else if (timestampObj instanceof String) {
-            return LocalDateTime.parse((String) timestampObj);
+            logger.info("Converting String to LocaldateTime");
+            result = LocalDateTime.parse((String) timestampObj);
         }
-        throw new IllegalArgumentException("Unknown timestamp format: " + timestampObj);
+        if(result == null){
+            logger.error("Error of type timestamp",new IllegalArgumentException("Unknown timestamp format: " + timestampObj));
+        }
+        return result;
     }
 
     private <T> T createEntityFromMap(Map<String, Object> data, Class<T> entityClass) throws Exception {
+        logger.info("Creating entity from map : "+data);
         ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new JavaTimeModule()); // Permet la conversion LocalDateTime
+        objectMapper.registerModule(new JavaTimeModule());
         return objectMapper.convertValue(data, entityClass);
     }
 

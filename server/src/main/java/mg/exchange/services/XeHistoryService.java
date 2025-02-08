@@ -6,6 +6,9 @@ import mg.exchange.repository.XeHistoryRepository;
 import mg.exchange.repository.CryptocurrencyRepository;
 import lombok.RequiredArgsConstructor;
 
+import org.hibernate.StaleObjectStateException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -22,6 +25,8 @@ import java.util.Random;
 @Service
 @RequiredArgsConstructor
 public class XeHistoryService {
+
+    private static final Logger logger = LoggerFactory.getLogger(XeHistoryService.class);
 
     private final FirestoreService firestoreService;
     int DEFAULT_INTERVAL = 3;
@@ -85,23 +90,27 @@ public class XeHistoryService {
     public void generateNewExchanges() {
         List<Cryptocurrency> cryptocurrencies = cryptocurrencyRepository.findAll();
         Random random = new Random();
-        List<XeHistory> newXeHistories = new ArrayList<>();
 
         for (Cryptocurrency cryptocurrency : cryptocurrencies) {
-            BigDecimal lastPrice = cryptocurrency.getFiatPrice();
-            double percentageChange = min + (max - min) * random.nextDouble();
-            BigDecimal newPrice = lastPrice.multiply(BigDecimal.ONE.add(BigDecimal.valueOf(percentageChange / 100)))
-                                        .setScale(2, RoundingMode.HALF_UP);
-            XeHistory xeHistory = new XeHistory();
-            xeHistory.setCryptocurrency(cryptocurrency);
-            xeHistory.setFiatPrice(newPrice);
-            xeHistory.setTimestamp(LocalDateTime.now());
-            newXeHistories.add(xeHistory);
+            try {
+                BigDecimal lastPrice = cryptocurrency.getFiatPrice();
+                double percentageChange = min + (max - min) * random.nextDouble();
+                BigDecimal newPrice = lastPrice.multiply(BigDecimal.ONE.add(BigDecimal.valueOf(percentageChange / 100)))
+                                            .setScale(2, RoundingMode.HALF_UP);
+                XeHistory xeHistory = new XeHistory();
+                xeHistory.setCryptocurrency(cryptocurrency);
+                xeHistory.setFiatPrice(newPrice);
+                xeHistory.setTimestamp(LocalDateTime.now());
 
-            cryptocurrency.setFiatPrice(newPrice);
-            cryptocurrencyService.updateCryptocurrency(cryptocurrency.getId(), cryptocurrency);
-            xeHistoryRepository.save(xeHistory);
+                cryptocurrency.setFiatPrice(newPrice);
+                cryptocurrencyService.updateCryptocurrency(cryptocurrency.getId(), cryptocurrency);
 
+                createXeHistory(xeHistory);
+            } catch (StaleObjectStateException e) {
+                // Log the error and retry or skip
+                logger.error("Conflict detected for cryptocurrency: " + cryptocurrency.getId());
+                // Optionally, refresh the entity and retry
+            }
         }
     }
 
@@ -112,6 +121,8 @@ public class XeHistoryService {
         
         return xeHistoryRepository.findByCryptocurrencyInAndTimestampBetween(cryptocurrencies,startTime,endTime);
     }
+
+
 
     public List<XeHistory> getHistory(List<Cryptocurrency> cryptos, Integer interval){
         return findHistory(cryptos, interval);

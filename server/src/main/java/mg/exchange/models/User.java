@@ -63,7 +63,8 @@ public class User implements FirestoreSyncable {
         if (username != null) map.put("username", username);
         if (email != null) map.put("email", email);
         if (accountRole != null) map.put("accountRole", accountRole.name());
-        // if (fcmToken != null) map.put("fcmToken", fcmToken);
+        if (password != null) map.put("password", password);
+        if (fcmToken != null) map.put("fcmToken", fcmToken);
         
         return map;
     }

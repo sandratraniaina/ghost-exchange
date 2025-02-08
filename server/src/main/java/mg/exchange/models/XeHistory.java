@@ -35,6 +35,9 @@ public class XeHistory implements FirestoreSyncable {
         return "xe_history";
     }
 
+    @Version
+    private Long version;
+
     @Override
     public Long getId() {
         return id;

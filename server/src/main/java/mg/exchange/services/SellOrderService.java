@@ -5,6 +5,9 @@ import mg.exchange.repository.SellOrderRepository;
 import mg.exchange.repository.UserRepository;
 import mg.exchange.repository.CryptocurrencyRepository;
 import lombok.RequiredArgsConstructor;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +20,8 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class SellOrderService {
+
+    private static final Logger logger = LoggerFactory.getLogger(SellOrderService.class);
 
     private final SellOrderRepository sellOrderRepository;
     private final UserRepository userRepository;
@@ -53,7 +58,7 @@ public class SellOrderService {
             throw new Exception("You don't have enough crypto for the amount you want to sell");
         }
         BigDecimal newBalance = wallet.getBalance().subtract(sellOrder.getAmount());
-        System.out.println("balance : "+newBalance);
+        logger.info("balance : "+newBalance);
         wallet.setBalance(newBalance);
         cryptocurrencyWalletService.updateWallet(wallet.getId(), wallet);
         SellOrder sellOrderSaved = sellOrderRepository.save(sellOrder);
@@ -117,7 +122,6 @@ public class SellOrderService {
         sellOrderRepository.save(sellOrder);
 
         Commission com = commissionService.getCommissionById(1L);
-        System.out.println(com);
 
         Ledger ledger = new Ledger();
         ledger.setSellOrder(sellOrder);
