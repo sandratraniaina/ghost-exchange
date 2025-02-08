@@ -50,8 +50,8 @@ const AdminDashboard = () => {
         await acceptTransaction(transactionId);
     };
 
-    const handleDecline = (transactionId: number) => {
-        // TODO: Hande decline
+    const handleDecline = async (transactionId: number) => {
+        await declineTransaction(transactionId);
     };
 
     // Filter transactions based on selected filters
