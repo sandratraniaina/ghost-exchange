@@ -47,11 +47,37 @@ const AdminDashboard = () => {
     });
 
     const handleAccept = async (transactionId: number) => {
-        await acceptTransaction(transactionId);
+        try {
+            await acceptTransaction(transactionId);
+            toast({
+                title: "Success",
+                description: "Operation done successfully",
+                className: "bg-green-600 text-white"
+            })
+        } catch (error) {
+            toast({
+                title: "Error",
+                description: error?.message || "Operation done with errors",
+                variant: "destructive"
+            })
+        }
     };
 
     const handleDecline = async (transactionId: number) => {
-        await declineTransaction(transactionId);
+        try {
+            await declineTransaction(transactionId);
+            toast({
+                title: "Success",
+                description: "Operation done successfully",
+                className: "bg-green-600 text-white"
+            })
+        } catch (error) {
+            toast({
+                title: "Error",
+                description: error?.message || "Operation done with errors",
+                variant: "destructive"
+            })
+        }
     };
 
     // Filter transactions based on selected filters
