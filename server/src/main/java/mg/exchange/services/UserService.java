@@ -71,6 +71,10 @@ public class UserService {
         return userRepository.findByUsername(username);
     }
 
+    public Optional<User> getUserByEmail(String email) {
+        return userRepository.findUserByEmail(email);
+    }
+
     public User convertJsonToUser(String json) {
         try {
             return objectMapper.readValue(json, User.class);
