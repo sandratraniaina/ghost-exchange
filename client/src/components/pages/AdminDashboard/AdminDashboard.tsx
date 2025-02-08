@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
     Table,
     TableBody,
@@ -17,170 +17,29 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Check, X } from "lucide-react";
+import { useToast } from '@/hooks/use-toast';
+import { getOpenTransaction } from '@/api/dashboard';
 
 const AdminDashboard = () => {
-    const [transactions, setTransactions] = useState([
-        {
-            "id": 3,
-            "user": {
-                "id": 2,
-                "fiatBalance": 100.50,
-                "username": "john_doe",
-                "email": "john@example.com",
-                "accountRole": "CLIENT",
-                "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=john"
-            },
-            "amount": 250.00,
-            "transactionType": "DEBIT",
-            "timestamp": "2024-01-02T12:34:56",
-            "validationTimestamp": null,
-            "status": "PENDING"
-        },
-        {
-            "id": 4,
-            "user": {
-                "id": 3,
-                "fiatBalance": 500.75,
-                "username": "jane_smith",
-                "email": "jane@example.com",
-                "accountRole": "CLIENT",
-                "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=jane"
-            },
-            "amount": 1000.00,
-            "transactionType": "CREDIT",
-            "timestamp": "2024-01-03T09:15:22",
-            "validationTimestamp": "2024-01-03T09:30:00",
-            "status": "COMPLETED"
-        },
-        {
-            "id": 5,
-            "user": {
-                "id": 4,
-                "fiatBalance": 0.00,
-                "username": "alice_w",
-                "email": "alice@example.com",
-                "accountRole": "ADMIN",
-                "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=alice"
-            },
-            "amount": 750.00,
-            "transactionType": "CREDIT",
-            "timestamp": "2024-01-04T16:45:10",
-            "validationTimestamp": null,
-            "status": "PENDING"
-        },
-        {
-            "id": 6,
-            "user": {
-                "id": 5,
-                "fiatBalance": 1200.00,
-                "username": "bob_b",
-                "email": "bob@example.com",
-                "accountRole": "CLIENT",
-                "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=bob"
-            },
-            "amount": 300.00,
-            "transactionType": "DEBIT",
-            "timestamp": "2024-01-05T14:20:30",
-            "validationTimestamp": "2024-01-05T14:25:00",
-            "status": "COMPLETED"
-        },
-        {
-            "id": 7,
-            "user": {
-                "id": 6,
-                "fiatBalance": 50.00,
-                "username": "charlie_c",
-                "email": "charlie@example.com",
-                "accountRole": "CLIENT",
-                "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=charlie"
-            },
-            "amount": 200.00,
-            "transactionType": "CREDIT",
-            "timestamp": "2024-01-06T11:11:11",
-            "validationTimestamp": null,
-            "status": "PENDING"
-        },
-        {
-            "id": 8,
-            "user": {
-                "id": 7,
-                "fiatBalance": 800.00,
-                "username": "diana_d",
-                "email": "diana@example.com",
-                "accountRole": "CLIENT",
-                "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=diana"
-            },
-            "amount": 1500.00,
-            "transactionType": "CREDIT",
-            "timestamp": "2024-01-07T08:05:45",
-            "validationTimestamp": "2024-01-07T08:10:00",
-            "status": "COMPLETED"
-        },
-        {
-            "id": 9,
-            "user": {
-                "id": 8,
-                "fiatBalance": 300.00,
-                "username": "edward_e",
-                "email": "edward@example.com",
-                "accountRole": "CLIENT",
-                "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=edward"
-            },
-            "amount": 100.00,
-            "transactionType": "DEBIT",
-            "timestamp": "2024-01-08T17:55:20",
-            "validationTimestamp": null,
-            "status": "PENDING"
-        },
-        {
-            "id": 10,
-            "user": {
-                "id": 9,
-                "fiatBalance": 0.00,
-                "username": "fiona_f",
-                "email": "fiona@example.com",
-                "accountRole": "CLIENT",
-                "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=fiona"
-            },
-            "amount": 500.00,
-            "transactionType": "CREDIT",
-            "timestamp": "2024-01-09T10:10:10",
-            "validationTimestamp": "2024-01-09T10:15:00",
-            "status": "COMPLETED"
-        },
-        {
-            "id": 11,
-            "user": {
-                "id": 10,
-                "fiatBalance": 2000.00,
-                "username": "george_g",
-                "email": "george@example.com",
-                "accountRole": "CLIENT",
-                "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=george"
-            },
-            "amount": 200.00,
-            "transactionType": "DEBIT",
-            "timestamp": "2024-01-10T13:25:40",
-            "validationTimestamp": null,
-            "status": "PENDING"
-        },
-        {
-            "id": 12,
-            "user": {
-                "id": 11,
-                "fiatBalance": 150.00,
-                "username": "hannah_h",
-                "email": "hannah@example.com",
-                "accountRole": "CLIENT",
-                "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=hannah"
-            },
-            "amount": 50.00,
-            "transactionType": "DEBIT",
-            "timestamp": "2024-01-11T19:30:00",
-            "validationTimestamp": "2024-01-11T19:35:00",
-            "status": "COMPLETED"
+    const { toast } = useToast();
+    const [transactions, setTransactions] = useState([]);
+
+    useEffect(() => {
+        const loadData = async () => {
+            try {
+                const data = await getOpenTransaction();
+                setTransactions(data);
+            } catch (error) {
+                toast({
+                    title: "Error",
+                    description: error.message || "Error while fetching data",
+                    variant: "destructive"
+                });
+            }
         }
-    ]);
+
+        loadData();
+    }, []);
 
     const [filters, setFilters] = useState({
         transactionType: '',
