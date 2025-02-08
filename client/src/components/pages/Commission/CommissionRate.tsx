@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Percent } from "lucide-react";
+import { fetchCommissions } from '@/api/commission';
+import { useToast } from '@/hooks/use-toast';
 
 interface CommissionRates {
     buyCommission: number;
@@ -11,22 +13,34 @@ interface CommissionRates {
 }
 
 export const CommissionRate = () => {
-    // TODO: Replace mock data with API call in production
-    const [commissionRates, setCommissionRates] = useState<CommissionRates>({
-        buyCommission: 0.5,
-        sellCommission: 0.5
-    });
-
+    const [commissionRates, setCommissionRates] = useState<CommissionRates>({ buyCommission: 0, sellCommission: 0 });
     const [isEditing, setIsEditing] = useState(false);
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        // Ensure value is between 0 and 100
-        const numValue = Math.min(Math.max(parseFloat(value) || 0, 0), 100);
-        setCommissionRates(prev => ({
-            ...prev,
-            [name]: numValue
-        }));
+    const { toast } = useToast();
+
+    useEffect(() => {
+        const fetchCommissionRates = async () => {
+            const rates = await fetchCommissions();
+
+            if (rates) {
+                setCommissionRates({ buyCommission: rates.data.purchasesCommission, sellCommission: rates.data.salesCommission });
+            } else {
+                toast({
+                    title: "Error",
+                    description: "Failed to fetch commission rates. Please check your connection and try again.",
+                    variant: "destructive",
+                });
+            }
+        };
+
+        fetchCommissionRates();
+    });
+
+    const handleChange = (key: keyof CommissionRates, value: number) => {
+        setCommissionRates({
+            ...commissionRates,
+            [key]: value,
+        });
     };
 
     const handleSubmit = (e: React.MouseEvent) => {
@@ -63,8 +77,8 @@ export const CommissionRate = () => {
                                     step="0.1"
                                     min="0"
                                     max="100"
-                                    value={commissionRates.buyCommission}
-                                    onChange={handleChange}
+                                    value={commissionRates?.buyCommission}
+                                    onChange={(e) => handleChange("buyCommission", parseFloat(e.target.value))}
                                     disabled={!isEditing}
                                     className="pr-8"
                                 />
@@ -85,8 +99,8 @@ export const CommissionRate = () => {
                                     step="0.1"
                                     min="0"
                                     max="100"
-                                    value={commissionRates.sellCommission}
-                                    onChange={handleChange}
+                                    value={commissionRates?.sellCommission}
+                                    onChange={(e) => handleChange("sellCommission", parseFloat(e.target.value))}
                                     disabled={!isEditing}
                                     className="pr-8"
                                 />
