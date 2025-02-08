@@ -1,8 +1,10 @@
 import { useRouter, useSegments } from "expo-router";
 import { createContext, useEffect, useState } from "react";
 import { signInWithEmailAndPassword, signOut, onAuthStateChanged, User as FirebaseUser } from "firebase/auth";
-import { collection, doc, getDoc, getDocs, query, where } from "firebase/firestore";
-import { auth, db } from "@/firebase"; // Import Firebase auth & Firestore
+import { collection, doc, getDoc, getDocs, query, where, updateDoc } from "firebase/firestore";
+import { auth, db } from "@/firebase";
+import * as Device from 'expo-device';
+import * as Notifications from 'expo-notifications';
 
 class User {
     id: string = "";
@@ -27,15 +29,60 @@ export function AuthProvider({ children }: { readonly children: React.ReactNode 
     const segments = useSegments();
     const router = useRouter();
 
+    // Function to register for push notifications
+    async function registerForPushNotificationsAsync() {
+        let token;
+
+        if (Device.isDevice) {
+            const { status: existingStatus } = await Notifications.getPermissionsAsync();
+            let finalStatus = existingStatus;
+
+            if (existingStatus !== 'granted') {
+                const { status } = await Notifications.requestPermissionsAsync();
+                finalStatus = status;
+            }
+
+            if (finalStatus !== 'granted') {
+                console.log('Failed to get push token for push notification!');
+                return null;
+            }
+
+            token = (await Notifications.getExpoPushTokenAsync()).data;
+        } else {
+            console.log('Must use physical device for Push Notifications');
+        }
+
+        return token;
+    }
+
+    // Function to update FCM token in Firestore
+    const updateFCMToken = async (email: string, token: string) => {
+        try {
+            const usersCollection = collection(db, "account");
+            const q = query(usersCollection, where("email", "==", email));
+            const querySnapshot = await getDocs(q);
+
+            if (querySnapshot.size > 0) {
+                const userDoc = querySnapshot.docs[0];
+                await updateDoc(doc(db, "account", userDoc.id), {
+                    fcmToken: token
+                });
+                console.log("FCM token updated successfully");
+            }
+        } catch (error) {
+            console.error("Error updating FCM token:", error);
+        }
+    };
+
     const fetchUserData = async (email: string) => {
         try {
             const usersCollection = collection(db, "account");
-            const q = query(usersCollection, where("email", "==", email)); // Query by email
+            const q = query(usersCollection, where("email", "==", email));
 
             const querySnapshot = await getDocs(q);
 
             if (querySnapshot.size > 0) {
-                const userDoc = querySnapshot.docs[0]; // Get the first document (assuming only one match)
+                const userDoc = querySnapshot.docs[0];
                 const userData = userDoc.data();
                 const user: User = {
                     id: userDoc.id,
@@ -55,9 +102,6 @@ export function AuthProvider({ children }: { readonly children: React.ReactNode 
         }
     };
 
-    // Handle Firebase authentication state changes
-
-    // Redirect to login if user is not authenticated
     useEffect(() => {
         const isLoginPage = segments[0] === "login";
         if (!user && !isLoginPage) {
@@ -65,18 +109,23 @@ export function AuthProvider({ children }: { readonly children: React.ReactNode 
         }
     }, [user, segments]);
 
-    // Handle user login
     const login = async (email: string, password: string) => {
         try {
             await signInWithEmailAndPassword(auth, email, password);
-            setUser(await fetchUserData(email));
+            const userData = await fetchUserData(email);
+            setUser(userData);
+
+            // Generate and store FCM token after successful login
+            const token = await registerForPushNotificationsAsync();
+            if (token) {
+                await updateFCMToken(email, token);
+            }
         } catch (error) {
             console.error("Login failed:", error.message);
             throw error;
         }
     };
 
-    // Handle user logout
     const logout = async () => {
         try {
             await signOut(auth);
