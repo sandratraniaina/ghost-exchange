@@ -41,25 +41,25 @@ public class CryptocurrencyWallet implements FirestoreSyncable {
     }
 
     @Override
-public Map<String, Object> toFirestoreMap() {
-    Map<String, Object> map = new HashMap<>();
+    public Map<String, Object> toFirestoreMap() {
+        Map<String, Object> map = new HashMap<>();
 
-    if (id != null) {
-        map.put("id", id);
-    }
-    
-    if (user != null) {
-        map.put("user", user.toFirestoreMap());
-    }
-    
-    if (cryptocurrency != null) {
-        map.put("cryptocurrency", cryptocurrency.toFirestoreMap());
-    }
-    
-    if (balance != null) {
-        map.put("balance", balance);
-    }
+        if (id != null) {
+            map.put("id", id);
+        }
 
-    return map;
-}
+        if (user != null) {
+            map.put("user", user.toFirestoreMap());
+        }
+
+        if (cryptocurrency != null) {
+            map.put("cryptocurrency", cryptocurrency.toFirestoreMap());
+        }
+
+        if (balance != null) {
+            map.put("balance", balance);
+        }
+
+        return map;
+    }
 }
