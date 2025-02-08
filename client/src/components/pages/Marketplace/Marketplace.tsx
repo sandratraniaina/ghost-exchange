@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/select';
 import { fetchCryptoOptions } from '@/api/crypto';
 import { useToast } from '@/hooks/use-toast';
-import { buyCrypto, getSellOrders } from '@/api/sellOrder';
+import { buyCrypto, fetchSellOrders } from '@/api/sellOrder';
 import { useAuth } from '@/hooks/useAuth';
 
 interface CryptoOption {
@@ -94,7 +94,7 @@ export const Marketplace = () => {
 
     useEffect(() => {
         const loadSellOrders = async () => {
-            const options = await getSellOrders();
+            const options = await fetchSellOrders();
 
             if (!options?.success) {
                 toast({

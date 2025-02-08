@@ -23,7 +23,7 @@ export const buyCrypto = async (sellOrderId: number, buyerId: number) => {
     }
 }
 
-export const getSellOrders = async () => {
+export const fetchSellOrders = async () => {
     try {
         const apiHost = import.meta.env.VITE_API_HOST;
 
