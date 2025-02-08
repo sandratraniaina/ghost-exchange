@@ -43,9 +43,13 @@ const analysisTypes = [
 ];
 
 const formatMGA = (value: number) => {
-  return value >= 1000000
-    ? `${(value / 1000000).toFixed(1)}M`
-    : `${(value / 1000).toFixed(0)}k`;
+  if (value >= 1000000) {
+    return `${(value / 1000000).toFixed(1)}M`;
+  } else if (value >= 1000) {
+    return `${(value / 1000).toFixed(0)}k`;
+  } else {
+    return value.toLocaleString();
+  }
 };
 
 export const Analysis = () => {
