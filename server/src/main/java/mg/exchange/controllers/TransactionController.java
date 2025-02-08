@@ -51,7 +51,10 @@ public class TransactionController {
             transaction.updateTimestamp();
             transaction = transactionService.createTransaction(transaction);
             return ResponseUtil.sendResponse(HttpStatus.OK, true, "Transaction saved successfully", (T) transaction);
-        } catch (Exception e) {
+        }catch (RuntimeException re){
+            return ResponseUtil.sendResponse(HttpStatus.OK, false, "Error while trying to save transaction", (T)re.getMessage());
+        }
+        catch (Exception e) {
             return ResponseUtil.sendResponse(HttpStatus.BAD_REQUEST, false, "Error while trying to save transaction", (T)e.getMessage());
         }
     }
