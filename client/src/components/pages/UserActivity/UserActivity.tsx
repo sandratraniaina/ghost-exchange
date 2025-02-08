@@ -17,6 +17,7 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 import { getUserActivity } from '@/api/userActivity';
+import { toast } from '@/hooks/use-toast';
 
 
 export const UserActivity = () => {
@@ -38,7 +39,20 @@ export const UserActivity = () => {
     }, []);
 
     const handleFilter = async () => {
-        await loadActivities();    
+        try {
+            await loadActivities();
+            toast({
+                title: "Success",
+                description: "Data fetched succesfully",
+                className: "bg-green-600 text-white"
+            });
+        } catch (error) {
+            toast({
+                title: "Error",
+                description: error?.message || "Error while fetching data",
+                variant: "destructive"
+            });
+        }
     }
 
     return (
