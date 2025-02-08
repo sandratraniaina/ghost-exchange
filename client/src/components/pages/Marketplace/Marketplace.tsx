@@ -64,15 +64,21 @@ export const Marketplace = () => {
 
             const response = await buyCrypto(sellOrderId, buyerId);
 
-            if (!response?.success) {
+            if (response?.status != 200) {
                 throw new Error;
+            } else if (response?.status == 200 && !response?.success) {
+                toast({
+                    title: "Denied",
+                    description: "Operation denied. You have insufficient balance.",
+                    className: "bg-yellow-500 text-black",
+                });
+            } else {
+                toast({
+                    title: "Success",
+                    description: "Cryptocurrency bought successfully!",
+                    className: "bg-green-600 text-white"
+                });
             }
-
-            toast({
-                title: "Success",
-                description: "Cryptocurrency bought successfully!",
-                className: "bg-green-600 text-white"
-            });
         } catch {
             toast({
                 title: "Error",
