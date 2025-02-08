@@ -1,5 +1,6 @@
 package mg.exchange.controllers;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,6 +57,7 @@ public class SellOrderController {
             if(sellOrder == null){
                 throw new Exception("Cannot create a sell order of a value null");
             }
+            sellOrder.setTimestamp(new Timestamp(System.currentTimeMillis()).toLocalDateTime());
             sellOrder = sellOrderService.createSellOrder(sellOrder);
             return ResponseUtil.sendResponse(HttpStatus.OK, true, "Sell order created successfully", (T) sellOrder);
         } catch (Exception e) {
