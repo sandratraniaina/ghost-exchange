@@ -24,20 +24,20 @@ const AdminDashboard = () => {
     const { toast } = useToast();
     const [transactions, setTransactions] = useState([]);
 
-    useEffect(() => {
-        const loadData = async () => {
-            try {
-                const data = await getOpenTransaction();
-                setTransactions(data);
-            } catch (error) {
-                toast({
-                    title: "Error",
-                    description: error.message || "Error while fetching data",
-                    variant: "destructive"
-                });
-            }
+    const loadData = async () => {
+        try {
+            const data = await getOpenTransaction();
+            setTransactions(data);
+        } catch (error) {
+            toast({
+                title: "Error",
+                description: error.message || "Error while fetching data",
+                variant: "destructive"
+            });
         }
+    };
 
+    useEffect(() => {
         loadData();
     }, []);
 
@@ -53,13 +53,15 @@ const AdminDashboard = () => {
                 title: "Success",
                 description: "Operation done successfully",
                 className: "bg-green-600 text-white"
-            })
+            });
+            // Refresh the transactions data after successful operation
+            await loadData();
         } catch (error) {
             toast({
                 title: "Error",
                 description: error?.message || "Operation done with errors",
                 variant: "destructive"
-            })
+            });
         }
     };
 
@@ -70,21 +72,22 @@ const AdminDashboard = () => {
                 title: "Success",
                 description: "Operation done successfully",
                 className: "bg-green-600 text-white"
-            })
+            });
+            // Refresh the transactions data after successful operation
+            await loadData();
         } catch (error) {
             toast({
                 title: "Error",
                 description: error?.message || "Operation done with errors",
                 variant: "destructive"
-            })
+            });
         }
     };
 
     // Filter transactions based on selected filters
     const filteredTransactions = transactions.filter(transaction => {
         const matchesType = (filters.transactionType == "all") ? true : transaction.transactionType === filters.transactionType;
-        const matchesUser = (filters.userId == "all") ? true :  transaction.user.id.toString() === filters.userId;
-        console.log(matchesType);
+        const matchesUser = (filters.userId == "all") ? true : transaction.user.id.toString() === filters.userId;
         return (matchesType) && (matchesUser);
     });
 
