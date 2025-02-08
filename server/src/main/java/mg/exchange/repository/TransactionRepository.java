@@ -30,5 +30,5 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
     );
 
     @Query("SELECT t FROM Transaction t WHERE t.validation_timestamp IS NULL")
-    List<SellOrder> findOpenTransactions();
+    List<Transaction> findOpenTransactions();
 }
