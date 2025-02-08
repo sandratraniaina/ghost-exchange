@@ -75,7 +75,10 @@ public class SellOrderController {
             }
             sellOrderService.buyCrypto(sellOrder, buyer);
             return ResponseUtil.sendResponse(HttpStatus.OK, true, "Sell order bought successfully : ",null);
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
+            return ResponseUtil.sendResponse(HttpStatus.OK, false, "Error while attempting to buy sell order id : " +sellOrderId, (T) e.getMessage());
+        }
+        catch (Exception e) {
             return ResponseUtil.sendResponse(HttpStatus.BAD_REQUEST, false, "Error while attempting to buy sell order id : " +sellOrderId, (T) e.getMessage());
         }
     }
