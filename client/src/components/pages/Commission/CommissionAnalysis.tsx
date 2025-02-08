@@ -1,9 +1,8 @@
 import { useEffect, useState } from 'react';
-import { TrendingUp } from "lucide-react";
+import { AlertTriangle, TrendingUp } from "lucide-react";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import {
     Card,
@@ -64,15 +63,6 @@ export const CommissionAnalysis = () => {
 
         loadOptions();
     }, []);
-
-    const handleAnalyze = () => {
-        // TODO: Replace with API call in production
-        console.log('Commission analysis parameters:', {
-            type: selectedAnalysis,
-            cryptocurrencies: selectedCryptos,
-            dateRange
-        });
-    };
 
     return (
         <Card className="w-full">
@@ -145,14 +135,12 @@ export const CommissionAnalysis = () => {
                         />
                     </div>
                 </div>
-
-                {/* Analyze Button */}
-                <Button
-                    className="w-full"
-                    onClick={handleAnalyze}
-                >
-                    Analyze Commissions
-                </Button>
+                {!(dateRange.min || dateRange.max) && (
+                    <div className="flex items-center space-x-2 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4" role="alert">
+                        <AlertTriangle className="h-5 w-5" />
+                        <p>No date range was provided, displaying data within the last 24 hours.</p>
+                    </div>
+                )}
 
                 {/* Bar Chart */}
                 <Card className="mt-6">
