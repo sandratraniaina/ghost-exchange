@@ -7,13 +7,13 @@ const config = createTamagui(defaultConfig);
 
 export default function Layout() {
     return (
-        <AuthProvider>
-            <TamaguiProvider config={config}>
+        <TamaguiProvider config={config}>
+            <AuthProvider>
                 <Stack screenOptions={{ headerShown: false }}>
                     <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
                     <Stack.Screen name="login" options={{ presentation: 'modal' }} />
                 </Stack>
-            </TamaguiProvider>
-        </AuthProvider>
+            </AuthProvider>
+        </TamaguiProvider>
     );
 }

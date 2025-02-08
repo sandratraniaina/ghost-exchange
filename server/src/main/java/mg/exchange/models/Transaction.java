@@ -34,6 +34,19 @@ public class Transaction implements FirestoreSyncable {
     @Column(nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime timestamp;
 
+    // Override the setter to prevent external modification
+    public void setTimestamp(LocalDateTime timestamp) {
+        // Only set if it's null or being set internally
+        if (this.timestamp == null || Thread.currentThread().getStackTrace()[2].getClassName().startsWith("mg.exchange")) {
+            this.timestamp = timestamp;
+        }
+    }
+
+    // Add a method for internal timestamp updates
+    public void updateTimestamp() {
+        this.timestamp = LocalDateTime.now();
+    }
+
     @Column(name = "validation_timestamp")
     private LocalDateTime validationTimestamp;
 

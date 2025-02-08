@@ -34,11 +34,23 @@ const FiatTransaction: React.FC<FiatTransactionProps> = ({
       response = await createTransaction(parseInt(user.id), numAmount, "WITHDRAW");
     }
 
-    if (!response?.success) {
+    console.log(response);
+
+    console.log("Red toast: " + (response?.status != 200));
+    console.log("Yellow toast: " + (!response?.status && response?.status == 200));
+    if (response?.status != 200) {
       toast({
         title: "Error",
         description: response?.message || "Failed to complete transaction. Please check your connection and try again.",
         variant: "destructive",
+      });
+      setIsLoading(false);
+      return;
+    } else if (response?.status == 200 && !response?.success) {
+      toast({
+        title: "Denied",
+        description: "Transaction denied. You have insufficient balance.",
+        className: "bg-yellow-500 text-black", // Yellow background, black text for contrast
       });
       setIsLoading(false);
       return;

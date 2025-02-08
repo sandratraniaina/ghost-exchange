@@ -2,6 +2,7 @@ package mg.exchange.services;
 
 import lombok.RequiredArgsConstructor;
 import mg.exchange.models.Transaction;
+import mg.exchange.models.TransactionType;
 import mg.exchange.models.User;
 import mg.exchange.repository.TransactionRepository;
 import mg.exchange.repository.UserRepository;
@@ -31,6 +32,8 @@ public class TransactionService {
 
     @Autowired
     private FirebaseService firebaseService;
+    @Autowired
+    private CryptocurrencyWalletService cryptocurrencyWalletService;
 
 
     public List<Transaction> getAllTransactions() {
@@ -44,13 +47,21 @@ public class TransactionService {
     }
 
     public Transaction createTransaction(Transaction transaction) {
-        // Ensure the user exists
+        Transaction savedTransaction = null;
+
         User user = userService.getUserById(transaction.getUser().getId());
         transaction.setUser(user);
-        Transaction savedTransaction = transactionRepository.save(transaction);
+        if (transaction.getTransactionType() == TransactionType.WITHDRAW) {
+            if (user.getFiatBalance().doubleValue() < transaction.getAmount().doubleValue()) {
+                throw new RuntimeException("Solde insuffisant");
+            }
+        }
+        savedTransaction = transactionRepository.save(transaction);
         firestoreService.syncToFirestore(savedTransaction);
+
         return savedTransaction;
     }
+
 
     public Transaction updateTransaction(Long id, Transaction transactionDetails) {
         Transaction transaction = transactionRepository.findById(id)
@@ -66,6 +77,17 @@ public class TransactionService {
         transaction.setTransactionType(transactionDetails.getTransactionType());
         transaction.setTimestamp(transactionDetails.getTimestamp());
         transaction.setValidationTimestamp(transactionDetails.getValidationTimestamp());
+
+        //Udapte the balance of the user
+        if (transaction.getTransactionType() == TransactionType.DEPOSIT) {
+            User user = transaction.getUser();
+            user.setFiatBalance(user.getFiatBalance().add(transaction.getAmount()));
+            userRepository.save(user);
+        } else if (transaction.getTransactionType() == TransactionType.WITHDRAW) {
+            User user = transaction.getUser();
+            user.setFiatBalance(user.getFiatBalance().subtract(transaction.getAmount()));
+            userRepository.save(user);
+        }
         firestoreService.syncToFirestore(transaction);
         return transactionRepository.save(transaction);
     }
@@ -83,29 +105,29 @@ public class TransactionService {
         transaction.setValidationTimestamp(LocalDateTime.now());
         String userToken = transaction.getUser().getFcmToken();
         transaction = updateTransaction(id, transaction);
-        if(userToken != null && !userToken.isEmpty()){
+        if (userToken != null && !userToken.isEmpty()) {
             try {
                 String notificationTitle = "Transaction validée";
                 String notificationBody = String.format(
-                    "Votre %s a été validé par l'admin avec succès. Transaction N°%d",
-                    transaction.getTransactionType().toString().toLowerCase(),
-                    transaction.getId()
+                        "Votre %s a été validé par l'admin avec succès. Transaction N°%d",
+                        transaction.getTransactionType().toString().toLowerCase(),
+                        transaction.getId()
                 );
-                
+
                 firebaseService.sendNotification(
-                    notificationTitle,
-                    notificationBody,
-                    userToken
-                ); 
-                return transaction;   
+                        notificationTitle,
+                        notificationBody,
+                        userToken
+                );
+                return transaction;
             } catch (FirebaseMessagingException e) {
                 e.printStackTrace();
-            } 
+            }
         }
-        return transaction;   
+        return transaction;
     }
 
-    public List<Transaction> getHistoryTransaction(Long cryptoId, LocalDateTime min, LocalDateTime max, String type){
-        return transactionRepository.getHistoryTransaction(cryptoId,min,max,type);
+    public List<Transaction> getHistoryTransaction(Long cryptoId, LocalDateTime min, LocalDateTime max, String type) {
+        return transactionRepository.getHistoryTransaction(cryptoId, min, max, type);
     }
 }

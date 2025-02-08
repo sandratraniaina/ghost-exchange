@@ -16,6 +16,9 @@ public interface CryptocurrencyWalletRepository extends JpaRepository<Cryptocurr
     List<CryptocurrencyWallet> findByUserId(Long userId);
 
     @Query("SELECT w from CryptocurrencyWallet w where  w.cryptocurrency.id = :crypto_id and w.user.id= :user_id ")
-    Optional<CryptocurrencyWallet> findByUuserIDAndCryptocurrencyId(@Param("crypto_id") Long cryptoId, @Param("user_id") Long userId );
+    Optional<CryptocurrencyWallet> findByUuserIDAndCryptocurrencyId(@Param("crypto_id") Long cryptoId, @Param("user_id") Long userId);
+
+    @Query("SELECT SUM(w.balance) from CryptocurrencyWallet w where w.user.id= :user_id ")
+    Optional<Double> findTotalBalanceByUserId(@Param("user_id") Long userId);
 
 }
