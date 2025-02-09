@@ -119,6 +119,8 @@ export const AppRoutes = () => {
                     }
                 />
             </Route>
+
+            <Route path="*" element={<ErrorPage />} />
         </Routes>
     );
 };

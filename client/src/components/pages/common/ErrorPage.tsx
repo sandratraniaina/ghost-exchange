@@ -12,8 +12,8 @@ const ErrorPage: React.FC = () => {
 
     // Default error state if none provided
     const errorState: ErrorState = {
-        title: state?.title || "Something went wrong",
-        message: state?.message || "An unexpected error occurred.",
+        title: state?.title || "Page not found",
+        message: state?.message || "The page you are looking for does not exist.",
         showHome: state?.showHome ?? true,
         showRetry: state?.showRetry ?? true
     };
