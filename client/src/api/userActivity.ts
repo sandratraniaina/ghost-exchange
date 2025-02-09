@@ -1,7 +1,7 @@
 export const getUserActivity = async (startDate, endDate) => {
     try {
         const host = import.meta.env.VITE_API_HOST;
-        const response = await fetch(`http://${host}/users/transactions/summary?min=${startDate}&max=${endDate}`, {
+        const response = await fetch(`${host}/users/transactions/summary?min=${startDate}&max=${endDate}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
