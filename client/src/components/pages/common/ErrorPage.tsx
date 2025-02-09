@@ -1,9 +1,9 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import { ErrorState } from '@/types/error';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '../ui/card';
 import { AlertTriangle } from 'lucide-react';
-import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
-import { Button } from '../ui/button';
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
 
 const ErrorPage: React.FC = () => {
     const location = useLocation();
