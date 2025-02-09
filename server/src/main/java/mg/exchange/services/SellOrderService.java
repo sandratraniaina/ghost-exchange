@@ -29,7 +29,6 @@ public class SellOrderService {
     private final CryptocurrencyRepository cryptocurrencyRepository;
     private final LedgerService ledgerService;
     private final CommissionService commissionService;
-    private final CryptocurrencyService cryptocurrencyService;
     private final CryptocurrencyWalletService cryptocurrencyWalletService;
     private final FirestoreService firestoreService;
 
