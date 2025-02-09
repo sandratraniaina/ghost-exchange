@@ -23,7 +23,7 @@ const ErrorPage: React.FC = () => {
     };
 
     const handleGoHome = () => {
-        navigate('/');
+        navigate('/home');
     };
 
     return (
