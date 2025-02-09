@@ -21,7 +21,7 @@ public class SellOrder implements FirestoreSyncable {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "seller_id", nullable = false)
+    @JoinColumn(name = "seller_id", nullable = true)
     private User seller;
 
     @ManyToOne

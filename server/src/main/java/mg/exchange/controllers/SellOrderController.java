@@ -70,9 +70,6 @@ public class SellOrderController {
     public <T> ResponseEntity<Response<T>> buyCrypto(@PathVariable Long sellOrderId , @RequestBody User buyer){
         try {
             SellOrder sellOrder = sellOrderService.getSellOrderById(sellOrderId);
-            if(buyer == null){
-                throw new Exception("Cannot buy a crypto with a buyer of a value null");
-            }
             sellOrderService.buyCrypto(sellOrder, buyer);
             return ResponseUtil.sendResponse(HttpStatus.OK, true, "Sell order bought successfully : ",null);
         } catch (RuntimeException e) {

@@ -27,7 +27,7 @@ public class Ledger implements FirestoreSyncable {
     private SellOrder sellOrder;
 
     @ManyToOne
-    @JoinColumn(name = "buyer_id", nullable = false)
+    @JoinColumn(name = "buyer_id", nullable = true)
     private User buyer;
 
     @Column(nullable = false, columnDefinition = "timestamp DEFAULT CURRENT_TIMESTAMP")
