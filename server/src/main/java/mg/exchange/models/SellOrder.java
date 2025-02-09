@@ -40,6 +40,9 @@ public class SellOrder implements FirestoreSyncable {
     @Column(name = "is_open", nullable = false, columnDefinition = "boolean DEFAULT true")
     private Boolean isOpen;
 
+    @Column(name = "sales_commission", nullable = false, precision = 10, scale = 2)
+    private BigDecimal salesCommission;
+
     @Override
     public String getFirestoreCollectionName() {
         return "sell_order";
@@ -61,6 +64,8 @@ public class SellOrder implements FirestoreSyncable {
         if (fiatPrice != null) map.put("fiatPrice", fiatPrice);
         if (timestamp != null) map.put("timestamp", timestamp.toString());
         if (isOpen != null) map.put("isOpen", isOpen);
+        if (salesCommission != null)
+            map.put("salesCommission", salesCommission);
         
         return map;
     }
