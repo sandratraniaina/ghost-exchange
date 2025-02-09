@@ -1,4 +1,4 @@
-import { HomeIcon, ShoppingCart, Wallet, BarChart2, Calculator, ActivitySquare, User, History, Shield } from 'lucide-react';
+import { HomeIcon, ShoppingCart, Wallet, BarChart2, Calculator, ActivitySquare, User, History, Shield, TrendingUp, Home } from 'lucide-react';
 import { BaseProps } from '@/types/common';
 import { Link } from 'react-router-dom';
 
@@ -11,7 +11,7 @@ interface NavItem {
 
 export const Sidebar: React.FC<BaseProps> = ({ className = '' }) => {
     const navItems: NavItem[] = [
-        { path: '/', label: 'Home', icon: HomeIcon },
+        { path: '/', label: 'Crypto Currency', icon: TrendingUp },
         { path: '/marketplace', label: 'Marketplace', icon: ShoppingCart },
         { path: '/wallet', label: 'Wallet', icon: Wallet },
         { path: '/analysis', label: 'Analysis', icon: BarChart2 },
