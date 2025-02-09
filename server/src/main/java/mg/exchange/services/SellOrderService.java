@@ -144,6 +144,45 @@ public class SellOrderService {
         cryptocurrencyWalletService.updateWallet(buyerWallet.getId(), buyerWallet);
     }
 
+    @Transactional
+    public void buyCrypto(SellOrder sellOrder, User buyer) throws Exception {
+        if (sellOrder == null) {
+            throw new IllegalArgumentException("Sell order must not be null");
+        }
+
+        sellOrder.setIsOpen(false);
+        sellOrderRepository.save(sellOrder);
+
+        Commission commission = commissionService.getCommissionById(1L);
+
+        Ledger ledger = new Ledger();
+        ledger.setSellOrder(sellOrder);
+        ledger.setTimestamp(LocalDateTime.now());
+        ledger.setPurchasesCommission(commission.getPurchasesCommission());
+        ledger.setSalesCommission(commission.getSalesCommission());
+
+        if (buyer != null) {
+            if (buyer.getFiatBalance().compareTo(sellOrder.getFiatPrice()) < 0) {
+                throw new RuntimeException("Solde insuffisant");
+            }
+
+            ledger.setBuyer(buyer);
+            updateBuyerWallet(buyer, sellOrder);
+            buyer.setFiatBalance(buyer.getFiatBalance().subtract(sellOrder.getFiatPrice()));
+            userService.updateUser(buyer.getId(), buyer);
+        } else {
+            ledger.setBuyer(null);
+        }
+
+        if (sellOrder.getSeller() != null) {
+            User seller = sellOrder.getSeller();
+            seller.setFiatBalance(seller.getFiatBalance().add(sellOrder.getFiatPrice()));
+            userService.updateUser(seller.getId(), seller);
+        }
+
+        ledgerService.createLedger(ledger);
+    }
+
     public List<SellOrder> getSellOrderByCryptocurrencyId(Long cryproId) {
         return sellOrderRepository.findSellOrderByCryptocurrencyIdandIsOpen(cryproId);
     }
