@@ -29,7 +29,6 @@ public class SellOrderService {
     private final CryptocurrencyRepository cryptocurrencyRepository;
     private final LedgerService ledgerService;
     private final CommissionService commissionService;
-    private final CryptocurrencyService cryptocurrencyService;
     private final CryptocurrencyWalletService cryptocurrencyWalletService;
     private final FirestoreService firestoreService;
 
@@ -72,13 +71,9 @@ public class SellOrderService {
             wallet.setBalance(newBalance);
             cryptocurrencyWalletService.updateWallet(wallet.getId(), wallet);
         }
-        BigDecimal newBalance = wallet.getBalance().subtract(sellOrder.getAmount());
-        wallet.setBalance(newBalance);
-        cryptocurrencyWalletService.updateWallet(wallet.getId(), wallet);
-        //Set Commission
         Commission com = commissionService.getCommissionById(1L);
         sellOrder.setSalesCommission(com.getSalesCommission());
-      
+
         SellOrder sellOrderSaved = sellOrderRepository.save(sellOrder);
         firestoreService.syncToFirestore(sellOrderSaved);
         return sellOrderSaved;
@@ -134,7 +129,7 @@ public class SellOrderService {
     public List<SellOrder> getOpenSellOrdersBySellerId(Long sellerId) {
         return sellOrderRepository.findOpenSellOrdersBySellerId(sellerId);
     }
-  
+
     @Transactional
     public void cancelSellOrder(SellOrder sellOrder) {
         sellOrder.setIsOpen(true);
@@ -168,7 +163,6 @@ public class SellOrderService {
         ledger.setSellOrder(sellOrder);
         ledger.setTimestamp(LocalDateTime.now());
         ledger.setPurchasesCommission(commission.getPurchasesCommission());
-        ledger.setSalesCommission(commission.getSalesCommission());
 
         if (buyer != null) {
             if (buyer.getFiatBalance().compareTo(sellOrder.getFiatPrice()) < 0) {
