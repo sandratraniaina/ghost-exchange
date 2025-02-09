@@ -19,13 +19,13 @@ public interface CommissionRepository extends JpaRepository<Commission, Long> {
             
                 -- Conditional SUM or AVG for sales commission
                 CASE
-                    WHEN :type_analyse = 'sum' THEN SUM(l.sales_commission * so.amount * so.fiat_price)
-                    ELSE AVG(l.sales_commission * so.amount * so.fiat_price)
+                    WHEN :type_analyse = 'sum' THEN SUM(so.sales_commission * so.amount * so.fiat_price)
+                    ELSE AVG(so.sales_commission * so.amount * so.fiat_price)
                     END AS total_sales_commission,
             
                 -- Conditional SUM or AVG for purchases commission
                 CASE
-                    WHEN :type_analyse = 'sum' THEN SUM(l.purchases_commission * so.amount * so.fiat_price)
+                    WHEN :type_analyse = 'sum' THEN SUM(so.sales_commission * so.amount * so.fiat_price)
                     ELSE AVG(l.purchases_commission * so.amount * so.fiat_price)
                     END AS total_purchases_commission
             
@@ -44,20 +44,21 @@ public interface CommissionRepository extends JpaRepository<Commission, Long> {
             @Param("max") Timestamp max);
 
     @Query(value = """
-            SELECT
-                    CASE
-                        WHEN :type_analyse = 'sum' THEN SUM(l.sales_commission * so.amount * so.fiat_price)
-                        ELSE AVG(l.sales_commission * so.amount * so.fiat_price)
-                        END AS total_sales_commission,
             
-                    CASE
-                        WHEN :type_analyse = 'sum' THEN SUM(l.purchases_commission * so.amount * so.fiat_price)
-                        ELSE AVG(l.purchases_commission * so.amount * so.fiat_price)
-                        END AS total_purchases_commission
-                FROM ledger l
-                         JOIN sell_order so ON l.sell_order_id = so.id
-                WHERE (CAST(:min AS TIMESTAMP) IS NULL OR so.timestamp >= :min)
-                  AND (CAST(:max AS TIMESTAMP) IS NULL OR so.timestamp <= :max);
+             SELECT
+                CASE
+                    WHEN :type_analyse = 'sum' THEN SUM(so.sales_commission * so.amount * so.fiat_price)
+                    ELSE AVG(so.sales_commission * so.amount * so.fiat_price)
+                    END AS total_sales_commission,
+            
+                CASE
+                    WHEN :type_analyse = 'sum' THEN SUM(l.purchases_commission * so.amount * so.fiat_price)
+                    ELSE AVG(l.purchases_commission * so.amount * so.fiat_price)
+                    END AS total_purchases_commission
+            FROM ledger l
+                     JOIN sell_order so ON l.sell_order_id = so.id
+            WHERE (CAST(:min AS TIMESTAMP) IS NULL OR so.timestamp >= :min)
+              AND (CAST(:max AS TIMESTAMP) IS NULL OR so.timestamp <= :max);
             """, nativeQuery = true)
     CommissionSummaryTotal getCommissionSummaryTotal(
             @Param("type_analyse") String type_analyse,
