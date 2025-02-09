@@ -127,77 +127,6 @@ public class SellOrderService {
     }
 
     @Transactional
-    public void buyCrypto(SellOrder sellOrder, User buyer) throws Exception {
-        if (sellOrder == null && buyer == null) {
-            throw new IllegalArgumentException("Sell order and buyer must not be null in one transaction");
-        }
-        sellOrder.setIsOpen(false);
-        sellOrderRepository.save(sellOrder);
-        Commission com = commissionService.getCommissionById(1L);
-        Ledger ledger = new Ledger();
-        ledger.setSellOrder(sellOrder);
-        ledger.setTimestamp(LocalDateTime.now());
-        ledger.setPurchasesCommission(com.getPurchasesCommission());
-        ledger.setSalesCommission(com.getSalesCommission());
-        ledgerService.createLedger(ledger);
-
-        if (sellOrder == null && buyer != null) {
-            ledger.setBuyer(buyer);
-            CryptocurrencyWallet buyerWallet = cryptocurrencyWalletService
-                    .getWalletByUserIdAndCrypotCurrencyId(buyer.getId(), sellOrder.getCryptocurrency().getId())
-                    .orElseGet(() -> {
-                        CryptocurrencyWallet newWallet = new CryptocurrencyWallet();
-                        newWallet.setId(0L);
-                        newWallet.setUser(buyer);
-                        newWallet.setCryptocurrency(sellOrder.getCryptocurrency());
-                        newWallet.setBalance(BigDecimal.ZERO);
-                        return cryptocurrencyWalletService.createWallet(newWallet);
-                    });
-            buyerWallet.setBalance(buyerWallet.getBalance().add(sellOrder.getAmount()));
-            buyerWallet.setBalance(buyerWallet.getBalance().add(sellOrder.getAmount()));
-            cryptocurrencyWalletService.updateWallet(buyerWallet.getId(), buyerWallet);
-            buyer.setFiatBalance(buyer.getFiatBalance().subtract(sellOrder.getFiatPrice()));
-            userService.updateUser(buyer.getId(), buyer);
-
-
-        } else if (sellOrder != null && buyer == null) {
-            ledger.setBuyer(null);
-            User seller = sellOrder.getSeller();
-            seller.setFiatBalance(seller.getFiatBalance().add(sellOrder.getFiatPrice()));
-            userService.updateUser(seller.getId(), seller);
-
-        } else {
-            if (buyer.getFiatBalance().doubleValue() < sellOrder.getFiatPrice().doubleValue()) {
-                throw new RuntimeException("Solde insuffisant");
-            }
-
-            ledger.setBuyer(buyer);
-
-            CryptocurrencyWallet buyerWallet = cryptocurrencyWalletService
-                    .getWalletByUserIdAndCrypotCurrencyId(buyer.getId(), sellOrder.getCryptocurrency().getId())
-                    .orElseGet(() -> {
-                        CryptocurrencyWallet newWallet = new CryptocurrencyWallet();
-                        newWallet.setId(0L);
-                        newWallet.setUser(buyer);
-                        newWallet.setCryptocurrency(sellOrder.getCryptocurrency());
-                        newWallet.setBalance(BigDecimal.ZERO);
-                        return cryptocurrencyWalletService.createWallet(newWallet);
-                    });
-
-            buyerWallet.setBalance(buyerWallet.getBalance().add(sellOrder.getAmount()));
-            cryptocurrencyWalletService.updateWallet(buyerWallet.getId(), buyerWallet);
-
-            User seller = sellOrder.getSeller();
-            buyer.setFiatBalance(buyer.getFiatBalance().subtract(sellOrder.getFiatPrice()));
-            seller.setFiatBalance(seller.getFiatBalance().add(sellOrder.getFiatPrice()));
-            userService.updateUser(buyer.getId(), buyer);
-            userService.updateUser(seller.getId(), seller);
-        }
-
-
-    }
-
-    @Transactional
     public void cancelSellOrder(SellOrder sellOrder) {
         sellOrder.setIsOpen(true);
         ledgerService.deleteBySellOrderId(sellOrder.getId());
@@ -217,6 +146,14 @@ public class SellOrderService {
 
     public List<SellOrder> getSellOrderByCryptocurrencyId(Long cryproId) {
         return sellOrderRepository.findSellOrderByCryptocurrencyIdandIsOpen(cryproId);
+    }
+
+    private CryptocurrencyWallet createNewWallet(User buyer, Cryptocurrency cryptocurrency) {
+        CryptocurrencyWallet newWallet = new CryptocurrencyWallet();
+        newWallet.setUser(buyer);
+        newWallet.setCryptocurrency(cryptocurrency);
+        newWallet.setBalance(BigDecimal.ZERO);
+        return cryptocurrencyWalletService.createWallet(newWallet);
     }
 
 }
