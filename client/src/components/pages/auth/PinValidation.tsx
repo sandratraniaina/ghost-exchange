@@ -65,6 +65,7 @@ const PinValidation = ({ email, onSuccess, onCancel }: PinValidationProps) => {
 
         try {
             // Mock API call
+            await submit();
             setTimeLeft(90); // Reset timer
         } catch (err) {
             console.error(err);
@@ -116,6 +117,8 @@ const PinValidation = ({ email, onSuccess, onCancel }: PinValidationProps) => {
         e.preventDefault();
         setIsLoading(true);
         setError(null);
+
+        await submit();
     };
 
     return (
