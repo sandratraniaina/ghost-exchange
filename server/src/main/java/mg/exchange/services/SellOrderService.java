@@ -61,6 +61,11 @@ public class SellOrderService {
         logger.info("balance : " + newBalance);
         wallet.setBalance(newBalance);
         cryptocurrencyWalletService.updateWallet(wallet.getId(), wallet);
+
+        //Set Commission
+        Commission com = commissionService.getCommissionById(1L);
+        sellOrder.setSalesCommission(com.getSalesCommission());
+
         SellOrder sellOrderSaved = sellOrderRepository.save(sellOrder);
         return sellOrderSaved;
     }
