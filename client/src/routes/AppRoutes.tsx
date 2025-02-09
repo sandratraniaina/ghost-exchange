@@ -14,6 +14,7 @@ import { UserTransactionHistory } from '@/components/pages/UserActivityHistory/U
 import { UserCryptoHistory } from '@/components/pages/UserActivityHistory/UserCryptoHistory';
 import ErrorPage from '@/components/pages/ErrorPage';
 import { RoleBasedRoute } from './RoleBaseRoute';
+import Home from '@/components/pages/HomePage';
 
 export const AppRoutes = () => {
     return (
@@ -37,6 +38,14 @@ export const AppRoutes = () => {
 
             {/* Client routes */}
             <Route element={<MainLayout />}>
+                <Route
+                    path="/home"
+                    element={
+                        <RoleBasedRoute allowedRoles={['CLIENT', 'ADMIN']}>
+                            <Home></Home>
+                        </RoleBasedRoute>
+                    }
+                />
                 <Route
                     path="/"
                     element={
