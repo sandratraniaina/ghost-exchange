@@ -14,11 +14,13 @@ interface PinValidationProps {
     onCancel: () => void;
 }
 
+const PIN_VALIDATION_DELAI = 90;
+
 const PinValidation = ({ email, onSuccess, onCancel }: PinValidationProps) => {
     const [pins, setPins] = useState(['', '', '', '', '', '']);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [timeLeft, setTimeLeft] = useState(90); // 5 minutes in seconds
+    const [timeLeft, setTimeLeft] = useState(PIN_VALIDATION_DELAI); // 5 minutes in seconds
 
     const { user, setUser } = useAuth();
 
@@ -66,7 +68,7 @@ const PinValidation = ({ email, onSuccess, onCancel }: PinValidationProps) => {
         try {
             // Mock API call
             await submit();
-            setTimeLeft(90); // Reset timer
+            setTimeLeft(PIN_VALIDATION_DELAI); // Reset timer
         } catch (err) {
             console.error(err);
             setError('Failed to resend code');
