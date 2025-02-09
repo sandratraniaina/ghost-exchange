@@ -13,7 +13,7 @@ export default function Home() {
                         <li>RAVELONARIVO Sanda Silakiniaina - ETU002510 - Silakiniaina</li>
                         <li>RAKOTONANAHARY Liantsoa Fanantenana Boblith - ETU002611 - Liantsoa123 </li>
                     </ul>
-                    <p>Add some styling please:)!!!</p>
+                    <p className="text-2xl bold">Add some styling please:)!!!</p>
                 </CardHeader>
             </Card>
         </div>
