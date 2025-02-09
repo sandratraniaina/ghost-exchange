@@ -156,4 +156,13 @@ public class SellOrderService {
         return cryptocurrencyWalletService.createWallet(newWallet);
     }
 
+    private void updateBuyerWallet(User buyer, SellOrder sellOrder) {
+        CryptocurrencyWallet buyerWallet = cryptocurrencyWalletService
+                .getWalletByUserIdAndCrypotCurrencyId(buyer.getId(), sellOrder.getCryptocurrency().getId())
+                .orElseGet(() -> createNewWallet(buyer, sellOrder.getCryptocurrency()));
+
+        buyerWallet.setBalance(buyerWallet.getBalance().add(sellOrder.getAmount()));
+        cryptocurrencyWalletService.updateWallet(buyerWallet.getId(), buyerWallet);
+    }
+
 }
