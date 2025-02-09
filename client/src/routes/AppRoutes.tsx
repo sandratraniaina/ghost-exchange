@@ -12,6 +12,8 @@ import AdminDashboard from '@/components/pages/AdminDashboard/AdminDashboard';
 import { UserActivity } from '@/components/pages/UserActivity/UserActivity';
 import { UserTransactionHistory } from '@/components/pages/UserActivityHistory/UserTransactionHistory';
 import { UserCryptoHistory } from '@/components/pages/UserActivityHistory/UserCryptoHistory';
+import ErrorPage from '@/components/pages/ErrorPage';
+import { RoleBasedRoute } from './RoleBaseRoute';
 
 export const AppRoutes = () => {
     return (
@@ -19,21 +21,95 @@ export const AppRoutes = () => {
             {/* Auth routes without layout */}
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />
+            <Route path="/error" element={<ErrorPage />} />
 
-            {/* Public routes with main layout */}
+            {/* Admin routes */}
             <Route element={<MainLayout />}>
-                <Route path="/" element={<Dashboard />} />
-                <Route path="/wallet" element={<Wallet />} />
-                <Route path="/marketplace" element={<Marketplace />} />
-                <Route path="/analysis" element={<Analysis />} />
-                <Route path="/commission-rate" element={<CommissionRate />} />
-                <Route path="/commission-analysis" element={<CommissionAnalysis />} />
-                <Route path="/admin/dashboard" element={<AdminDashboard />} />
-                <Route path="/user-activity" element={<UserActivity />} />
-                <Route path="/user-activity/history/transaction" element={<UserTransactionHistory />} />
-                <Route path="/user-activity/history/crypto" element={<UserCryptoHistory />} />
+                <Route
+                    path="/admin/dashboard"
+                    element={
+                        <RoleBasedRoute allowedRoles={['ADMIN']}>
+                            <AdminDashboard />
+                        </RoleBasedRoute>
+                    }
+                />
             </Route>
 
+            {/* Client routes */}
+            <Route element={<MainLayout />}>
+                <Route
+                    path="/"
+                    element={
+                        <RoleBasedRoute allowedRoles={['CLIENT']}>
+                            <Dashboard />
+                        </RoleBasedRoute>
+                    }
+                />
+                <Route
+                    path="/wallet"
+                    element={
+                        <RoleBasedRoute allowedRoles={['CLIENT']}>
+                            <Wallet />
+                        </RoleBasedRoute>
+                    }
+                />
+                <Route
+                    path="/marketplace"
+                    element={
+                        <RoleBasedRoute allowedRoles={['CLIENT']}>
+                            <Marketplace />
+                        </RoleBasedRoute>
+                    }
+                />
+                <Route
+                    path="/analysis"
+                    element={
+                        <RoleBasedRoute allowedRoles={['CLIENT']}>
+                            <Analysis />
+                        </RoleBasedRoute>
+                    }
+                />
+                <Route
+                    path="/commission-rate"
+                    element={
+                        <RoleBasedRoute allowedRoles={['CLIENT']}>
+                            <CommissionRate />
+                        </RoleBasedRoute>
+                    }
+                />
+                <Route
+                    path="/commission-analysis"
+                    element={
+                        <RoleBasedRoute allowedRoles={['CLIENT']}>
+                            <CommissionAnalysis />
+                        </RoleBasedRoute>
+                    }
+                />
+                <Route
+                    path="/user-activity"
+                    element={
+                        <RoleBasedRoute allowedRoles={['CLIENT']}>
+                            <UserActivity />
+                        </RoleBasedRoute>
+                    }
+                />
+                <Route
+                    path="/user-activity/history/transaction"
+                    element={
+                        <RoleBasedRoute allowedRoles={['CLIENT']}>
+                            <UserTransactionHistory />
+                        </RoleBasedRoute>
+                    }
+                />
+                <Route
+                    path="/user-activity/history/crypto"
+                    element={
+                        <RoleBasedRoute allowedRoles={['CLIENT']}>
+                            <UserCryptoHistory />
+                        </RoleBasedRoute>
+                    }
+                />
+            </Route>
         </Routes>
     );
 };
