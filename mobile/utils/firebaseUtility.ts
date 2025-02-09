@@ -43,7 +43,7 @@ export async function fetchCollection<T = DocumentData>(
             : collectionRef;
 
         const querySnapshot = await getDocs(queryRef);
-
+        console.log(querySnapshot.docs);
         return querySnapshot.docs.map(
             (doc) =>
                 ({
