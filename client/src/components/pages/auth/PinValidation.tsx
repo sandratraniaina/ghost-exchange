@@ -14,11 +14,13 @@ interface PinValidationProps {
     onCancel: () => void;
 }
 
+const PIN_VALIDATION_DELAI = 90;
+
 const PinValidation = ({ email, onSuccess, onCancel }: PinValidationProps) => {
     const [pins, setPins] = useState(['', '', '', '', '', '']);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [timeLeft, setTimeLeft] = useState(90); // 5 minutes in seconds
+    const [timeLeft, setTimeLeft] = useState(PIN_VALIDATION_DELAI); // 5 minutes in seconds
 
     const { user, setUser } = useAuth();
 
@@ -65,8 +67,8 @@ const PinValidation = ({ email, onSuccess, onCancel }: PinValidationProps) => {
 
         try {
             // Mock API call
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            setTimeLeft(90); // Reset timer
+            await submit();
+            setTimeLeft(PIN_VALIDATION_DELAI); // Reset timer
         } catch (err) {
             console.error(err);
             setError('Failed to resend code');
@@ -75,11 +77,7 @@ const PinValidation = ({ email, onSuccess, onCancel }: PinValidationProps) => {
         }
     };
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setIsLoading(true);
-        setError(null);
-
+    const submit = async () => {
         const pin = pins.join('');
         if (pin.length !== 6) {
             setError('Please enter all 6 digits');
@@ -115,6 +113,14 @@ const PinValidation = ({ email, onSuccess, onCancel }: PinValidationProps) => {
         } finally {
             setIsLoading(false);
         }
+    }
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setIsLoading(true);
+        setError(null);
+
+        await submit();
     };
 
     return (
