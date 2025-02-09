@@ -25,7 +25,7 @@ public class SellOrderService {
 
     private final SellOrderRepository sellOrderRepository;
     private final UserRepository userRepository;
-    private final UserService userService ;
+    private final UserService userService;
     private final CryptocurrencyRepository cryptocurrencyRepository;
     private final LedgerService ledgerService;
     private final CommissionService commissionService;
@@ -43,34 +43,48 @@ public class SellOrderService {
     }
 
     public SellOrder createSellOrder(SellOrder sellOrder) throws Exception {
-        User seller = userRepository.findById(sellOrder.getSeller().getId())
-                .orElseThrow(() -> new RuntimeException("Seller not found"));
+        User seller = null;
+        if (sellOrder.getSeller() != null && sellOrder.getSeller().getId() != null) {
+            seller = userRepository.findById(sellOrder.getSeller().getId())
+                    .orElseThrow(() -> new RuntimeException("Seller not found"));
+        }
+        sellOrder.setSeller(seller);
+
         Cryptocurrency cryptocurrency = cryptocurrencyRepository.findById(sellOrder.getCryptocurrency().getId())
                 .orElseThrow(() -> new RuntimeException("Cryptocurrency not found"));
-        sellOrder.setSeller(seller);
         sellOrder.setCryptocurrency(cryptocurrency);
-        Optional<CryptocurrencyWallet> walletOptional = cryptocurrencyWalletService.getWalletByUserIdAndCrypotCurrencyId(seller.getId(), cryptocurrency.getId());
-        if (walletOptional.isEmpty()) {
-            throw new Exception("You don't have a wallet for that crypto to sell");
+
+        if (seller != null) {
+            Optional<CryptocurrencyWallet> walletOptional = cryptocurrencyWalletService
+                    .getWalletByUserIdAndCrypotCurrencyId(seller.getId(), cryptocurrency.getId());
+
+            if (walletOptional.isEmpty()) {
+                throw new Exception("You don't have a wallet for that crypto to sell");
+            }
+
+            CryptocurrencyWallet wallet = walletOptional.get();
+            if (wallet.getBalance().compareTo(sellOrder.getAmount()) < 0) {
+                throw new Exception("You don't have enough crypto for the amount you want to sell");
+            }
+
+            BigDecimal newBalance = wallet.getBalance().subtract(sellOrder.getAmount());
+            logger.info("balance : " + newBalance);
+            wallet.setBalance(newBalance);
+            cryptocurrencyWalletService.updateWallet(wallet.getId(), wallet);
         }
-        CryptocurrencyWallet wallet = walletOptional.get();
-        if (wallet.getBalance().compareTo(sellOrder.getAmount()) < 0) {
-            throw new Exception("You don't have enough crypto for the amount you want to sell");
-        }
-        BigDecimal newBalance = wallet.getBalance().subtract(sellOrder.getAmount());
-        logger.info("balance : "+newBalance);
-        wallet.setBalance(newBalance);
-        cryptocurrencyWalletService.updateWallet(wallet.getId(), wallet);
+
         SellOrder sellOrderSaved = sellOrderRepository.save(sellOrder);
+        firestoreService.syncToFirestore(sellOrderSaved);
         return sellOrderSaved;
     }
+
 
     public SellOrder updateSellOrder(Long id, SellOrder sellOrderDetails) {
         SellOrder sellOrder = sellOrderRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("SellOrder not found"));
 
         // Update seller if provided
-        if (sellOrderDetails.getSeller() != null) {
+        if (sellOrderDetails.getSeller() != null && sellOrderDetails.getSeller().getId() != null) {
             User seller = userRepository.findById(sellOrderDetails.getSeller().getId())
                     .orElseThrow(() -> new RuntimeException("Seller not found"));
             sellOrder.setSeller(seller);
@@ -113,12 +127,12 @@ public class SellOrderService {
     }
 
     @Transactional
-    public void buyCrypto(SellOrder sellOrder, User buyer)throws Exception {
+    public void buyCrypto(SellOrder sellOrder, User buyer) throws Exception {
         if (sellOrder == null || buyer == null) {
             throw new IllegalArgumentException("Sell order and buyer must not be null");
         }
 
-        if(buyer.getFiatBalance().doubleValue() < sellOrder.getFiatPrice().doubleValue()){
+        if (buyer.getFiatBalance().doubleValue() < sellOrder.getFiatPrice().doubleValue()) {
             throw new RuntimeException("Solde insuffisant");
         }
 
@@ -152,9 +166,9 @@ public class SellOrderService {
         User seller = sellOrder.getSeller();
         buyer.setFiatBalance(buyer.getFiatBalance().subtract(sellOrder.getFiatPrice()));
         seller.setFiatBalance(seller.getFiatBalance().add(sellOrder.getFiatPrice()));
-        userService.updateUser(buyer.getId(),buyer);
-        userService.updateUser(seller.getId(),seller);
-        
+        userService.updateUser(buyer.getId(), buyer);
+        userService.updateUser(seller.getId(), seller);
+
     }
 
     @Transactional
