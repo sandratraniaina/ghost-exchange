@@ -19,13 +19,13 @@ public interface CommissionRepository extends JpaRepository<Commission, Long> {
             
                 -- Conditional SUM or AVG for sales commission
                 CASE
-                    WHEN :type_analyse = 'sum' THEN SUM(l.sales_commission * so.amount * so.fiat_price)
-                    ELSE AVG(l.sales_commission * so.amount * so.fiat_price)
+                    WHEN :type_analyse = 'sum' THEN SUM(so.sales_commission * so.amount * so.fiat_price)
+                    ELSE AVG(so.sales_commission * so.amount * so.fiat_price)
                     END AS total_sales_commission,
             
                 -- Conditional SUM or AVG for purchases commission
                 CASE
-                    WHEN :type_analyse = 'sum' THEN SUM(l.purchases_commission * so.amount * so.fiat_price)
+                    WHEN :type_analyse = 'sum' THEN SUM(so.sales_commission * so.amount * so.fiat_price)
                     ELSE AVG(l.purchases_commission * so.amount * so.fiat_price)
                     END AS total_purchases_commission
             
