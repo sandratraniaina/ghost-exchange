@@ -7,7 +7,7 @@ interface HeaderProps extends BaseProps {
 }
 
 export const Header: React.FC<HeaderProps> = ({
-    title = 'My Application',
+    title = 'Ghost Exchange',
     className = ''
 }) => {
     return (
