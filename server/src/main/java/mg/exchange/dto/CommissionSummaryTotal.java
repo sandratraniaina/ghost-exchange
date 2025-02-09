@@ -9,8 +9,8 @@ import java.math.BigDecimal;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CommissionSummaryDTO {
-    private Long cryptocurrencyId;
+public class CommissionSummaryTotal {
     private BigDecimal totalSalesCommission;
     private BigDecimal totalPurchasesCommission;
+
 }

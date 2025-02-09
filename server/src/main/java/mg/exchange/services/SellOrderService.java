@@ -72,7 +72,13 @@ public class SellOrderService {
             wallet.setBalance(newBalance);
             cryptocurrencyWalletService.updateWallet(wallet.getId(), wallet);
         }
-
+        BigDecimal newBalance = wallet.getBalance().subtract(sellOrder.getAmount());
+        wallet.setBalance(newBalance);
+        cryptocurrencyWalletService.updateWallet(wallet.getId(), wallet);
+        //Set Commission
+        Commission com = commissionService.getCommissionById(1L);
+        sellOrder.setSalesCommission(com.getSalesCommission());
+      
         SellOrder sellOrderSaved = sellOrderRepository.save(sellOrder);
         firestoreService.syncToFirestore(sellOrderSaved);
         return sellOrderSaved;
@@ -103,7 +109,9 @@ public class SellOrderService {
         sellOrder.setTimestamp(sellOrderDetails.getTimestamp());
         sellOrder.setIsOpen(sellOrderDetails.getIsOpen());
         firestoreService.syncToFirestore(sellOrder);
-        return sellOrderRepository.save(sellOrder);
+        SellOrder sellOrderSaved = sellOrderRepository.save(sellOrder);
+        firestoreService.syncToFirestore(sellOrderSaved);
+        return sellOrderSaved;
     }
 
     @Transactional
@@ -111,6 +119,7 @@ public class SellOrderService {
         SellOrder sellOrder = sellOrderRepository.findById(sellOrderId)
                 .orElseThrow(() -> new RuntimeException("Sell Order not found with id: " + sellOrderId));
         ledgerService.deleteBySellOrderId(sellOrderId);
+        firestoreService.deleteFromFirestore(sellOrder);
         sellOrderRepository.deleteById(sellOrderId);
     }
 
@@ -125,7 +134,7 @@ public class SellOrderService {
     public List<SellOrder> getOpenSellOrdersBySellerId(Long sellerId) {
         return sellOrderRepository.findOpenSellOrdersBySellerId(sellerId);
     }
-
+  
     @Transactional
     public void cancelSellOrder(SellOrder sellOrder) {
         sellOrder.setIsOpen(true);
