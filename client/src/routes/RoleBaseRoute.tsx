@@ -2,6 +2,7 @@ import { ReactNode, useContext } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { UserRole } from '@/types/auth';
 import { AuthContext } from '@/contexts/AuthContext';
+import { ErrorState } from '@/types/error';
 
 interface RoleBasedRouteProps {
     children: ReactNode;
@@ -16,7 +17,13 @@ export const RoleBasedRoute: React.FC<RoleBasedRouteProps> = ({
     const location = useLocation();
 
     if (!auth) {
-        throw new Error('RoleBasedRoute must be used within an AuthProvider');
+        const errorState: ErrorState = {
+            title: "Authentication Error",
+            message: "Authentication context is not available.",
+            showHome: true,
+            showRetry: true
+        };
+        return <Navigate to="/error" state={errorState} replace />;
     }
 
     if (!auth.isAuthenticated) {
@@ -24,15 +31,13 @@ export const RoleBasedRoute: React.FC<RoleBasedRouteProps> = ({
     }
 
     if (!auth.user.role || !allowedRoles.includes(auth.user.role)) {
-        return <Navigate
-            to="/error"
-            state={{
-                title: "Unauthorized Access",
-                message: "You don't have permission to access this page.",
-                showRetry: false
-            }}
-            replace
-        />;
+        const errorState: ErrorState = {
+            title: "Unauthorized Access",
+            message: `You don't have permission to access this page. Your role (${auth.user.role}) does not have access to this resource.`,
+            showHome: true,
+            showRetry: false
+        };
+        return <Navigate to="/error" state={errorState} replace />;
     }
 
     return <>{children}</>;
