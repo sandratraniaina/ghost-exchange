@@ -12,9 +12,9 @@ import AdminDashboard from '@/components/pages/AdminDashboard/AdminDashboard';
 import { UserActivity } from '@/components/pages/UserActivity/UserActivity';
 import { UserTransactionHistory } from '@/components/pages/UserActivityHistory/UserTransactionHistory';
 import { UserCryptoHistory } from '@/components/pages/UserActivityHistory/UserCryptoHistory';
-import ErrorPage from '@/components/pages/ErrorPage';
+import ErrorPage from '@/components/pages/common/ErrorPage';
 import { RoleBasedRoute } from './RoleBaseRoute';
-import Home from '@/components/pages/HomePage';
+import Home from '@/components/pages/common/HomePage';
 
 export const AppRoutes = () => {
     return (
