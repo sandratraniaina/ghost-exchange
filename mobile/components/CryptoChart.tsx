@@ -1,8 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { LayoutChangeEvent } from 'react-native';
 import { LineChart } from 'react-native-chart-kit';
 import { Card, YStack, Text, XStack, Checkbox, Label, Spinner } from 'tamagui';
 import { CryptoService, Cryptocurrency, XeHistory } from '../api/cryptoHistory';
+
+const REFRESH_INTERVAL = 10; // seconds
 
 const chartConfig = {
     backgroundGradientFrom: '#ffffff',
@@ -25,6 +27,7 @@ export const CryptoChart = () => {
     const [historyData, setHistoryData] = useState<Record<number, XeHistory[]>>({});
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [timeUntilRefresh, setTimeUntilRefresh] = useState(REFRESH_INTERVAL);
 
     // Fetch available cryptocurrencies
     useEffect(() => {
@@ -50,34 +53,49 @@ export const CryptoChart = () => {
     }, []);
 
     // Fetch history data for selected cryptocurrencies
-    useEffect(() => {
-        const fetchHistory = async () => {
-            setLoading(true);
-            try {
-                const historyPromises = Array.from(selectedCryptos).map(cryptoId =>
-                    CryptoService.getLatestHistoryForCrypto(cryptoId)
-                );
-                const histories = await Promise.all(historyPromises);
+    const fetchHistory = useCallback(async () => {
+        setLoading(true);
+        try {
+            const historyPromises = Array.from(selectedCryptos).map(cryptoId =>
+                CryptoService.getLatestHistoryForCrypto(cryptoId)
+            );
+            const histories = await Promise.all(historyPromises);
 
-                const newHistoryData: Record<number, XeHistory[]> = {};
-                Array.from(selectedCryptos).forEach((cryptoId, index) => {
-                    newHistoryData[cryptoId] = histories[index];
-                });
+            const newHistoryData: Record<number, XeHistory[]> = {};
+            Array.from(selectedCryptos).forEach((cryptoId, index) => {
+                newHistoryData[cryptoId] = histories[index];
+            });
 
-                setHistoryData(newHistoryData);
-                setError(null);
-            } catch (err) {
-                setError('Failed to fetch history data');
-                console.error(err);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        if (selectedCryptos.size > 0) {
-            fetchHistory();
+            setHistoryData(newHistoryData);
+            setError(null);
+            setTimeUntilRefresh(REFRESH_INTERVAL); // Reset timer after successful fetch
+        } catch (err) {
+            setError('Failed to fetch history data');
+            console.error(err);
+        } finally {
+            setLoading(false);
         }
     }, [selectedCryptos]);
+
+    // Initial data fetch and refresh timer setup
+    useEffect(() => {
+        if (selectedCryptos.size > 0) {
+            fetchHistory();
+
+            // Set up refresh timer
+            const timer = setInterval(() => {
+                setTimeUntilRefresh((prev) => {
+                    if (prev <= 1) {
+                        fetchHistory();
+                        return REFRESH_INTERVAL;
+                    }
+                    return prev - 1;
+                });
+            }, 1000);
+
+            return () => clearInterval(timer);
+        }
+    }, [selectedCryptos, fetchHistory]);
 
     const onLayout = (event: LayoutChangeEvent) => {
         const { width } = event.nativeEvent.layout;
@@ -114,9 +132,8 @@ export const CryptoChart = () => {
                 minute: '2-digit'
             })
         ).reverse() || [];
-        // const labels = ["5min", "10mn", "15mn"];
 
-        return { labels, datasets};
+        return { labels, datasets };
     };
 
     if (loading && cryptocurrencies.length === 0) {
@@ -133,12 +150,17 @@ export const CryptoChart = () => {
     return (
         <Card elevate size="$4" bordered marginBottom="$4">
             <YStack padding="$4" onLayout={onLayout}>
-                <Text fontSize="$6" fontWeight="bold" marginBottom="$4">
-                    Real-time Cryptocurrency Prices
-                </Text>
+                <XStack justifyContent="space-between" alignItems="center" marginBottom="$4">
+                    <Text fontSize="$6" fontWeight="bold">
+                        Real-time Cryptocurrency Prices
+                    </Text>
+                    <Text fontSize="$4" color="$gray10">
+                        Refreshing in {timeUntilRefresh}s
+                    </Text>
+                </XStack>
 
                 {error && (
-                    <Text color="$red10" marginBottom="$4">{error}</Text>
+                    <Text color="$ff0000" marginBottom="$4">{error}</Text>
                 )}
 
                 {containerWidth > 0 && selectedCryptos.size > 0 && !loading && (
