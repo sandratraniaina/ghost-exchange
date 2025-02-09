@@ -9,7 +9,7 @@ export const getUserWallet = async (userId: number) => {
         }
 
         const uri = `/users/${userId}/wallets`;
-        const url = `http://${apiHost}${uri}`;
+        const url = `${apiHost}${uri}`;
 
         const response = await axios.get(url);
         return response.data;

@@ -94,7 +94,7 @@ export function AuthProvider({ children }: { readonly children: React.ReactNode 
                 return user;
             } else {
                 console.log("No user found with that email.");
-                return null;
+                throw new Error("No user found with that email");
             }
         } catch (error) {
             console.error("Error fetching user data:", error);

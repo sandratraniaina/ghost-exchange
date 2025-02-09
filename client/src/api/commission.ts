@@ -9,7 +9,7 @@ export const fetchCommissions = async () => {
     }
 
     const uri = '/commissions';
-    const url = `http://${apiHost}${uri}`;
+    const url = `${apiHost}${uri}`;
 
     const response = await axios.get(url);
     return response.data;
@@ -28,7 +28,7 @@ export const updateCommissions = async (salesCommission: number, purchaseCommiss
     }
 
     const uri = '/commissions/1';
-    const url = `http://${apiHost}${uri}`;
+    const url = `${apiHost}${uri}`;
 
     const requestBody = {
       salesCommission: salesCommission,

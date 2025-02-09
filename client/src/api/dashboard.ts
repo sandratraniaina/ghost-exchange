@@ -1,7 +1,7 @@
 export const getOpenTransaction = async () => {
     try {
         const host = import.meta.env.VITE_API_HOST;
-        const response = await fetch(`http://${host}/transactions?type=open`, {
+        const response = await fetch(`${host}/transactions?type=open`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -28,7 +28,7 @@ export const getOpenTransaction = async () => {
 export const acceptTransaction = async (transactionId: number) => {
     try {
         const host = import.meta.env.VITE_API_HOST;
-        const response = await fetch(`http://${host}/transactions/${transactionId}`, {
+        const response = await fetch(`${host}/transactions/${transactionId}`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -56,7 +56,7 @@ export const acceptTransaction = async (transactionId: number) => {
 export const declineTransaction = async (transactionId: number) => {
     try {
         const host = import.meta.env.VITE_API_HOST;
-        const response = await fetch(`http://${host}/transactions/${transactionId}`, {
+        const response = await fetch(`${host}/transactions/${transactionId}`, {
             method: "DELETE",
             headers: {
                 "Content-Type": "application/json",
