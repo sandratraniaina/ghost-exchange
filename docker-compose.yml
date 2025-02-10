@@ -11,7 +11,6 @@ services:
     networks:
       - app-network
 
-  # TODO: Create an application.properties in production
   backend:
     build:
       context: ./server
@@ -21,8 +20,6 @@ services:
     networks:
       - app-network
 
-  # TODO: Copy anonymizer's init.sql to initdb.d in production
-  # TODO: Copy backend's init.sql to initdb.d in production
   postgres:
     image: postgres:16-alpine
     environment:
@@ -35,9 +32,8 @@ services:
     networks:
       - app-network
 
-  # TODO: Deploy anonymizer to DockerHub
   anonymizer:
-    image: anonymizer:1.0.0
+    image: hasinajy/anonymizer:latest
     depends_on:
       - postgres
     networks:
