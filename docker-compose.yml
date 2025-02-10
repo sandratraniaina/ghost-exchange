@@ -34,9 +34,8 @@ services:
     networks:
       - app-network
 
-  # TODO: Deploy anonymizer to DockerHub
   anonymizer:
-    image: anonymizer:latest
+    image: hasinajy/anonymizer:latest
     depends_on:
       - postgres
     networks:
