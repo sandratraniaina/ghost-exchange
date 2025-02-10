@@ -1,7 +1,7 @@
 import { AnalysisType, CryptoOption, DateRange } from '@/components/pages/Analysis/Analysis';
 import axios from 'axios';
 
-export const fetchCommissionsAnalysis = async (analysisType: AnalysisType, selectedCrypto: CryptoOption, dateRange: DateRange) => {
+export const fetchCommissionsAnalysis = async (analysisType: AnalysisType, selectedCrypto: CryptoOption | null, dateRange: DateRange) => {
   try {
     const apiHost = import.meta.env.VITE_API_HOST;
 
@@ -19,10 +19,13 @@ export const fetchCommissionsAnalysis = async (analysisType: AnalysisType, selec
     }
 
     const uri = `/commissions/search?type=${analysisType}&start=${dateRange.min}&end=${dateRange.max}`;
-    const url = `${apiHost}${uri}`;
+    const url = `http://${apiHost}${uri}`;
 
     const formData = new FormData();
-    formData.append('cryptoId', `${selectedCrypto.id}`);
+
+    if (selectedCrypto != null) {
+      formData.append('cryptoId', `${selectedCrypto.id}`);
+    }
 
     const response = await axios.post(url, formData, {
       headers: {
@@ -36,7 +39,7 @@ export const fetchCommissionsAnalysis = async (analysisType: AnalysisType, selec
 
     return response.data;
   } catch (error) {
-    console.error('Error fetching commissions analysis data:', error);
+    console.error('Error fetching cryptocurrencies:', error);
     return null;
   }
 };
@@ -70,7 +73,7 @@ export const fetchCryptoAnalysis = async (analysisType: AnalysisType, selectedCr
 
     return response.data;
   } catch (error) {
-    console.error('Error fetching cryptocurrencies analysis data:', error);
+    console.error('Error fetching cryptocurrencies:', error);
     return null;
   }
 }
