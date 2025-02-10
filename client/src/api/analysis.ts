@@ -21,7 +21,7 @@ export const fetchCommissionsAnalysis = async (analysisType: AnalysisType, selec
     }
 
     const uri = `/commissions/search?type=${analysisType}&start=${dateRange.min}&end=${dateRange.max}`;
-    const url = `http://${apiHost}${uri}`;
+    const url = `${apiHost}${uri}`;
 
     const formData = new FormData();
 
