@@ -13,11 +13,13 @@ services:
   backend:
     build:
       context: ./server
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     depends_on:
       - postgres
     networks:
       - app-network
+    volumes:
+      - maven_repo:/root/.m2
 
   postgres:
     image: postgres:16-alpine
@@ -43,3 +45,4 @@ networks:
 
 volumes:
   postgres_data:
+  maven_repo:
