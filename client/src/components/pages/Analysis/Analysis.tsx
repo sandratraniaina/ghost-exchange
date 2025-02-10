@@ -14,7 +14,7 @@ import {
 import { fetchCryptoOptions } from '@/api/crypto';
 import { fetchCryptoAnalysis } from '@/api/analysis';
 
-export type AnalysisType = '1q' | 'max' | 'min' | 'avg' | 'standard-deviation';
+export type AnalysisType = '1q' | 'max' | 'min' | 'avg' | 'standard-deviation' | 'sum' | 'average';
 
 export interface CryptoOption {
   id: number;
