@@ -8,10 +8,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.cloud.FirestoreClient;
 import com.google.firebase.messaging.FirebaseMessaging;
 
-import jakarta.annotation.PostConstruct;
-import lombok.RequiredArgsConstructor;
-import mg.exchange.services.FirestoreService;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,14 +22,14 @@ import java.net.UnknownHostException;
 public class FirebaseConfig {
 
     private static final Logger logger = LoggerFactory.getLogger(FirebaseConfig.class);
-    
+
     @Value("${firebase.config.path}")
     private String configPath;
 
     @Bean
     public FirebaseApp firebaseApp() throws IOException {
         checkFirestoreConnectivity();
-        
+
         if (FirebaseApp.getApps().isEmpty()) {
             FileInputStream serviceAccount = new FileInputStream(configPath);
             FirebaseOptions options = FirebaseOptions.builder()
