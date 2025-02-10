@@ -1,9 +1,8 @@
 services:
-  # TODO: Suppress warnings in front end build
   frontend:
     build:
       context: ./client
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     ports:
       - "5173:5173"
     depends_on:
