@@ -26,6 +26,7 @@ const analysisTypes = [
   { value: 'average' as AnalysisType, label: 'Average (Moyenne)' }
 ];
 
+// TODO: Replace with API call in production
 // Sample data for individual cryptocurrencies
 const rawData: ChartDataItem[] = [
   { name: 'Bitcoin', salesCommission: 1250000, purchaseCommission: 980000 },
@@ -201,45 +202,54 @@ export const CommissionAnalysis = () => {
           </CardHeader>
 
           <CardContent>
-            <div className="w-full h-[600px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={chartData} margin={{ top: 20, right: 30, left: 35, bottom: 20 }}>
-                  <CartesianGrid vertical={false} />
-                  <XAxis
-                    dataKey="name"
-                    tickLine={false}
-                    axisLine={false}
-                    fontSize={12}
-                  />
-                  <YAxis
-                    tickFormatter={formatMGA}
-                    tickLine={false}
-                    axisLine={false}
-                    fontSize={12}
-                    width={35}
-                  />
-                  <Tooltip
-                    formatter={(value) => [`${value.toLocaleString()} MGA`, "Commission"]}
-                  />
-                  <Legend
-                    verticalAlign="top"
-                    height={36}
-                  />
-                  <Bar
-                    name="Sales Commission"
-                    dataKey="salesCommission"
-                    fill="hsl(var(--primary))"
-                    radius={[4, 4, 0, 0]}
-                  />
-                  <Bar
-                    name="Purchase Commission"
-                    dataKey="purchaseCommission"
-                    fill="hsl(var(--primary) / 0.5)"
-                    radius={[4, 4, 0, 0]}
-                  />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
+            {selectedAnalysis && (
+              <div className="w-full h-[600px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={chartData} margin={{ top: 20, right: 30, left: 35, bottom: 20 }}>
+                    <CartesianGrid vertical={false} />
+                    <XAxis
+                      dataKey="name"
+                      tickLine={false}
+                      axisLine={false}
+                      fontSize={12}
+                    />
+                    <YAxis
+                      tickFormatter={formatMGA}
+                      tickLine={false}
+                      axisLine={false}
+                      fontSize={12}
+                      width={35}
+                    />
+                    <YAxis
+                      tickFormatter={formatMGA}
+                      tickLine={false}
+                      axisLine={false}
+                      fontSize={12}
+                      width={35}
+                    />
+                    <Tooltip
+                      formatter={(value) => [`${value.toLocaleString()} MGA`, "Commission"]}
+                    />
+                    <Legend
+                      verticalAlign="top"
+                      height={36}
+                    />
+                    <Bar
+                      name="Sales Commission"
+                      dataKey="salesCommission"
+                      fill="hsl(var(--primary))"
+                      radius={[4, 4, 0, 0]}
+                    />
+                    <Bar
+                      name="Purchase Commission"
+                      dataKey="purchaseCommission"
+                      fill="hsl(var(--primary) / 0.5)"
+                      radius={[4, 4, 0, 0]}
+                    />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
