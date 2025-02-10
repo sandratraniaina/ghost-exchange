@@ -9,7 +9,7 @@ export default function Home() {
                     <CardTitle className="text-2xl text-center">Welcome to Ghost Exchange</CardTitle>
                     <ul>
                         <li>RAFANOMEZANTSOA Sandratriniaiaina - ETU002468 - sandratraniaina</li>
-                        <li>RAMANANDRAITSIORY Andry Hasin Jean Yves - ETU002539 - hasinajy</li>
+                        <li>RAMANANDRAITSIORY Andry Hasina Jean Yves - ETU002539 - hasinajy</li>
                         <li>RAVELONARIVO Sanda Silakiniaina - ETU002510 - Silakiniaina</li>
                         <li>RAKOTONANAHARY Liantsoa Fanantenana Boblith - ETU002611 - Liantsoa123 </li>
                     </ul>

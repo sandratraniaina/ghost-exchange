@@ -7,7 +7,7 @@ import { Button, YStack, Input, Spinner } from 'tamagui';
 export default function LoginScreen() {
     const router = useRouter();
     const { login } = useAuth();
-    const [email, setEmail] = useState('sandratra2468@gmail.com');
+    const [email, setEmail] = useState('ghostexchangetest@gmail.com');
     const [password, setPassword] = useState('Here is a 8 letters pwd');
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');

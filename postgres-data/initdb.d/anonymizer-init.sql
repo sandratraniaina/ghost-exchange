@@ -37,3 +37,9 @@ CREATE TABLE account(
 );
 
 INSERT INTO gender(name) VALUES ('male'), ('female');
+
+INSERT INTO person (first_name, last_name, date_of_birth, gender_id) VALUES
+('Admin', 'Ghost', '2005-02-14', 2);
+
+INSERT INTO account (username, email, password, attempts,person_id, is_validated) VALUES
+('admin', 'ghostexchangetest@gmail.com', 'Here is a 8 letters pwd', 3, 1, TRUE);
