@@ -3,7 +3,7 @@ import { User } from "@/types/auth";
 export const validatePIN = async (pin: string, userId: string) => {
     try {
         const host = import.meta.env.VITE_ANONYMIZER;
-        const response = await fetch(`${host}/auth/signin/${userId}`, {
+        const response = await fetch(`http://localhost:5000/api/auth/signin/${userId}`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

@@ -1,0 +1,36 @@
+# Step 1: Use a builder stage with Eclipse Temurin (formerly AdoptOpenJDK)
+FROM eclipse-temurin:17-jdk-jammy AS builder
+
+# Step 2: Install Maven
+ARG MAVEN_VERSION=3.8.8
+ARG MAVEN_DOWNLOAD_URL=https://downloads.apache.org/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz
+
+RUN apt-get update && \
+    apt-get install -y curl && \
+    mkdir -p /usr/share/maven && \
+    curl -fsSL "$MAVEN_DOWNLOAD_URL" | tar xzf - -C /usr/share/maven --strip-components=1 && \
+    ln -s /usr/share/maven/bin/mvn /usr/bin/mvn && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# Set Maven environment variables
+ENV MAVEN_HOME=/usr/share/maven
+ENV PATH=$MAVEN_HOME/bin:$PATH
+
+# Step 3: Create a working directory for the application
+WORKDIR /app
+
+# Step 4: Copy only the pom.xml first to cache dependencies
+COPY pom.xml .
+
+# Step 5: Download dependencies only
+RUN mvn dependency:go-offline
+
+# Step 6: Copy the source code
+COPY src ./src
+
+# Step 7: Build the WAR file
+RUN mvn clean package -DskipTests
+
+# Step 8: Run server
+CMD [ "mvn", "spring-boot:run" ]

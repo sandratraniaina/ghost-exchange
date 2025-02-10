@@ -1,11 +1,11 @@
-# Use an official Node.js image as the base image
-FROM node:18-alpine
+# Use the full Node.js image instead of Alpine
+FROM node:22
 
 # Set the working directory
 WORKDIR /app
 
-# Copy package.json and package-lock.json to install dependencies
-COPY package.json package-lock.json ./
+# Copy package.json to install dependencies
+COPY package.json ./
 
 # Install dependencies
 RUN npm install

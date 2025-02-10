@@ -7,23 +7,23 @@ export const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const [user, setUser] = useLocalStorage<User | null>('user', null);
-    
+
     const login = async (email: string, password: string) => {
         try {
             const host = import.meta.env.VITE_ANONYMIZER;
             console.log("Lasa izy zay");
-            const response = await fetch(`${host}/auth/signin`, {
+            const response = await fetch(`http://localhost:5000/api/auth/signin`, {
                 method: "POST",
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({email, password})
+                body: JSON.stringify({ email, password })
             });
 
             console.log(response);
-            
+
             const data = await response.json();
-            
+
             if (data.success) {
                 const newUser = new User();
                 newUser.id = data.data;

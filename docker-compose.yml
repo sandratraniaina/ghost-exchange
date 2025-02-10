@@ -13,11 +13,13 @@ services:
   backend:
     build:
       context: ./server
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     depends_on:
       - postgres
     networks:
       - app-network
+    volumes:
+      - maven_repo:/root/.m2
 
   postgres:
     image: postgres:16-alpine
@@ -33,6 +35,8 @@ services:
 
   anonymizer:
     image: hasinajy/anonymizer:latest
+    ports:
+      - "5000:5000"
     depends_on:
       - postgres
     networks:
@@ -43,3 +47,4 @@ networks:
 
 volumes:
   postgres_data:
+  maven_repo:
