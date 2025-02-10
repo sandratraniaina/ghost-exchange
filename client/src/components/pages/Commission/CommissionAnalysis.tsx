@@ -27,12 +27,14 @@ const analysisTypes = [
   { value: 'average' as AnalysisType, label: 'Average (Moyenne)' }
 ];
 
-const formatMGA = (value: number | null | undefined) => {
-  if (value == null) return '0';
-  const millions = value / 1000000;
-  return millions >= 1
-    ? `${millions.toFixed(1)}M`
-    : `${(value / 1000).toFixed(0)}k`;
+const formatMGA = (value: number) => {
+  if (value >= 1000000) {
+    return `MGA{(value / 1000000).toFixed(1)}M`;
+  } else if (value >= 1000) {
+    return `MGA{(value / 1000).toFixed(0)}k`;
+  } else {
+    return value.toLocaleString();
+  }
 };
 
 const formatCommission = (value: number | null | undefined) => {
