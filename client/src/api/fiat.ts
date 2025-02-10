@@ -9,7 +9,7 @@ export const createTransaction = async (userId: number, amount: number, transact
     }
 
     const uri = '/transactions';
-    const url = `http://${apiHost}${uri}`;
+    const url = `${apiHost}${uri}`;
 
     const requestBody = {
       "user": {

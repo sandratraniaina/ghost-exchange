@@ -3,6 +3,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
+import { cn } from '@/lib/utils';
 
 interface CryptoCardProps {
     avatarUrl: string;
@@ -11,6 +12,8 @@ interface CryptoCardProps {
     cryptoSymbol: string;
     volume: number;
     price: number;
+    canBuy: boolean;
+    isLoading: boolean;
     handleBuy: () => void;
 }
 
@@ -21,6 +24,8 @@ const SellOrder: React.FC<CryptoCardProps> = ({
     cryptoSymbol,
     volume,
     price,
+    canBuy,
+    isLoading,
     handleBuy,
 }) => {
     return (
@@ -53,14 +58,37 @@ const SellOrder: React.FC<CryptoCardProps> = ({
                         </div>
                         <div>
                             <div className="text-sm text-muted-foreground">Price</div>
-                            <div className="font-bold">${price.toFixed(2)}</div>
+                            <div className="font-bold">MGA{price.toFixed(2)}</div>
                         </div>
                     </div>
                 </div>
 
-                {/* Buy Button */}
-                <Button onClick={handleBuy} className="w-full">
-                    BUY
+                <Button onClick={handleBuy} className="w-full" disabled={!canBuy}>
+                    {isLoading && (
+                        <svg
+                            className="animate-spin h-5 w-5 text-white absolute"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                        >
+                            <circle
+                                className="opacity-25"
+                                cx="12"
+                                cy="12"
+                                r="10"
+                                stroke="currentColor"
+                                strokeWidth="4"
+                            />
+                            <path
+                                className="opacity-75"
+                                fill="currentColor"
+                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c3.042 0 5.61 2.185 6.291 5.291l.33 1.005A8.002 8.002 0 0112 20v-2.001c.47-.001.933-.017 1.404-.052A8.005 8.005 0 0120 12a8 8 0 01-8-8V4a8 8 0 01-7.995 7.995L12 17.291z"
+                            />
+                        </svg>
+                    )}
+                    <span className={cn(isLoading && "opacity-0")}>
+                        BUY
+                    </span>
                 </Button>
             </CardContent>
         </Card>

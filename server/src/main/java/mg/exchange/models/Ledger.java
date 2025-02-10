@@ -27,14 +27,12 @@ public class Ledger implements FirestoreSyncable {
     private SellOrder sellOrder;
 
     @ManyToOne
-    @JoinColumn(name = "buyer_id", nullable = false)
+    @JoinColumn(name = "buyer_id", nullable = true)
     private User buyer;
 
     @Column(nullable = false, columnDefinition = "timestamp DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime timestamp;
 
-    @Column(name = "sales_commission", nullable = false, precision = 10, scale = 2)
-    private BigDecimal salesCommission;
 
     @Column(name = "purchases_commission", nullable = false, precision = 10, scale = 2)
     private BigDecimal purchasesCommission;
@@ -61,8 +59,6 @@ public class Ledger implements FirestoreSyncable {
             map.put("buyer", buyer.toFirestoreMap());
         if (timestamp != null)
             map.put("timestamp", timestamp.toString());
-        if (salesCommission != null)
-            map.put("salesCommission", salesCommission);
         if (purchasesCommission != null)
             map.put("purchasesCommission", purchasesCommission);
 

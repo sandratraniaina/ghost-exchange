@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import SellOrder from './SellOrder';
 import {
     Select,
@@ -7,104 +7,195 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import { fetchCryptoOptions } from '@/api/crypto';
+import { useToast } from '@/hooks/use-toast';
+import { buyCrypto, fetchSellOrders } from '@/api/sellOrder';
+import { useAuth } from '@/hooks/useAuth';
 
-interface SellOrderData {
+interface CryptoOption {
     id: number;
-    username: string;
-    avatarUrl: string;
-    volume: number;
-    price: number;
-    cryptoName: string;
-    cryptoSymbol: string;
+    name: string;
+    symbol: string;
+    fiatPrice: number;
+    firestoreCollectionName: string;
 }
 
-const mockSellOrders: SellOrderData[] = [
-    {
-        id: 1,
-        username: 'John Doe',
-        avatarUrl: 'https://randomuser.me/api/portraits/men/1.jpg',
-        volume: 16.5,
-        price: 15.0,
-        cryptoName: 'Bitcoin',
-        cryptoSymbol: 'BTC',
-    },
-    {
-        id: 2,
-        username: 'Jane Smith',
-        avatarUrl: 'https://randomuser.me/api/portraits/women/2.jpg',
-        volume: 8.2,
-        price: 25.0,
-        cryptoName: 'Ethereum',
-        cryptoSymbol: 'ETH',
-    },
-    {
-        id: 3,
-        username: 'Alice Johnson',
-        avatarUrl: 'https://randomuser.me/api/portraits/women/3.jpg',
-        volume: 5.0,
-        price: 40.0,
-        cryptoName: 'Litecoin',
-        cryptoSymbol: 'LTC',
-    },
-    {
-        id: 4,
-        username: 'Bob Williams',
-        avatarUrl: 'https://randomuser.me/api/portraits/men/4.jpg',
-        volume: 12.0,
-        price: 20.0,
-        cryptoName: 'Bitcoin',
-        cryptoSymbol: 'BTC',
-    },
-];
+interface SellOrder {
+    id: number;
+    seller: {
+        id: number;
+        fiatBalance: number;
+        username: string;
+        email: string;
+        accountRole: string;
+        firestoreCollectionName: string;
+    };
+    cryptocurrency: {
+        id: number;
+        name: string;
+        symbol: string;
+        fiatPrice: number;
+        firestoreCollectionName: string;
+    };
+    amount: number;
+    fiatPrice: number;
+    timestamp: string;
+    isOpen: boolean;
+    firestoreCollectionName: string;
+}
 
 export const Marketplace = () => {
-    // Set default value to "all" instead of an empty string.
+    const [cryptoOptions, setCryptoOptions] = useState<CryptoOption[]>([]);
+    const [sellOrders, setSellOrders] = useState<SellOrder[]>([]);
     const [selectedCrypto, setSelectedCrypto] = useState<string>('all');
+    const [loadingOptions, setLoadingOptions] = useState(true);
+    const [isLoading, setIsLoading] = useState<boolean[]>([]);
 
-    // Filter orders: if "all" is selected, show all orders.
+    const { user } = useAuth();
+    const { toast } = useToast();
+
+    const handleBuy = async (sellOrderId: number, buyerId: number, sellOrderIndex: number) => {
+        try {
+            setIsLoading(prevLoading => {
+                const newLoading = [...prevLoading];
+                newLoading[sellOrderIndex] = true;
+                return newLoading;
+            });
+
+            const response = await buyCrypto(sellOrderId, buyerId);
+
+            if (response?.status != 200) {
+                throw new Error;
+            } else if (response?.status == 200 && !response?.success) {
+                toast({
+                    title: "Denied",
+                    description: "Operation denied. You have insufficient balance.",
+                    className: "bg-yellow-500 text-black",
+                });
+            } else {
+                toast({
+                    title: "Success",
+                    description: "Cryptocurrency bought successfully!",
+                    className: "bg-green-600 text-white"
+                });
+            }
+        } catch {
+            toast({
+                title: "Error",
+                description: "Failed to buy cryptocurrency. Please check your connection and try again.",
+                variant: "destructive",
+            });
+        } finally {
+            setIsLoading(prevLoading => {
+                const newLoading = [...prevLoading];
+                newLoading[sellOrderIndex] = false;
+                return newLoading;
+            });
+        }
+    }
+
+    useEffect(() => {
+        const loadOptions = async () => {
+            const options = await fetchCryptoOptions();
+
+            if (!options?.success) {
+                toast({
+                    title: "Error",
+                    description: "Failed to fetch crypto options. Please check your connection and try again.",
+                    variant: "destructive",
+                });
+                return;
+            }
+
+            setLoadingOptions(false);
+            setCryptoOptions(options.data);
+        };
+
+        loadOptions();
+    });
+
+    useEffect(() => {
+        const loadSellOrders = async () => {
+            const options = await fetchSellOrders();
+
+            if (!options?.success) {
+                toast({
+                    title: "Error",
+                    description: "Failed to fetch sell orders. Please check your connection and try again.",
+                    variant: "destructive",
+                });
+                return;
+            }
+
+            setSellOrders(options.data);
+
+            // Preserve existing isLoading state if it exists and matches the new data length
+            if (isLoading.length === options.data.length) {
+                return; // Do nothing, keep the current isLoading state
+            }
+
+            // Otherwise, reset isLoading to match the new data
+            setIsLoading(Array(options.data.length).fill(false));
+        };
+
+        loadSellOrders();
+    });
+
+    useEffect(() => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const cryptoParam = urlParams.get('crypto');
+
+        if (cryptoParam) {
+            const selectedCryptosFromUrl = cryptoParam.split(',');
+
+            if (selectedCryptosFromUrl.length === 1) {
+                setSelectedCrypto(selectedCryptosFromUrl[0].toUpperCase());
+            } else {
+                setSelectedCrypto('all');
+            }
+
+        } else {
+            setSelectedCrypto('all');
+        }
+    }, []);
+
     const filteredSellOrders =
         selectedCrypto === 'all'
-            ? mockSellOrders
-            : mockSellOrders.filter((order) => order.cryptoSymbol === selectedCrypto);
-
-    // Get unique crypto symbols for the dropdown options
-    const cryptoOptions = Array.from(
-        new Set(mockSellOrders.map((order) => order.cryptoSymbol))
-    );
+            ? sellOrders
+            : sellOrders.filter((order: SellOrder) => order.cryptocurrency.symbol === selectedCrypto);
 
     return (
         <div className="p-4 space-y-4">
-            {/* Cryptocurrency Filter */}
             <div className="max-w-xs">
-                <Select onValueChange={setSelectedCrypto} value={selectedCrypto}>
-                    <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Filter by cryptocurrency" />
+                <Select value={selectedCrypto} onValueChange={setSelectedCrypto} disabled={loadingOptions}>
+                    <SelectTrigger className="w-[120px] rounded-lg">
+                        <SelectValue placeholder={loadingOptions ? "Loading..." : "Filter by cryptocurrency"} />
                     </SelectTrigger>
-                    <SelectContent>
-                        {/* Option for "All" cryptocurrencies */}
+                    <SelectContent className="rounded-xl">
                         <SelectItem value="all">All</SelectItem>
-                        {cryptoOptions.map((symbol) => (
-                            <SelectItem key={symbol} value={symbol}>
-                                {symbol}
+                        {cryptoOptions.map((crypto) => (
+                            <SelectItem key={crypto.id} value={crypto.symbol} className="rounded-lg">
+                                {crypto.name} ({crypto.symbol})
                             </SelectItem>
                         ))}
                     </SelectContent>
                 </Select>
             </div>
 
-            {/* Sell Orders Grid */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {filteredSellOrders.length > 0 ? (
-                    filteredSellOrders.map((order) => (
+                    filteredSellOrders.map((order, index) => (
                         <SellOrder
                             key={order.id}
-                            username={order.username}
-                            avatarUrl={order.avatarUrl}
-                            volume={order.volume}
-                            price={order.price}
-                            cryptoName={order.cryptoName}
-                            cryptoSymbol={order.cryptoSymbol}
-                            handleBuy={() => console.log(`Buying from ${order.username}`)}
+                            username={order.seller.username}
+                            avatarUrl={"https://randomuser.me/api/portraits/men/1.jpg"}
+                            volume={order.amount}
+                            price={order.fiatPrice}
+                            cryptoName={order.cryptocurrency.name}
+                            cryptoSymbol={order.cryptocurrency.symbol}
+                            canBuy={order.fiatPrice <= user.fiatBalance}
+                            isLoading={isLoading[index]}
+                            handleBuy={() => handleBuy(order.id, parseInt(user.id), index)}
                         />
                     ))
                 ) : (

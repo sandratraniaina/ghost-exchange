@@ -9,7 +9,7 @@ export const sellCrypto = async (sellerId: number, cryptoId: number, fiatPrice: 
     }
 
     const uri = '/sell-orders';
-    const url = `http://${apiHost}${uri}`;
+    const url = `${apiHost}${uri}`;
 
     const requestBody = {
       "seller": {
@@ -45,7 +45,7 @@ export const fetchCryptoOptions = async () => {
     }
 
     const uri = '/cryptocurrencies';
-    const url = `http://${apiHost}${uri}`;
+    const url = `${apiHost}${uri}`;
 
     const response = await axios.get(url);
 
@@ -68,7 +68,7 @@ export const fetchCryptoHistory = async (exchangeId: number) => {
     }
 
     const uri = '/exchanges?interval=1';
-    const url = `http://${apiHost}${uri}`;
+    const url = `${apiHost}${uri}`;
 
     const requestBody = [{ id: exchangeId }];
 

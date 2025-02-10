@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -108,7 +109,7 @@ public class UserController {
     @GetMapping("/{userId}/wallets")
     public <T> ResponseEntity<Response<T>> getWalletByUserId(@PathVariable Long userId) {
         try {
-            Optional<CryptocurrencyWallet> wallets = walletService.getWalletByUserId(userId);
+            List<CryptocurrencyWallet> wallets = walletService.getWalletByUserId(userId);
             return ResponseUtil.sendResponse(HttpStatus.OK, true, "Wallet fetched successfully", (T) wallets);
         } catch (Exception e) {
             return ResponseUtil.sendResponse(HttpStatus.BAD_REQUEST, false,
@@ -146,6 +147,34 @@ public class UserController {
             return ResponseUtil.sendResponse(HttpStatus.OK, true, "Transactions fetched successfully", (T)transactions);
         } catch (Exception e) {
             return ResponseUtil.sendResponse(HttpStatus.BAD_REQUEST, false, "Error while retrieving transaction history for user", (T)e.getMessage());
+        }
+    }
+
+
+    @PostMapping("/balances")
+    public <T> ResponseEntity<Response<T>> getUserBalance(@RequestParam("userId") Long userId) {
+        try {
+            User user = userService.getUserById(userId);
+            if (user == null) {
+                return ResponseUtil.sendResponse(HttpStatus.NOT_FOUND, false, "User not found", null);
+            }
+            return ResponseUtil.sendResponse(HttpStatus.OK, true, "User balance fetched successfully", (T)user.getFiatBalance());
+        } catch (Exception e) {
+            return ResponseUtil.sendResponse(HttpStatus.BAD_REQUEST, false, "Error while retrieving user balance", null);
+        }
+   }
+  
+    @SuppressWarnings("unchecked")
+    @GetMapping
+    public <T> ResponseEntity<Response<T>> getUserByEmail(@RequestParam(required = false) String email){
+        try {
+            Optional<User> user = userService.getUserByEmail(email);
+            if(user == null){
+                throw new Exception("No user found for email : "+email);
+            }
+            return ResponseUtil.sendResponse(HttpStatus.OK, true, "User fetched successfully" , (T)user.get());
+        } catch (Exception e) {
+            return ResponseUtil.sendResponse(HttpStatus.BAD_REQUEST, false, "Error while retrieving user for email "+email , (T)e.getMessage());
         }
     }
 }

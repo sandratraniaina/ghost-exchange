@@ -1,13 +1,16 @@
 import { SignupFormData } from "@/components/pages/auth/SignupPage";
 import React from "react";
 
+export type UserRole = "ADMIN" | "CLIENT";
+
 export class User {
     id: string = "1";
     email: string = "johndoe@gmail.com";
     avatar: string = "https://randomuser.me/api/portraits";
-    role: string = "User";
+    role: UserRole = "CLIENT"; // Updated to use UserRole type
     password: string = "";
     username: string = "";
+    fiatBalance: number = 0;
 }
 
 export interface AuthContextType {

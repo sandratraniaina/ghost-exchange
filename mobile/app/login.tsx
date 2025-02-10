@@ -2,17 +2,27 @@ import { useAuth } from '@/hooks/useAuth';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { View, Text } from 'react-native';
-import { Button, YStack, Input } from 'tamagui';
+import { Button, YStack, Input, Spinner } from 'tamagui';
 
 export default function LoginScreen() {
     const router = useRouter();
     const { login } = useAuth();
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+    const [email, setEmail] = useState('sandratra2468@gmail.com');
+    const [password, setPassword] = useState('Here is a 8 letters pwd');
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState('');
 
-    const handleLogin = () => {
-        login(email, password);
-        router.replace('/');
+    const handleLogin = async () => {
+        setIsLoading(true);
+        setError('');
+        try {
+            await login(email, password);
+            router.replace('/');
+        } catch (error) {
+            setError(error.message);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
@@ -24,6 +34,7 @@ export default function LoginScreen() {
                     value={email}
                     onChangeText={setEmail}
                     style={{ borderWidth: 1, padding: 10 }}
+                    editable={!isLoading}
                 />
                 <Input
                     placeholder="Password"
@@ -31,13 +42,24 @@ export default function LoginScreen() {
                     onChangeText={setPassword}
                     secureTextEntry
                     style={{ borderWidth: 1, padding: 10 }}
+                    editable={!isLoading}
                 />
+                {error && <Text style={{ color: 'red' }}>{error}</Text>}
                 <Button
                     backgroundColor="#1D88AF"
                     color="white"
                     onPress={handleLogin}
+                    disabled={isLoading}
+                    opacity={isLoading ? 0.7 : 1}
                 >
-                    Login
+                    <YStack alignItems="center" flexDirection="row" gap="$2">
+                        {isLoading && (
+                            <Spinner size="small" color="white" />
+                        )}
+                        <Text style={{ color: 'white' }}>
+                            {isLoading ? 'Logging in...' : 'Login'}
+                        </Text>
+                    </YStack>
                 </Button>
             </YStack>
         </View>

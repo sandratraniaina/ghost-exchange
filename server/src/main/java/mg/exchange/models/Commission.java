@@ -1,6 +1,7 @@
 package mg.exchange.models;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import mg.exchange.utils.FirestoreSyncable;
@@ -11,6 +12,7 @@ import java.util.Map;
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "commission")
 public class Commission implements FirestoreSyncable {

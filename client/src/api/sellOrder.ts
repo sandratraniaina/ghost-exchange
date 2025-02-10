@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-export const fetchUserBalance = async (userId: number) => {
+export const buyCrypto = async (sellOrderId: number, buyerId: number) => {
     try {
         const apiHost = import.meta.env.VITE_API_HOST;
 
@@ -8,25 +8,22 @@ export const fetchUserBalance = async (userId: number) => {
             throw new Error('VITE_API_HOST environment variable is not defined.');
         }
 
-        const uri = `/users/balances`;
-        const url = `http://${apiHost}${uri}`;
+        const uri = `/sell-orders/${sellOrderId}/buy`;
+        const url = `${apiHost}${uri}`;
 
-        const formData = new FormData();
-        formData.append('userId', `${userId}`);
+        const requestBody = {
+            "id": buyerId
+        };
 
-        const response = await axios.post(url, formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data'
-            }
-        });
+        const response = await axios.post(url, requestBody);
         return response.data;
     } catch (error) {
-        console.error('Error fetching user wallet:', error);
+        console.error('Error performing buy operation:', error);
         return null;
     }
 }
 
-export const getUserWallet = async (userId: number) => {
+export const fetchSellOrders = async () => {
     try {
         const apiHost = import.meta.env.VITE_API_HOST;
 
@@ -34,13 +31,13 @@ export const getUserWallet = async (userId: number) => {
             throw new Error('VITE_API_HOST environment variable is not defined.');
         }
 
-        const uri = `/users/${userId}/wallets`;
+        const uri = '/sell-orders?type=open';
         const url = `${apiHost}${uri}`;
 
         const response = await axios.get(url);
         return response.data;
     } catch (error) {
-        console.error('Error fetching user wallet:', error);
+        console.error('Error fetching sell orders:', error);
         return null;
     }
 };

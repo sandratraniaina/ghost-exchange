@@ -20,6 +20,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("SELECT u FROM User u WHERE u.username = :username")
     Optional<User> findByUsername(@Param("username") String username);
 
+    @Query("SELECT u FROM User u WHERE u.email = :email")
+    Optional<User> findUserByEmail(@Param("email") String email);
+
     @Query("SELECT new mg.exchange.dto.UserTransactionSummary(" +
         "a, " +
         "COALESCE(SUM(up.totalPurchase), 0), " +

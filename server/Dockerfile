@@ -1,7 +1,7 @@
-# Step 1: Use alpine as the base image
-FROM alpine:3.20 AS base
+# Step 1: Use a builder stage with alpine as the base image
+FROM alpine:3.20 AS builder
 
-# Step 2: Install necessary dependencies (bash, curl, tar, gzip)
+# Step 2: Install necessary dependencies
 RUN apk add --no-cache bash curl gzip openjdk17 tar
 
 # Step 3: Set JAVA_HOME environment variable
@@ -23,17 +23,32 @@ ENV PATH=$MAVEN_HOME/bin:$PATH
 # Step 5: Create a working directory for the application
 WORKDIR /app
 
-# Step 6: Copy pom.xml file
+# Step 6: Copy only the pom.xml first to cache dependencies
 COPY pom.xml .
 
-# Step 7: Build the application dependencies
-RUN mvn clean package -DskipTests
+# Step 7: Download dependencies only
+RUN mvn dependency:go-offline
 
-# Step 8: Copy the rest of the application source code
+# Step 8: Copy the source code
 COPY src ./src
 
-# Step 9: Expose the port your Spring Boot app runs on (default is 8080)
+# Step 9: Build the WAR file
+RUN mvn clean package -DskipTests
+
+# Step 10: Create the runtime image
+FROM alpine:3.20
+
+# Step 11: Install only the JRE
+RUN apk add --no-cache openjdk17-jre
+
+# Step 12: Set working directory
+WORKDIR /app
+
+# Step 13: Copy the built WAR from the builder stage
+COPY --from=builder /app/target/*.war app.war
+
+# Step 14: Expose the application port
 EXPOSE 8080
 
-# Step 10: Set the entrypoint to run the Spring Boot application using Maven
-CMD ["java", "-jar", "target/ghost-exchange-0.0.1-SNAPSHOT.jar"]
+# Step 15: Run the Spring Boot application
+CMD ["java", "-jar", "app.war"]

@@ -2,6 +2,7 @@ package mg.exchange.repository;
 
 
 import mg.exchange.dto.UserCryptoTransaction;
+import mg.exchange.models.SellOrder;
 import mg.exchange.models.Transaction;
 
 import java.time.LocalDateTime;
@@ -28,4 +29,6 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
         @Param("type") String type
     );
 
+    @Query("SELECT t FROM Transaction t WHERE t.validationTimestamp IS NULL")
+    List<Transaction> findOpenTransactions();
 }

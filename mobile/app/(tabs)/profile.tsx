@@ -13,7 +13,7 @@ export default function ProfileScreen() {
                 <Text fontSize={24} fontWeight="bold">{user?.username}</Text>
                 <Text fontSize={16}>{user?.email}</Text>
                 <Text fontSize={20} fontWeight="bold">
-                    Balance: ${user?.balance.toFixed(2)}
+                    Balance: ${user?.balance}
                 </Text>
                 <Button theme="red" onPress={logout}>Logout</Button>
             </YStack>
