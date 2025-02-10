@@ -66,7 +66,7 @@ export const fetchCryptoAnalysis = async (analysisType: AnalysisType, selectedCr
     }
 
     const uri = `/analysis?type=${analysisType}&start=${dateRange.min}&end=${dateRange.max}`;
-    const url = `http://${apiHost}${uri}`;
+    const url = `${apiHost}${uri}`;
 
     const requestBody = selectedCrypto;
     const response = await axios.post(url, requestBody);

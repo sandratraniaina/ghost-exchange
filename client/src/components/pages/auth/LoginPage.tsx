@@ -26,7 +26,7 @@ export const LoginPage = () => {
         password: 'Here is a 8 letters pwd'
     });
 
-    const from = location.state?.from?.pathname || '/';
+    const from = location.state?.from?.pathname || '/home';
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;

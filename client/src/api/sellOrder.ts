@@ -9,7 +9,7 @@ export const buyCrypto = async (sellOrderId: number, buyerId: number) => {
         }
 
         const uri = `/sell-orders/${sellOrderId}/buy`;
-        const url = `http://${apiHost}${uri}`;
+        const url = `${apiHost}${uri}`;
 
         const requestBody = {
             "id": buyerId
@@ -32,7 +32,7 @@ export const fetchSellOrders = async () => {
         }
 
         const uri = '/sell-orders?type=open';
-        const url = `http://${apiHost}${uri}`;
+        const url = `${apiHost}${uri}`;
 
         const response = await axios.get(url);
         return response.data;

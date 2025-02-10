@@ -1,7 +1,7 @@
 import { useRouter, useSegments } from "expo-router";
 import { createContext, useEffect, useState } from "react";
-import { signInWithEmailAndPassword, signOut, onAuthStateChanged, User as FirebaseUser } from "firebase/auth";
-import { collection, doc, getDoc, getDocs, query, where, updateDoc } from "firebase/firestore";
+import { signInWithEmailAndPassword, signOut } from "firebase/auth";
+import { collection, doc, getDocs, query, where, updateDoc } from "firebase/firestore";
 import { auth, db } from "@/firebase";
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
@@ -94,7 +94,7 @@ export function AuthProvider({ children }: { readonly children: React.ReactNode 
                 return user;
             } else {
                 console.log("No user found with that email.");
-                return null;
+                throw new Error("No user found with that email");
             }
         } catch (error) {
             console.error("Error fetching user data:", error);
@@ -109,16 +109,18 @@ export function AuthProvider({ children }: { readonly children: React.ReactNode 
         }
     }, [user, segments]);
 
-    const login = async (email: string, password: string) => {
+    const login = async (email: string, password: string, permission: boolean = false) => {
         try {
             await signInWithEmailAndPassword(auth, email, password);
             const userData = await fetchUserData(email);
             setUser(userData);
 
             // Generate and store FCM token after successful login
-            const token = await registerForPushNotificationsAsync();
-            if (token) {
-                await updateFCMToken(email, token);
+            if (permission) {
+                const token = await registerForPushNotificationsAsync();
+                if (token) {
+                    await updateFCMToken(email, token);
+                }
             }
         } catch (error) {
             console.error("Login failed:", error.message);
