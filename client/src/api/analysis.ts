@@ -54,13 +54,15 @@ export const fetchCryptoAnalysis = async (analysisType: AnalysisType, selectedCr
       throw new Error('VITE_API_HOST environment variable is not defined.');
     }
 
-    const today = new Date();
-    const midnightToday = new Date(today.setHours(0, 0, 0, 0)).toISOString().slice(0, 16);
-    const endOfToday = new Date(today.setHours(23, 59, 0, 0)).toISOString().slice(0, 16);
+    const now = new Date();
+    const offset = 3 * 60 * 60 * 1000;
+    const adjustedTime = new Date(now.getTime() + offset);
+    const startOf24HoursGMT3 = new Date(now.getTime() - 24 * 60 * 60 * 1000 + offset).toISOString().slice(0, 16);
+    const endOfTodayGMT3 = new Date(adjustedTime.getTime()).toISOString().slice(0, 16);
 
     if (dateRange.min == "" && dateRange.max == "") {
-      dateRange.min = midnightToday;
-      dateRange.max = endOfToday;
+      dateRange.min = startOf24HoursGMT3;
+      dateRange.max = endOfTodayGMT3;
     }
 
     const uri = `/analysis?type=${analysisType}&start=${dateRange.min}&end=${dateRange.max}`;
