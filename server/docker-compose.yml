@@ -1,0 +1,34 @@
+services:
+  # TODO: Create an application.properties in production
+  backend:
+    build:
+      dockerfile: Dockerfile
+    ports:
+      - "9090:9090"
+    depends_on:
+      - postgres
+    networks:
+      - app-network
+    volumes:
+      - maven_dependencies:/root/.m2/repository
+
+  # TODO: Copy anonymizer's init.sql to initdb.d in production
+  # TODO: Copy backend's init.sql to initdb.d in production
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: dev
+      POSTGRES_PASSWORD: DevTeam2000
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./postgres_data/initdb.d:/docker-entrypoint-initdb.d
+    networks:
+      - app-network
+
+networks:
+  app-network:
+
+volumes:
+  postgres_data:
+  maven_dependencies:

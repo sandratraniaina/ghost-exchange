@@ -1,0 +1,50 @@
+services:
+  frontend:
+    build:
+      context: ./client
+      dockerfile: Dockerfile.dev
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+  backend:
+    build:
+      context: ./server
+      dockerfile: Dockerfile.dev
+    depends_on:
+      - postgres
+    networks:
+      - app-network
+    volumes:
+      - maven_repo:/root/.m2
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: dev
+      POSTGRES_PASSWORD: DevTeam2000
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./postgres-data/initdb.d:/docker-entrypoint-initdb.d
+    networks:
+      - app-network
+
+  anonymizer:
+    image: hasinajy/anonymizer:latest
+    ports:
+      - "5000:5000"
+    depends_on:
+      - postgres
+    networks:
+      - app-network
+
+networks:
+  app-network:
+
+volumes:
+  postgres_data:
+  maven_repo:
